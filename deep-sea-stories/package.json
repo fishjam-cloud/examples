@@ -12,5 +12,8 @@
 		"format": "biome format",
 		"lint": "biome lint",
 		"check": "biome check --write"
+	},
+	"engines": {
+		"node": ">= 24.0.0"
 	}
 }
