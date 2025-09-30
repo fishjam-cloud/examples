@@ -1,35 +1,29 @@
-import Fastify, {
-	type FastifyInstance,
-	type RouteShorthandOptions,
-} from 'fastify';
+import Fastify from 'fastify';
+import {
+	serializerCompiler,
+	validatorCompiler,
+	type ZodTypeProvider,
+} from 'fastify-type-provider-zod';
+import { fastifyConfig } from './config.js';
+import { fishjamPlugin } from './plugins/fishjam.js';
+import routes from './routes/index.js';
 
-const server: FastifyInstance = Fastify({
+const fastify = Fastify({
 	logger: { transport: { target: 'pino-pretty' } },
-});
-const port = 3000;
+}).withTypeProvider<ZodTypeProvider>();
 
-const opts: RouteShorthandOptions = {
-	schema: {
-		response: {
-			200: {
-				type: 'object',
-				properties: {
-					pong: {
-						type: 'string',
-					},
-				},
-			},
-		},
-	},
-};
+fastify.setValidatorCompiler(validatorCompiler);
+fastify.setSerializerCompiler(serializerCompiler);
 
-server.get('/ping', opts, async (_request, _reply) => {
-	return { pong: 'it worked!' };
-});
+fastify.register(fastifyConfig);
+fastify.register(fishjamPlugin);
+
+fastify.register(routes, { prefix: '/api/v1' });
 
 try {
-	await server.listen({ port });
+	await fastify.ready();
+	await fastify.listen({ port: fastify.config.PORT });
 } catch (err) {
-	server.log.error(err);
+	fastify.log.error(err);
 	process.exit(1);
 }

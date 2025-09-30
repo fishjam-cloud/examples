@@ -1,6 +1,7 @@
 {
 	"extends": "@tsconfig/node24/tsconfig.json",
 	"compilerOptions": {
-		"outDir": "dist"
+		"outDir": "dist",
+		"declaration": true
 	}
 }
