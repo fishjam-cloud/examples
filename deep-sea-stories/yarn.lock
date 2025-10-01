@@ -209,6 +209,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@binbat/whip-whep@npm:^1.1.1-sdp-trickle-throw":
+  version: 1.1.1-sdp-trickle-throw
+  resolution: "@binbat/whip-whep@npm:1.1.1-sdp-trickle-throw"
+  checksum: 10c0/073dc456898c51cccfa3bc766741d84b883881bf0dfa9b663bb3e42d5eba3d9843447c85892662d7c98221fdbb4e9d4858b56533241f919c5699b8bb54a059d7
+  languageName: node
+  linkType: hard
+
 "@biomejs/biome@npm:2.2.4":
   version: 2.2.4
   resolution: "@biomejs/biome@npm:2.2.4"
@@ -297,6 +304,13 @@ __metadata:
   version: 2.2.4
   resolution: "@biomejs/cli-win32-x64@npm:2.2.4"
   conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@bufbuild/protobuf@npm:^2.2.3":
+  version: 2.9.0
+  resolution: "@bufbuild/protobuf@npm:2.9.0"
+  checksum: 10c0/fe46723c12204c00ff1f4eefb3636a7e7ad9e3c87736ed92e9de77aad6f29edae9b903a1517bb0cd8d1b24da46934ab1ae7acebc04c151b8f3a6151b7583f20f
   languageName: node
   linkType: hard
 
@@ -570,6 +584,30 @@ __metadata:
     axios: "npm:^1.7.9"
     uuid: "npm:^11.1.0"
   checksum: 10c0/6574e887a731b6a2e0db691ea4320fe726ce7bd51731fbe51d697c91842d18d4d70aa55bb43e487b472ef255e904fef721a4abef2170e9588f119ffe22ca234b
+  languageName: node
+  linkType: hard
+
+"@fishjam-cloud/react-client@npm:^0.20.0":
+  version: 0.20.0
+  resolution: "@fishjam-cloud/react-client@npm:0.20.0"
+  dependencies:
+    "@fishjam-cloud/ts-client": "npm:0.20.0"
+    events: "npm:3.3.0"
+    lodash.isequal: "npm:4.5.0"
+  checksum: 10c0/1cb74e11e2f193881d548963ee9acc19a24e6c1f8c2263de7636446bc4186f71d1cc7883e4087511ec04bd3582cd32657f51383ee4c3418b57cea56a29f9a1cb
+  languageName: node
+  linkType: hard
+
+"@fishjam-cloud/ts-client@npm:0.20.0":
+  version: 0.20.0
+  resolution: "@fishjam-cloud/ts-client@npm:0.20.0"
+  dependencies:
+    "@binbat/whip-whep": "npm:^1.1.1-sdp-trickle-throw"
+    "@bufbuild/protobuf": "npm:^2.2.3"
+    events: "npm:^3.3.0"
+    typed-emitter: "npm:^2.1.0"
+    uuid: "npm:^11.1.0"
+  checksum: 10c0/78b831399d56c012b65882af70ac87b44c022c4bcec72612e9e90baef839665a5795bfdc9f0e0ed902bab8ecb3f1cb9946b1b9a5a006ad4fcf0eabc2dafc99f2
   languageName: node
   linkType: hard
 
@@ -1776,6 +1814,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"events@npm:3.3.0, events@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "events@npm:3.3.0"
+  checksum: 10c0/d6b6f2adbccbcda74ddbab52ed07db727ef52e31a61ed26db9feb7dc62af7fc8e060defa65e5f8af9449b86b52cc1a1f6a79f2eafcf4e62add2b7a1fa4a432f6
+  languageName: node
+  linkType: hard
+
 "exponential-backoff@npm:^3.1.1":
   version: 3.1.2
   resolution: "exponential-backoff@npm:3.1.2"
@@ -2356,6 +2401,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.isequal@npm:4.5.0":
+  version: 4.5.0
+  resolution: "lodash.isequal@npm:4.5.0"
+  checksum: 10c0/dfdb2356db19631a4b445d5f37868a095e2402292d59539a987f134a8778c62a2810c2452d11ae9e6dcac71fc9de40a6fedcb20e2952a15b431ad8b29e50e28f
+  languageName: node
+  linkType: hard
+
 "lru-cache@npm:^10.0.1, lru-cache@npm:^10.2.0":
   version: 10.4.3
   resolution: "lru-cache@npm:10.4.3"
@@ -2927,6 +2979,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rxjs@npm:*":
+  version: 7.8.2
+  resolution: "rxjs@npm:7.8.2"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/1fcd33d2066ada98ba8f21fcbbcaee9f0b271de1d38dc7f4e256bfbc6ffcdde68c8bfb69093de7eeb46f24b1fb820620bf0223706cff26b4ab99a7ff7b2e2c45
+  languageName: node
+  linkType: hard
+
 "safe-regex2@npm:^5.0.0":
   version: 5.0.0
   resolution: "safe-regex2@npm:5.0.0"
@@ -3186,7 +3247,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.4.0, tslib@npm:^2.8.0":
+"tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.8.0":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -3213,6 +3274,18 @@ __metadata:
   version: 1.4.0
   resolution: "tw-animate-css@npm:1.4.0"
   checksum: 10c0/6cfbc19ccc73883ec80ef1f9147f43e736cb01ee99c8172968b37eb81b720523d30e38b1a96aef92db3c586d864204db5510b51744ddacbbf0ad8e3c7fb56ec7
+  languageName: node
+  linkType: hard
+
+"typed-emitter@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "typed-emitter@npm:2.1.0"
+  dependencies:
+    rxjs: "npm:*"
+  dependenciesMeta:
+    rxjs:
+      optional: true
+  checksum: 10c0/01fc354ba8e87bd39b1bf4fe1c96fe7ecff7fde83161003b0f8c7f4b285a368052e185ba655dd8c102c4445301b7a1e032c8972f181b440fc95bd810450f1314
   languageName: node
   linkType: hard
 
@@ -3343,6 +3416,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "web@workspace:packages/web"
   dependencies:
+    "@fishjam-cloud/react-client": "npm:^0.20.0"
     "@radix-ui/react-slot": "npm:^1.2.3"
     "@tailwindcss/vite": "npm:^4.1.13"
     "@tanstack/react-query": "npm:^5.90.2"

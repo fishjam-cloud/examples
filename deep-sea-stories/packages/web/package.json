@@ -9,6 +9,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@fishjam-cloud/react-client": "^0.20.0",
 		"@radix-ui/react-slot": "^1.2.3",
 		"@tailwindcss/vite": "^4.1.13",
 		"@tanstack/react-query": "^5.90.2",
