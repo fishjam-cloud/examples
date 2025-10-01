@@ -5,6 +5,7 @@
 	"type": "module",
 	"dependencies": {
 		"@fishjam-cloud/js-server-sdk": "^0.21.0",
+		"@openai/agents-realtime": "^0.1.7",
 		"@trpc/server": "^11.6.0",
 		"dotenv": "^17.2.3",
 		"fastify": "^5.6.1",
