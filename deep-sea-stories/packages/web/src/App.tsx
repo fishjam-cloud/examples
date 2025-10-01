@@ -1,44 +1,10 @@
-import { useState } from 'react';
-import viteLogo from '/vite.svg';
-import reactLogo from './assets/react.svg';
-import './App.css';
+import angler from './assets/angler.webp';
 
 function App() {
-	const [count, setCount] = useState(0);
-
 	return (
-		<>
-			<div>
-				<a
-					href="https://vite.dev"
-					target="_blank"
-					rel="noopener"
-					referrerPolicy="no-referrer"
-				>
-					<img src={viteLogo} className="logo" alt="Vite logo" />
-				</a>
-				<a
-					href="https://react.dev"
-					target="_blank"
-					rel="noopener"
-					referrerPolicy="no-referrer"
-				>
-					<img src={reactLogo} className="logo react" alt="React logo" />
-				</a>
-			</div>
-			<h1>Vite + React</h1>
-			<div className="card">
-				<button type="button" onClick={() => setCount((count) => count + 1)}>
-					count is {count}
-				</button>
-				<p>
-					Edit <code>src/App.tsx</code> and save to test HMR
-				</p>
-			</div>
-			<p className="read-the-docs">
-				Click on the Vite and React logos to learn more
-			</p>
-		</>
+		<main className="flex h-screen w-screen flex-col items-center gap-8 px-4 pt-4 pb-4 md:px-6 md:pt-8 md:pb-16 xl:px-20">
+			<img className="size-full object-contain" src={angler} alt="angler" />
+		</main>
 	);
 }
 

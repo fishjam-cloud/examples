@@ -1,9 +1,13 @@
-import type { FishjamClient, RoomId } from '@fishjam-cloud/js-server-sdk';
+import type { RoomId } from '@fishjam-cloud/js-server-sdk';
+import { getRoomInputSchema } from '../schemas.js';
+import { publicProcedure } from '../trpc.js';
 
-export async function createRoom(fishjam: FishjamClient) {
-	return await fishjam.createRoom();
-}
+export const createRoom = publicProcedure.mutation(async ({ ctx }) => {
+	return await ctx.fishjam.createRoom();
+});
 
-export async function getRoom(fishjam: FishjamClient, roomId: RoomId) {
-	return await fishjam.getRoom(roomId);
-}
+export const getRoom = publicProcedure
+	.input(getRoomInputSchema)
+	.query(async ({ ctx, input }) => {
+		return await ctx.fishjam.getRoom(input.roomId as RoomId);
+	});
