@@ -1,28 +1,30 @@
-import Fastify from 'fastify';
 import {
-	serializerCompiler,
-	validatorCompiler,
-	type ZodTypeProvider,
-} from 'fastify-type-provider-zod';
-import { fastifyConfig } from './config.js';
-import { fishjamPlugin } from './plugins/fishjam.js';
-import routes from './routes/index.js';
+	type FastifyTRPCPluginOptions,
+	fastifyTRPCPlugin,
+} from '@trpc/server/adapters/fastify';
+import Fastify from 'fastify';
+import { CONFIG } from './config.js';
+import { createContext } from './context.js';
+import { type AppRouter, appRouter } from './router.js';
 
 const fastify = Fastify({
 	logger: { transport: { target: 'pino-pretty' } },
-}).withTypeProvider<ZodTypeProvider>();
+});
 
-fastify.setValidatorCompiler(validatorCompiler);
-fastify.setSerializerCompiler(serializerCompiler);
-
-fastify.register(fastifyConfig);
-fastify.register(fishjamPlugin);
-
-fastify.register(routes, { prefix: '/api/v1' });
+fastify.register(fastifyTRPCPlugin, {
+	prefix: '/api/v1',
+	trpcOptions: {
+		router: appRouter,
+		createContext,
+		onError({ path, error }) {
+			fastify.log.error('Error in tRPC handler on path %s: %O', path, error);
+		},
+	} satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
+});
 
 try {
 	await fastify.ready();
-	await fastify.listen({ port: fastify.config.PORT });
+	await fastify.listen({ port: CONFIG.PORT });
 } catch (err) {
 	fastify.log.error(err);
 	process.exit(1);
