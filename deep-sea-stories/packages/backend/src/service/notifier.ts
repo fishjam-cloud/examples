@@ -1,21 +1,47 @@
-import { FishjamWSNotifier, FishjamConfig } from '@fishjam-cloud/js-server-sdk';
-import { RealtimeSession } from '@openai/agents-realtime';
-import { getRealtimeAgent } from './agent.js';
+import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
+import { CONFIG } from '../config.js';
+import { roomService } from './room.js';
 
-export async function getNotifier(
-	session: RealtimeSession,
-	config: FishjamConfig,
-): Promise<FishjamWSNotifier> {
-	const notifier = new FishjamWSNotifier(
-		config,
-		() => {},
-		() => {},
-	);
+class NotifierService {
+	private notifier: FishjamWSNotifier | null = null;
+	private isConnected = false;
 
-	notifier.on('peerConnected', () => {
-		const agent = getRealtimeAgent();
-		const session = new RealtimeSession(agent);
-		session.sendMessage('start');
-	});
-	return notifier;
+	async initialize() {
+		if (this.notifier !== null) {
+			return;
+		}
+		this.notifier = new FishjamWSNotifier(
+			{
+				fishjamId: CONFIG.FISHJAM_ID,
+				managementToken: CONFIG.FISHJAM_MANAGEMENT_TOKEN,
+			},
+			(msg) => {
+				console.log(`Got error: ${msg}`);
+			},
+			(code, reason) => {
+				this.isConnected = false;
+				console.log(
+					`FishjamWSNotifier closed with code: ${code}, reason: ${reason}`,
+				);
+			},
+		);
+		this.isConnected = true;
+
+		this.setupEventHandlers();
+	}
+
+	private setupEventHandlers() {
+		if (!this.notifier) return;
+		this.notifier.on('peerConnected', async (msg) => {
+			const sessionManager = roomService.getSessionManager(msg.roomId);
+			await sessionManager?.createSession(msg.peerId, msg.roomId);
+		});
+
+		this.notifier.on('peerDisconnected', async (msg) => {
+			const sessionManager = roomService.getSessionManager(msg.roomId);
+			await sessionManager?.deleteSession(msg.peerId);
+		});
+	}
 }
+
+export const notifierService = new NotifierService();

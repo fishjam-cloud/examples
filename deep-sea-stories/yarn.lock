@@ -563,13 +563,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/js-server-sdk@npm:^0.21.0":
-  version: 0.21.0
-  resolution: "@fishjam-cloud/js-server-sdk@npm:0.21.0"
+"@fishjam-cloud/js-server-sdk@npm:^0.22.0":
+  version: 0.22.0
+  resolution: "@fishjam-cloud/js-server-sdk@npm:0.22.0"
   dependencies:
     axios: "npm:^1.7.9"
     uuid: "npm:^11.1.0"
-  checksum: 10c0/6574e887a731b6a2e0db691ea4320fe726ce7bd51731fbe51d697c91842d18d4d70aa55bb43e487b472ef255e904fef721a4abef2170e9588f119ffe22ca234b
+  checksum: 10c0/cf1022a0887e4df018c9b449999d85349b64214c20a7620d78d11d9b9c26571d126e82ebb448115e72054cd13112eb386df1db2a87bbfffc26feb8a385f662c4
   languageName: node
   linkType: hard
 
@@ -1416,13 +1416,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backend@workspace:packages/backend"
   dependencies:
-    "@fishjam-cloud/js-server-sdk": "npm:^0.21.0"
+    "@fishjam-cloud/js-server-sdk": "npm:^0.22.0"
     "@openai/agents-realtime": "npm:^0.1.7"
     "@trpc/server": "npm:^11.6.0"
     "@tsconfig/node24": "npm:^24.0.1"
     "@types/node": "npm:^24.5.2"
     dotenv: "npm:^17.2.3"
     fastify: "npm:^5.6.1"
+    openai: "npm:^6.1.0"
     pino-pretty: "npm:^13.1.1"
     tsx: "npm:^4.20.6"
     zod: "npm:^4.1.11"
@@ -3007,6 +3008,23 @@ __metadata:
   bin:
     openai: bin/cli
   checksum: 10c0/8ee37f37c64fd04a61622c4782d231e8f0245e2d85956d833e43d30946edbf07d5276cd74e09aa5d23006de8da43dad312246a9dd7ca6ca6d65d983fc976ffa6
+  languageName: node
+  linkType: hard
+
+"openai@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "openai@npm:6.1.0"
+  peerDependencies:
+    ws: ^8.18.0
+    zod: ^3.25 || ^4.0
+  peerDependenciesMeta:
+    ws:
+      optional: true
+    zod:
+      optional: true
+  bin:
+    openai: bin/cli
+  checksum: 10c0/770808d8afbbe084691e65738fc2cbd02f816fd0bd7240346ec55b39e4652532d0a30dd0be3bd2593f53c6035968713a4a51ac34ee4fbc9602c03fb0568a1771
   languageName: node
   linkType: hard
 

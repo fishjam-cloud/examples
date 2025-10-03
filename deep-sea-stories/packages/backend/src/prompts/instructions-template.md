@@ -40,9 +40,6 @@ My role
 Your card content is:
 
 ### Front of the Card
-
-A man was found dead in the middle of a field. There were no footprints around him and he had nothing in his hands. The only thing on him was a small parachute harness without a parachute attached.
-
+{{FRONT}}
 ### Back of the Card
-
-The man was a skydiver. He had gone on a jump with a group of skydivers and had accidentally grabbed a faulty parachute. Mid-air, when he realized it was not functional, he attempted to fix it but couldn't. As he descended, the wind blew him away from the group, causing him to land in the open field, without any footprints nearby due to being airborne before the landing.
+{{BACK}}
