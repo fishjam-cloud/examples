@@ -22,13 +22,13 @@ export class SessionManager {
 
 		const agentId = await elevenLabs.createAgent({
 			agent_prompt: instructions,
-			first_message: "Welcome to the deep sea stories!",
-			language: "en"
+			first_message: 'Welcome to the deep sea stories!',
+			language: 'en',
 		});
 
 		const session = new ElevenLabsConversation(
 			agentId.agent_id,
-			CONFIG.ELEVENLABS_API_KEY
+			CONFIG.ELEVENLABS_API_KEY,
 		);
 		await session.connect();
 

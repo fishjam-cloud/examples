@@ -32,7 +32,7 @@ class NotifierService {
 		this.notifier.on('peerConnected', async (msg) => {
 			console.log(`Peer connected: ${msg.peerId} in room ${msg.roomId}`);
 
-			if ( !roomService.getPeers(msg.roomId).find( p => p.id === msg.peerId ) ) {
+			if (!roomService.getPeers(msg.roomId).find((p) => p.id === msg.peerId)) {
 				return;
 			}
 
@@ -41,20 +41,24 @@ class NotifierService {
 
 			const fishjam_agent = roomService.getAgent(msg.roomId);
 			fishjam_agent?.on('trackData', (msg) => {
-				const {data, peerId} = msg;
+				const { data, peerId } = msg;
 
 				const session = sessionManager?.getSession(peerId);
 
 				if (session && data) {
-					console.log(`Sending ${data.byteLength} bytes of audio data to ElevenLabs for peer ${peerId}`);
+					console.log(
+						`Sending ${data.byteLength} bytes of audio data to ElevenLabs for peer ${peerId}`,
+					);
 					try {
 						const audioBuffer = Buffer.from(data);
 						session.sendAudio(audioBuffer);
 					} catch (error) {
-						console.error(`Error sending audio to ElevenLabs for peer ${peerId}:`, error);
+						console.error(
+							`Error sending audio to ElevenLabs for peer ${peerId}:`,
+							error,
+						);
 					}
 				}
-
 			});
 		});
 
