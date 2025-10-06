@@ -1,16 +1,16 @@
-import { RealtimeSession } from '@openai/agents-realtime';
 import type { RoomId, PeerId } from '@fishjam-cloud/js-server-sdk';
+import { elevenLabs, ElevenLabsConversation } from './elevenlabs.js';
 import { roomService } from './room.js';
-import { RealtimeAgent } from '@openai/agents-realtime';
 import { getInstructionsForStory } from '../utils.js';
+import { CONFIG } from '../config.js';
 
 export class SessionManager {
-	private sessions = new Map<PeerId, RealtimeSession>();
+	private sessions = new Map<PeerId, ElevenLabsConversation>();
 
 	async createSession(
 		peerId: PeerId,
 		roomId: RoomId,
-	): Promise<RealtimeSession> {
+	): Promise<ElevenLabsConversation> {
 		await this.deleteSession(peerId);
 
 		const story = roomService.getStory(roomId);
@@ -18,16 +18,21 @@ export class SessionManager {
 			throw new Error(`No story found for room ${roomId}`);
 		}
 
-		const agent = new RealtimeAgent({
-			name: 'Riddle Master',
-			instructions: getInstructionsForStory(story),
+		const instructions = getInstructionsForStory(story);
+
+		const agentId = await elevenLabs.createAgent({
+			agent_prompt: instructions,
+			first_message: "Welcome to the deep sea stories!",
+			language: "en"
 		});
-		const session = new RealtimeSession(agent);
+
+		const session = new ElevenLabsConversation(
+			agentId.agent_id,
+			CONFIG.ELEVENLABS_API_KEY
+		);
+		await session.connect();
 
 		this.sessions.set(peerId, session);
-
-		session.sendMessage('start');
-
 		return session;
 	}
 
@@ -35,7 +40,7 @@ export class SessionManager {
 		const session = this.sessions.get(peerId);
 		if (session) {
 			try {
-				session.close();
+				await session.disconnect();
 			} catch (error) {
 				console.error(`Error closing session for peer ${peerId}:`, error);
 			}
@@ -43,7 +48,7 @@ export class SessionManager {
 		}
 	}
 
-	getSession(peerId: PeerId): RealtimeSession | undefined {
+	getSession(peerId: PeerId): ElevenLabsConversation | undefined {
 		return this.sessions.get(peerId);
 	}
 

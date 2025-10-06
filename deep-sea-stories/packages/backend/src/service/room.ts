@@ -11,8 +11,8 @@ import { SessionManager } from './session.js';
 
 class RoomService {
 	private RoomToStory = new Map<RoomId, Story>();
-	private RoomToFishjamAgent = new Map<RoomId, FishjamAgent>();
 	private RoomToPeers = new Map<RoomId, Peer[]>();
+	private RoomToFishjamAgent = new Map<RoomId, FishjamAgent>();
 	private RoomToSessionManager = new Map<RoomId, SessionManager>();
 
 	getStory(roomId: RoomId) {
@@ -21,6 +21,10 @@ class RoomService {
 
 	getAgent(roomId: RoomId) {
 		return this.RoomToFishjamAgent.get(roomId);
+	}
+
+	getPeers(roomId: RoomId) {
+		return this.RoomToPeers.get(roomId) || [];
 	}
 
 	getSessionManager(roomId: RoomId) {

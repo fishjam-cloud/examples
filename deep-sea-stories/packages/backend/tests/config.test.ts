@@ -65,18 +65,27 @@ describe('Configuration', () => {
 			});
 		}, 'Should throw when required FISHJAM_MANAGEMENT_TOKEN is missing');
 
-		assert.doesNotThrow(() => {
+		assert.throws(() => {
 			configSchema.parse({
 				FISHJAM_ID: 'test-id',
 				FISHJAM_MANAGEMENT_TOKEN: 'test-token',
 			});
-		}, 'Should not throw with valid required fields');
+		}, 'Should throw when required ELEVENLABS_API_KEY is missing');
+
+		assert.doesNotThrow(() => {
+			configSchema.parse({
+				FISHJAM_ID: 'test-id',
+				FISHJAM_MANAGEMENT_TOKEN: 'test-token',
+				ELEVENLABS_API_KEY: 'test-api-key',
+			});
+		}, 'Should not throw with all required fields');
 	});
 
 	test('configSchema should provide default PORT value', () => {
 		const config = configSchema.parse({
 			FISHJAM_ID: 'test-id',
 			FISHJAM_MANAGEMENT_TOKEN: 'test-token',
+			ELEVENLABS_API_KEY: 'test-api-key',
 		});
 
 		assert.strictEqual(config.PORT, 8000, 'Should default PORT to 8000');
@@ -86,6 +95,7 @@ describe('Configuration', () => {
 		const config = configSchema.parse({
 			FISHJAM_ID: 'test-id',
 			FISHJAM_MANAGEMENT_TOKEN: 'test-token',
+			ELEVENLABS_API_KEY: 'test-api-key',
 			PORT: '3000',
 		});
 

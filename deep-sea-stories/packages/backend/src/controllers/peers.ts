@@ -7,7 +7,9 @@ export const createPeer = publicProcedure
 	.input(createPeerInputSchema)
 	.mutation(async ({ ctx, input }) => {
 		const room = await ctx.fishjam.getRoom(input.roomId as RoomId);
-		// TODO: if doesn't exist create
+		if (!room) {
+			throw new Error(`Room with id ${input.roomId} does not exist`);
+		}
 		if (room.peers.length === 0) {
 			await roomService.createFishjamAgent(room.id, ctx.fishjam);
 		}
