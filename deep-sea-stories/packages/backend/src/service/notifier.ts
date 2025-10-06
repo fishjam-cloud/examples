@@ -4,7 +4,6 @@ import { roomService } from './room.js';
 
 class NotifierService {
 	private notifier: FishjamWSNotifier | null = null;
-	private isConnected = false;
 
 	async initialize() {
 		if (this.notifier !== null) {
@@ -19,13 +18,11 @@ class NotifierService {
 				console.log(`Got error: ${msg}`);
 			},
 			(code, reason) => {
-				this.isConnected = false;
 				console.log(
 					`FishjamWSNotifier closed with code: ${code}, reason: ${reason}`,
 				);
 			},
 		);
-		this.isConnected = true;
 
 		this.setupEventHandlers();
 	}

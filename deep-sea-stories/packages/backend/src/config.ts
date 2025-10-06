@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 import z from 'zod';
-import * as fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import * as fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import type { Story } from './types.js';
 import type { PeerOptions } from '@fishjam-cloud/js-server-sdk';
 

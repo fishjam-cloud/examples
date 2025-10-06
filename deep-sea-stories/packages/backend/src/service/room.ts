@@ -1,10 +1,10 @@
-import {
+import type {
 	FishjamAgent,
 	FishjamClient,
 	Peer,
 	RoomId,
 } from '@fishjam-cloud/js-server-sdk';
-import { Story } from '../types.js';
+import type { Story } from '../types.js';
 import { getRandomStory } from '../utils.js';
 import { FISHJAM_AGENT_OPTIONS } from '../config.js';
 import { SessionManager } from './session.js';
