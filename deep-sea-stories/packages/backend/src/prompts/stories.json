@@ -1,41 +1,51 @@
 [
 	{
+		"title": "Dead Skydiver in a Field",
 		"front": "A man was found dead in the middle of a field. There were no footprints around him and he had nothing in his hands. The only thing on him was a small parachute harness without a parachute attached.",
 		"back": "The man was a skydiver. He had gone on a jump with a group of skydivers and had accidentally grabbed a faulty parachute. Mid-air, when he realized it was not functional, he attempted to fix it but couldn't. As he descended, the wind blew him away from the group, causing him to land in the open field, without any footprints nearby due to being airborne before the landing."
 	},
 	{
+		"title": "Locked Apartment Mystery",
 		"front": "A man is found dead in his locked apartment. The door is bolted from the inside, all the windows are closed, and there are no signs of forced entry. Next to him lies a puddle of water and some shattered glass.",
 		"back": "The man had kept a large ice block propped against the door as an improvised barricade, fearing someone was after him. When he sat down to rest, the ice eventually melted, leaving only the puddle of water. The door closed and locked itself, and no one had to enter. He later died of unrelated causes (a heart attack)."
 	},
 	{
+		"title": "Dead Men in a Mountain Cabin",
 		"front": "Two men are found dead in a cabin on a mountain. The windows are shattered, but there are no footprints leading away from the cabin.",
 		"back": "The men had been flying in a small airplane that crashed into the mountainside. What the rescuers thought was a 'cabin' was actually the remains of the airplane fuselage. They died on impact, and the shattered 'windows' were airplane windows, not a house."
 	},
 	{
+		"title": "Death by Thirst in a Bar",
 		"front": "A man dies of thirst in the middle of a bar full of people. Nobody helped him.",
 		"back": "The bar was not a drinking establishment, but a sandbar in the desert. He was stranded, saw no one around, and perished from dehydration. The wording misleads the guessers into thinking of an alcohol-serving bar."
 	},
 	{
+		"title": "Library Blunt Force Trauma",
 		"front": "A body is found in a library, with dozens of books scattered around. Cause of death: blunt force trauma. There are no weapons nearby.",
 		"back": "The man died when a heavy bookshelf collapsed on him while he was trying to reach a book from the top. The books scattered everywhere during the fall, concealing the true cause of his death until closer inspection."
 	},
 	{
+		"title": "Hanging in an Empty Room",
 		"front": "A man is found hanged in a room with a ceiling 4 meters high. There is no chair, no furniture, and the floor is bare.",
 		"back": "The man stood on a large block of ice to hang himself. Over time, the ice melted completely, leaving no trace and creating the illusion of an impossible hanging."
 	},
 	{
+		"title": "Sailor with Sand-Filled Pockets",
 		"front": "A sailor is found dead on the deck of his ship. His pockets are full of sand, and there are no signs of injury.",
 		"back": "The sailor had been rescued after a shipwreck. During the accident, he swallowed a large amount of seawater containing sand and silt. Though he survived the wreck, he later collapsed and died from internal damage caused by inhaling sand-filled water into his lungs."
 	},
 	{
+		"title": "Death in a Phone Booth",
 		"front": "A man lies dead in a phone booth. The glass is shattered, and he is clutching torn pages from a phone book.",
 		"back": "The man was a fisherman who had boasted about the size of a fish he caught. His friends didn’t believe him, so he rushed to the phone booth to call and confirm it with someone. He angrily tore pages looking for the number but accidentally broke the glass and cut himself fatally in his frustration."
 	},
 	{
+		"title": "Smiling Woman and Static TV",
 		"front": "A woman is found dead in front of her television. The TV is on, but the screen shows only static. She has a smile on her face.",
 		"back": "The woman had been terminally ill and bedridden. She watched a TV show religiously every week, and on the night of her death, the show aired its final episode. She smiled, having seen the ending she long awaited, and then peacefully passed away. The static was just the end of transmission."
 	},
 	{
+		"title": "Shot in a Locked Car",
 		"front": "A man is found shot to death in a car. All the doors are locked from the inside, and there is no gun in the vehicle.",
 		"back": "The man was killed in a drive-by shooting. After he was shot, his car rolled forward and hit an obstacle, automatically locking the central locking system on impact. The attacker left with the weapon, leaving behind a locked car with a dead man inside."
 	}
