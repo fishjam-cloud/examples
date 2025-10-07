@@ -16,7 +16,7 @@ class RoomService {
 	private RoomToFishjamAgent = new Map<RoomId, FishjamAgent>();
 	private RoomToSessionManager = new Map<RoomId, SessionManager>();
 
-	getStory(roomId: RoomId) {
+	getStory(roomId: RoomId): Story | undefined {
 		return this.RoomToStory.get(roomId);
 	}
 
@@ -53,8 +53,12 @@ class RoomService {
 		return this.RoomToSessionManager.get(roomId);
 	}
 
-	setStory(roomId: RoomId, story: Story) {
-		this.RoomToStory.set(roomId, story);
+	setStory(roomId: RoomId, story: Story | null) {
+		if (story === null) {
+			this.RoomToStory.delete(roomId);
+		} else {
+			this.RoomToStory.set(roomId, story);
+		}
 	}
 
 	async createPeer(roomId: RoomId, fishjam: FishjamClient) {

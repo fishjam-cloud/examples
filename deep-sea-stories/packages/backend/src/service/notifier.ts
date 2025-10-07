@@ -1,6 +1,7 @@
 import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
 import { CONFIG } from '../config.js';
 import { roomService } from './room.js';
+import { gameService } from './game.js';
 
 class NotifierService {
 	private notifier: FishjamWSNotifier | null = null;
@@ -29,56 +30,32 @@ class NotifierService {
 
 	private setupEventHandlers() {
 		if (!this.notifier) return;
+
 		this.notifier.on('peerConnected', async (msg) => {
 			console.log(`Peer connected: ${msg.peerId} in room ${msg.roomId}`);
 
 			roomService.addConnectedPeer(msg.roomId, msg.peerId);
 
-			const story = roomService.getStory(msg.roomId);
-			if (story) {
-				const sessionManager = roomService.getSessionManager(msg.roomId);
+			if (gameService.isGameActive(msg.roomId)) {
 				try {
-					await sessionManager?.createSession(msg.peerId, msg.roomId);
-					console.log(
-						`Created AI session for peer ${msg.peerId} in room ${msg.roomId}`,
-					);
+					await gameService.startGameForPeer(msg.roomId, msg.peerId);
 				} catch (error) {
 					console.error(
-						`Failed to create session for peer ${msg.peerId}:`,
+						`Failed to start game for newly connected peer ${msg.peerId}:`,
 						error,
 					);
 				}
 			}
-
-			const fishjam_agent = roomService.getAgent(msg.roomId);
-			fishjam_agent?.on('trackData', (trackMsg) => {
-				const { data, peerId } = trackMsg;
-
-				const sessionManager = roomService.getSessionManager(msg.roomId);
-				const session = sessionManager?.getSession(peerId);
-
-				if (session && data) {
-					console.log(
-						`Sending ${data.byteLength} bytes of audio data to ElevenLabs for peer ${peerId}`,
-					);
-					try {
-						const audioBuffer = Buffer.from(data);
-						session.sendAudio(audioBuffer);
-					} catch (error) {
-						console.error(
-							`Error sending audio to ElevenLabs for peer ${peerId}:`,
-							error,
-						);
-					}
-				}
-			});
 		});
 
 		this.notifier.on('peerDisconnected', async (msg) => {
 			console.log(`Peer disconnected: ${msg.peerId} from room ${msg.roomId}`);
+
 			roomService.removeConnectedPeer(msg.roomId, msg.peerId);
-			const sessionManager = roomService.getSessionManager(msg.roomId);
-			await sessionManager?.deleteSession(msg.peerId);
+
+			if (gameService.isGameActive(msg.roomId)) {
+				await gameService.removePeerFromGame(msg.roomId, msg.peerId);
+			}
 		});
 	}
 }
