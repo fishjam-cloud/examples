@@ -21,9 +21,13 @@ export class SessionManager {
 		const instructions = getInstructionsForStory(story);
 
 		const agentId = await elevenLabs.createAgent({
-			agent_prompt: instructions,
-			first_message: 'Welcome to the deep sea stories!',
-			language: 'en',
+			agent: {
+				first_message: 'Welcome to Deepsea stories',
+				language: 'en',
+				prompt: {
+					prompt: instructions,
+				},
+			},
 		});
 
 		const session = new ElevenLabsConversation(

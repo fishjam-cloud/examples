@@ -27,12 +27,18 @@ interface ElevenLabsMessage {
 	client_tool_call?: unknown;
 }
 
-interface ConversationConfig {
-	agent_prompt?: string;
+interface Prompt {
+	prompt?: string;
+}
+
+interface AgentConfig {
 	first_message?: string;
 	language?: string;
-	voice_id?: string;
-	[key: string]: unknown;
+	prompt?: Prompt;
+}
+
+interface ConversationConfig {
+	agent?: AgentConfig;
 }
 
 interface AgentCreateRequest {

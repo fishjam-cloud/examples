@@ -16,7 +16,7 @@ class NotifierService {
 				managementToken: CONFIG.FISHJAM_MANAGEMENT_TOKEN,
 			},
 			(msg) => {
-				console.log(`Got error: ${msg}`);
+				console.log(`FishjamWSNotifier got error: ${msg}`);
 			},
 			(code, reason) => {
 				console.log(
@@ -33,6 +33,10 @@ class NotifierService {
 
 		this.notifier.on('peerConnected', async (msg) => {
 			console.log(`Peer connected: ${msg.peerId} in room ${msg.roomId}`);
+			const { peerId } = roomService.getAgent(msg.roomId);
+			if (msg.peerId === peerId) {
+				return;
+			}
 
 			roomService.addConnectedPeer(msg.roomId, msg.peerId);
 

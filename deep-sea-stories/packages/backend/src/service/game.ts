@@ -1,4 +1,4 @@
-import type { PeerId, RoomId } from '@fishjam-cloud/js-server-sdk';
+import type { PeerId, RoomId, TrackId } from '@fishjam-cloud/js-server-sdk';
 import { roomService } from './room.js';
 import type { Story } from '../types.js';
 
@@ -36,6 +36,7 @@ class GameService {
 				}
 			}),
 		);
+		this.setupAudioStreaming(roomId);
 	}
 
 	async startGameForPeer(roomId: RoomId, peerId: PeerId): Promise<void> {
@@ -52,17 +53,16 @@ class GameService {
 		try {
 			await sessionManager.createSession(peerId, roomId);
 			console.log(`Started game session for peer ${peerId} in room ${roomId}`);
-
-			this.setupAudioStreaming(roomId, peerId);
 		} catch (error) {
 			console.error(`Failed to start game session for peer ${peerId}:`, error);
 			throw error;
 		}
 	}
 
-	private setupAudioStreaming(roomId: RoomId, peerId: PeerId): void {
-		const fishjamAgent = roomService.getAgent(roomId);
+	private setupAudioStreaming(roomId: RoomId): void {
+		const { fishjamAgent } = roomService.getAgent(roomId);
 		const sessionManager = roomService.getSessionManager(roomId);
+		const connectedPeers = roomService.getConnectedPeers(roomId);
 
 		if (!fishjamAgent || !sessionManager) {
 			console.error(
@@ -72,29 +72,56 @@ class GameService {
 		}
 
 		fishjamAgent.on('trackData', (trackMsg) => {
-			const connectedPeers = roomService.getConnectedPeers(roomId);
-			if (!connectedPeers.includes(peerId)) {
+			if (!connectedPeers.includes(trackMsg.peerId)) {
 				return;
 			}
 
 			const { data } = trackMsg;
-			const session = sessionManager.getSession(peerId);
+			const session = sessionManager.getSession(trackMsg.peerId);
 
 			if (session && data) {
-				console.log(
-					`Sending ${data.byteLength} bytes of audio data to ElevenLabs for peer ${peerId}`,
-				);
 				try {
 					const audioBuffer = Buffer.from(data);
 					session.sendAudio(audioBuffer);
 				} catch (error) {
 					console.error(
-						`Error sending audio to ElevenLabs for peer ${peerId}:`,
+						`Error sending audio to ElevenLabs for peer ${trackMsg.peerId}:`,
 						error,
 					);
 				}
 			}
 		});
+		const audioTrack = fishjamAgent.createTrack({
+			encoding: 'pcm16',
+			sampleRate: 16000,
+			channels: 1,
+		});
+
+		for (const peerId of connectedPeers) {
+			try {
+				const agentSession = sessionManager.getSession(peerId);
+				agentSession?.on('agentAudio', (audioEvent) => {
+					try {
+						const audioBuffer = Uint8Array.from(
+							atob(audioEvent.audio_base_64),
+							(c) => c.charCodeAt(0),
+						);
+						if (!audioBuffer) {
+							console.error('Received empty audio buffer from ElevenLabs');
+							return;
+						}
+						fishjamAgent.sendData(audioTrack.id as TrackId, audioBuffer);
+					} catch (error) {
+						console.error('Error sending agent audio track to room:', error);
+					}
+				});
+			} catch (error) {
+				console.error(
+					`Error setting up agent audio for peer ${peerId}:`,
+					error,
+				);
+			}
+		}
 	}
 
 	isGameActive(roomId: RoomId): boolean {
