@@ -14,11 +14,13 @@ class GameService {
 			);
 
 			await this.startGameForPeers(roomId, connectedPeerIds);
+		} else {
+			throw new Error(`No connected peers in room ${roomId}`);
 		}
 	}
 
 	async startGameForPeers(roomId: RoomId, peerIds: PeerId[]): Promise<void> {
-		const sessionManager = roomService.getSessionManager(roomId);
+		const sessionManager = roomService.getAiSessionManager(roomId);
 
 		if (!sessionManager) {
 			throw new Error(`No session manager found for room ${roomId}`);
@@ -45,7 +47,7 @@ class GameService {
 			throw new Error(`No active game found for room ${roomId}`);
 		}
 
-		const sessionManager = roomService.getSessionManager(roomId);
+		const sessionManager = roomService.getAiSessionManager(roomId);
 		if (!sessionManager) {
 			throw new Error(`No session manager found for room ${roomId}`);
 		}
@@ -61,7 +63,7 @@ class GameService {
 
 	private setupAudioStreaming(roomId: RoomId): void {
 		const { fishjamAgent } = roomService.getAgent(roomId);
-		const sessionManager = roomService.getSessionManager(roomId);
+		const sessionManager = roomService.getAiSessionManager(roomId);
 		const connectedPeers = roomService.getConnectedPeers(roomId);
 
 		if (!fishjamAgent || !sessionManager) {
@@ -129,7 +131,7 @@ class GameService {
 	}
 
 	async stopGame(roomId: RoomId): Promise<void> {
-		const sessionManager = roomService.getSessionManager(roomId);
+		const sessionManager = roomService.getAiSessionManager(roomId);
 		if (sessionManager) {
 			await sessionManager.cleanup();
 		}
@@ -140,7 +142,7 @@ class GameService {
 	}
 
 	async removePeerFromGame(roomId: RoomId, peerId: PeerId): Promise<void> {
-		const sessionManager = roomService.getSessionManager(roomId);
+		const sessionManager = roomService.getAiSessionManager(roomId);
 		if (sessionManager) {
 			await sessionManager.deleteSession(peerId);
 			console.log(`Removed peer ${peerId} from game in room ${roomId}`);

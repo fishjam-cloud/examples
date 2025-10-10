@@ -39,16 +39,15 @@ class NotifierService {
 			}
 
 			roomService.addConnectedPeer(msg.roomId, msg.peerId);
+			if (gameService.isGameActive(msg.roomId)) return;
 
-			if (gameService.isGameActive(msg.roomId)) {
-				try {
-					await gameService.startGameForPeer(msg.roomId, msg.peerId);
-				} catch (error) {
-					console.error(
-						`Failed to start game for newly connected peer ${msg.peerId}:`,
-						error,
-					);
-				}
+			try {
+				await gameService.startGameForPeer(msg.roomId, msg.peerId);
+			} catch (error) {
+				console.error(
+					`Failed to start game for newly connected peer ${msg.peerId}:`,
+					error,
+				);
 			}
 		});
 
