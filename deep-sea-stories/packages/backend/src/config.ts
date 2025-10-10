@@ -31,6 +31,6 @@ export const AGENT_INSTRUCTIONS_TEMPLATE = fs.readFileSync(
 
 export const FISHJAM_AGENT_OPTIONS: PeerOptions = {
 	output: {
-		audioSampleRate: 24_000,
+		audioSampleRate: 16_000,
 	},
 };
