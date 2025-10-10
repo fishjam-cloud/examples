@@ -10,6 +10,12 @@ export const createPeer = publicProcedure
 		if (!room) {
 			throw new Error(`Room with id ${input.roomId} does not exist`);
 		}
+		const roomAgent = roomService.getAgent(room.id);
+		if (room.peers.length > 0 && !roomAgent) {
+			throw new Error(
+				`Room with id ${input.roomId} already has a peer and no agent`,
+			);
+		}
 		if (room.peers.length === 0) {
 			await roomService.createFishjamAgent(room.id, ctx.fishjam);
 		}
