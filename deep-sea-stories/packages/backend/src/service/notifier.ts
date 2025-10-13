@@ -39,7 +39,7 @@ class NotifierService {
 			}
 
 			roomService.addConnectedPeer(msg.roomId, msg.peerId);
-			if (gameService.isGameActive(msg.roomId)) return;
+			if (!gameService.isGameActive(msg.roomId)) return;
 
 			try {
 				await gameService.startGameForPeer(msg.roomId, msg.peerId);
