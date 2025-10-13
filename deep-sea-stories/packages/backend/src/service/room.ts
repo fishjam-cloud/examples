@@ -7,7 +7,7 @@ import type {
 } from '@fishjam-cloud/js-server-sdk';
 import type { Story } from '../types.js';
 import { FISHJAM_AGENT_OPTIONS } from '../config.js';
-import { AiSessionManager } from './session.js';
+import { ElevenLabsSessionManager } from './session.js';
 
 class RoomService {
 	private RoomToStory = new Map<RoomId, Story>();
@@ -15,7 +15,7 @@ class RoomService {
 	private RoomToConnectedPeers = new Map<RoomId, Set<PeerId>>();
 	private RoomToFishjamAgent = new Map<RoomId, FishjamAgent>();
 	private RoomToFishjamAgentId = new Map<RoomId, PeerId>();
-	private RoomToSessionManager = new Map<RoomId, AiSessionManager>();
+	private RoomToSessionManager = new Map<RoomId, ElevenLabsSessionManager>();
 
 	getStory(roomId: RoomId): Story | undefined {
 		return this.RoomToStory.get(roomId);
@@ -50,9 +50,9 @@ class RoomService {
 		}
 	}
 
-	getAiSessionManager(roomId: RoomId) {
+	getElevenLabsSessionManager(roomId: RoomId) {
 		if (!this.RoomToSessionManager.get(roomId)) {
-			this.RoomToSessionManager.set(roomId, new AiSessionManager());
+			this.RoomToSessionManager.set(roomId, new ElevenLabsSessionManager());
 		}
 		return this.RoomToSessionManager.get(roomId);
 	}

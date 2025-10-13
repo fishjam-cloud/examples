@@ -4,7 +4,7 @@ import { roomService } from './room.js';
 import { getInstructionsForStory } from '../utils.js';
 import { CONFIG } from '../config.js';
 
-export class AiSessionManager {
+export class ElevenLabsSessionManager {
 	private sessions = new Map<PeerId, ElevenLabsConversation>();
 
 	async createSession(
