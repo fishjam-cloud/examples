@@ -7,9 +7,9 @@ import type { RoomId } from '@fishjam-cloud/js-server-sdk';
 export const startStory = publicProcedure
 	.input(startStoryInputSchema)
 	.mutation(async ({ input }) => {
-		const selectedStory = stories.find((s) => s.title === input.storyTitle);
+		const selectedStory = stories.find((s) => s.id === input.storyId);
 		if (!selectedStory) {
-			throw new Error(`Story with title ${input.storyTitle} does not exist`);
+			throw new Error(`Story with id ${input.storyId} does not exist`);
 		}
 
 		try {
@@ -17,7 +17,7 @@ export const startStory = publicProcedure
 
 			return {
 				success: true,
-				message: `Story "${input.storyTitle}" started successfully`,
+				message: `Story "${input.storyId}" started successfully`,
 			};
 		} catch (error) {
 			console.error(`Failed to start story: ${error}`);

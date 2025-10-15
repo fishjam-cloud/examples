@@ -40,6 +40,6 @@ My role
 Your card content is:
 
 ### Front of the Card
-{{FRONT}}
+{{ FRONT }}
 ### Back of the Card
-{{BACK}}
+{{ BACK }}

@@ -6,5 +6,5 @@ export const createPeerInputSchema = z.object({ roomId: z.string() });
 
 export const startStoryInputSchema = z.object({
 	roomId: z.string(),
-	storyTitle: z.string(),
+	storyId: z.number(),
 });

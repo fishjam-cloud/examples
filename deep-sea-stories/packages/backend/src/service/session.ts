@@ -3,8 +3,9 @@ import { elevenLabs, ElevenLabsConversation } from './elevenlabs.js';
 import { roomService } from './room.js';
 import { getInstructionsForStory } from '../utils.js';
 import { CONFIG } from '../config.js';
+import type { VoiceAgentSessionManager } from '../types.js';
 
-export class ElevenLabsSessionManager {
+export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 	private sessions = new Map<PeerId, ElevenLabsConversation>();
 
 	async createSession(

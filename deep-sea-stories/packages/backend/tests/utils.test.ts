@@ -6,6 +6,7 @@ import type { Story } from '../src/types.js';
 describe('Stories Service', () => {
 	test('getInstructionsForStory should replace template placeholders', () => {
 		const testStory: Story = {
+			id: 999,
 			title: 'Test Story',
 			front: 'Test front story',
 			back: 'Test back story',

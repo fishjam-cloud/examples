@@ -1,6 +1,7 @@
 import { CONFIG } from '../config.js';
 import { EventEmitter } from 'node:events';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
+import type { Conversation } from '../types.js';
 
 interface ConversationInitiationMetadataEvent {
 	conversation_id: string;
@@ -46,19 +47,28 @@ export interface AgentId {
  * - 'clientToolCall': (ClientToolCall) - Client tool call request
  * - 'disconnected': ({ code, reason }) - When WebSocket disconnects
  */
-export class ElevenLabsConversation extends EventEmitter {
+export class ElevenLabsConversation
+	extends EventEmitter
+	implements Conversation
+{
 	private ws: WebSocket | null = null;
 	private conversationId: string | null = null;
 	private isConnected = false;
 	private audioFormat: string | null = null;
 	private inputFormat: string | null = null;
+	private agentId: string;
+	private apiKey: string;
+	private baseUrl: string;
 
 	constructor(
-		private agentId: string,
-		private apiKey: string,
-		private baseUrl: string = 'wss://api.elevenlabs.io',
+		agentId: string,
+		apiKey: string,
+		baseUrl: string = 'wss://api.elevenlabs.io',
 	) {
 		super();
+		this.agentId = agentId;
+		this.apiKey = apiKey;
+		this.baseUrl = baseUrl;
 	}
 
 	/**
