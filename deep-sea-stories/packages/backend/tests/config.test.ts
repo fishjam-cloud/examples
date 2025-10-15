@@ -45,12 +45,12 @@ describe('Configuration', () => {
 		);
 
 		assert(
-			AGENT_INSTRUCTIONS_TEMPLATE.includes('{{FRONT}}'),
-			'Template should contain {{FRONT}} placeholder',
+			AGENT_INSTRUCTIONS_TEMPLATE.includes('{{ FRONT }}'),
+			'Template should contain {{ FRONT }} placeholder',
 		);
 		assert(
-			AGENT_INSTRUCTIONS_TEMPLATE.includes('{{BACK}}'),
-			'Template should contain {{BACK}} placeholder',
+			AGENT_INSTRUCTIONS_TEMPLATE.includes('{{ BACK }}'),
+			'Template should contain {{ BACK }} placeholder',
 		);
 	});
 
