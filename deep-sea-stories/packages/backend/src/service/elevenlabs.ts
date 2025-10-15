@@ -1,6 +1,6 @@
 import { CONFIG } from '../config.js';
-import WebSocket from 'ws';
 import { EventEmitter } from 'node:events';
+import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 
 interface ConversationInitiationMetadataEvent {
 	conversation_id: string;
@@ -27,82 +27,8 @@ interface ElevenLabsMessage {
 	client_tool_call?: unknown;
 }
 
-interface Prompt {
-	prompt?: string;
-}
-
-interface AgentConfig {
-	first_message?: string;
-	language?: string;
-	prompt?: Prompt;
-}
-
-interface ConversationConfig {
-	agent?: AgentConfig;
-}
-
-interface AgentCreateRequest {
-	conversation_config: ConversationConfig;
-	platform_settings?: {
-		[key: string]: unknown;
-	};
-	name?: string;
-	tags?: string[];
-}
-
 export interface AgentId {
 	agent_id: string;
-}
-
-class ElevenLabs {
-	private apiKey: string;
-	private baseUrl: string = 'https://api.elevenlabs.io';
-
-	constructor(apiKey: string) {
-		this.apiKey = apiKey;
-	}
-
-	async createAgent(
-		conversationConfig: ConversationConfig,
-		options?: {
-			name?: string;
-			tags?: string[];
-			platformSettings?: { [key: string]: unknown };
-		},
-	): Promise<AgentId> {
-		try {
-			const requestBody: AgentCreateRequest = {
-				conversation_config: conversationConfig,
-				...(options?.name && { name: options.name }),
-				...(options?.tags && { tags: options.tags }),
-				...(options?.platformSettings && {
-					platform_settings: options.platformSettings,
-				}),
-			};
-
-			const response = await fetch(`${this.baseUrl}/v1/convai/agents/create`, {
-				method: 'POST',
-				headers: {
-					'xi-api-key': this.apiKey,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(requestBody),
-			});
-
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(
-					`ElevenLabs API error: ${response.status} ${response.statusText} - ${errorText}`,
-				);
-			}
-
-			return (await response.json()) as AgentId;
-		} catch (error) {
-			throw new Error(
-				`Failed to create ElevenLabs agent: ${error instanceof Error ? error.message : 'Unknown error'}`,
-			);
-		}
-	}
 }
 
 /**
@@ -150,7 +76,7 @@ export class ElevenLabsConversation extends EventEmitter {
 					},
 				});
 
-				this.ws.on('open', () => {
+				this.ws.addEventListener('open', () => {
 					console.log('Connected to ElevenLabs WebSocket');
 					this.isConnected = true;
 
@@ -162,27 +88,27 @@ export class ElevenLabsConversation extends EventEmitter {
 					resolve();
 				});
 
-				this.ws.on('message', (data: Buffer) => {
+				this.ws.addEventListener('message', (event) => {
 					try {
-						const message = JSON.parse(data.toString());
+						const message = JSON.parse(event.data.toString());
 						this.handleMessage(message);
 					} catch (error) {
 						console.error('Failed to parse WebSocket message:', error);
 					}
 				});
 
-				this.ws.on('close', (code: number, reason: Buffer) => {
+				this.ws.addEventListener('close', (event) => {
 					console.log(
-						`ElevenLabs WebSocket connection closed: ${code} - ${reason.toString()}`,
+						`ElevenLabs WebSocket connection closed: ${event.code} - ${event.reason}`,
 					);
 					this.isConnected = false;
-					this.emit('disconnected', { code, reason: reason.toString() });
+					this.emit('disconnected', { code: event.code, reason: event.reason });
 				});
 
-				this.ws.on('error', (error) => {
-					console.error('ElevenLabs WebSocket error:', error);
+				this.ws.addEventListener('error', (event) => {
+					console.error('ElevenLabs WebSocket error:', event);
 					this.isConnected = false;
-					reject(error);
+					reject(new Error('WebSocket error occurred'));
 				});
 			} catch (error) {
 				reject(error);
@@ -356,4 +282,6 @@ export class ElevenLabsConversation extends EventEmitter {
 	}
 }
 
-export const elevenLabs = new ElevenLabs(CONFIG.ELEVENLABS_API_KEY);
+export const elevenLabs = new ElevenLabsClient({
+	apiKey: CONFIG.ELEVENLABS_API_KEY,
+});

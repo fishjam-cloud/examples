@@ -20,18 +20,20 @@ export class ElevenLabsSessionManager {
 
 		const instructions = getInstructionsForStory(story);
 
-		const agentId = await elevenLabs.createAgent({
-			agent: {
-				first_message: 'Welcome to Deepsea stories',
-				language: 'en',
-				prompt: {
-					prompt: instructions,
+		const { agentId } = await elevenLabs.conversationalAi.agents.create({
+			conversationConfig: {
+				agent: {
+					firstMessage: 'Welcome to Deepsea stories',
+					language: 'en',
+					prompt: {
+						prompt: instructions,
+					},
 				},
 			},
 		});
 
 		const session = new ElevenLabsConversation(
-			agentId.agent_id,
+			agentId,
 			CONFIG.ELEVENLABS_API_KEY,
 		);
 		await session.connect();

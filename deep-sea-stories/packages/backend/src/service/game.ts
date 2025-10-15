@@ -19,12 +19,6 @@ class GameService {
 	}
 
 	async startGameForPeers(roomId: RoomId, peerIds: PeerId[]): Promise<void> {
-		const sessionManager = roomService.getElevenLabsSessionManager(roomId);
-
-		if (!sessionManager) {
-			throw new Error(`No session manager found for room ${roomId}`);
-		}
-
 		await Promise.all(
 			peerIds.map(async (peerId) => {
 				try {
