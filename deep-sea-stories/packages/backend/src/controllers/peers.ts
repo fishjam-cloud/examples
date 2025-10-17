@@ -2,6 +2,7 @@ import type { RoomId } from '@fishjam-cloud/js-server-sdk';
 import { createPeerInputSchema } from '../schemas.js';
 import { publicProcedure } from '../trpc.js';
 import { roomService } from '../service/room.js';
+import { GameSession } from '../service/game-session.js';
 
 export const createPeer = publicProcedure
 	.input(createPeerInputSchema)
@@ -11,9 +12,10 @@ export const createPeer = publicProcedure
 			throw new Error(`Room with id ${input.roomId} does not exist`);
 		}
 
-		const gameSession = roomService.getGameSession(room.id);
+		let gameSession = roomService.getGameSession(room.id);
 		if (!gameSession) {
-			throw new Error(`No game session found for room with id ${input.roomId}`);
+			gameSession = new GameSession(room.id);
+			roomService.setGameSession(room.id, gameSession);
 		}
 
 		const roomAgent = gameSession.getFishjamAgent();

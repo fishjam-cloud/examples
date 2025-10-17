@@ -12,6 +12,7 @@ import {
 	NoPeersConnectedError,
 	NoVoiceSessionManagerError,
 } from '../domain/errors.js';
+import { ElevenLabsSessionManager } from './elevenlabs-session.js';
 
 export class GameSession {
 	private roomId: RoomId;
@@ -107,6 +108,9 @@ export class GameSession {
 		console.log(
 			`Starting game for ${this.connectedPeers.size} connected peers in room ${this.roomId}`,
 		);
+
+		const gameSession = new ElevenLabsSessionManager();
+		this.setVoiceSessionManager(gameSession);
 
 		const peerIds = Array.from(this.connectedPeers);
 		await Promise.all(
