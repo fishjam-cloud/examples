@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import type { Story } from './types.js';
 import type { PeerOptions } from '@fishjam-cloud/js-server-sdk';
 
-dotenv.config({quiet: true})
+dotenv.config({ quiet: true });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
