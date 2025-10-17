@@ -1,94 +1,20 @@
-import type {
-	FishjamAgent,
-	FishjamClient,
-	Peer,
-	PeerId,
-	RoomId,
-} from '@fishjam-cloud/js-server-sdk';
-import type { Story } from '../types.js';
-import { FISHJAM_AGENT_OPTIONS } from '../config.js';
-import { ElevenLabsSessionManager } from './session.js';
+import type { RoomId } from '@fishjam-cloud/js-server-sdk';
+import type { GameSession } from './game-session.js';
 
 class RoomService {
-	private RoomToStory = new Map<RoomId, Story>();
-	private RoomToPeers = new Map<RoomId, Peer[]>();
-	private RoomToConnectedPeers = new Map<RoomId, Set<PeerId>>();
-	private RoomToFishjamAgent = new Map<RoomId, FishjamAgent>();
-	private RoomToFishjamAgentId = new Map<RoomId, PeerId>();
-	private RoomToSessionManager = new Map<RoomId, ElevenLabsSessionManager>();
+	private RoomToGameSession = new Map<RoomId, GameSession>();
 
-	getStory(roomId: RoomId): Story | undefined {
-		return this.RoomToStory.get(roomId);
+	getGameSession(roomId: RoomId): GameSession | undefined {
+		return this.RoomToGameSession.get(roomId);
 	}
 
-	getAgent(roomId: RoomId) {
-		return {
-			fishjamAgent: this.RoomToFishjamAgent.get(roomId),
-			peerId: this.RoomToFishjamAgentId.get(roomId),
-		};
+	setGameSession(roomId: RoomId, gameSession: GameSession) {
+		this.RoomToGameSession.set(roomId, gameSession);
 	}
 
-	getPeers(roomId: RoomId) {
-		return this.RoomToPeers.get(roomId) || [];
-	}
-
-	getConnectedPeers(roomId: RoomId): PeerId[] {
-		const connectedPeerIds = this.RoomToConnectedPeers.get(roomId) || new Set();
-		return Array.from(connectedPeerIds);
-	}
-
-	addConnectedPeer(roomId: RoomId, peerId: PeerId) {
-		const connectedPeers = this.RoomToConnectedPeers.get(roomId) || new Set();
-		connectedPeers.add(peerId);
-		this.RoomToConnectedPeers.set(roomId, connectedPeers);
-	}
-
-	removeConnectedPeer(roomId: RoomId, peerId: PeerId) {
-		const connectedPeers = this.RoomToConnectedPeers.get(roomId);
-		if (connectedPeers) {
-			connectedPeers.delete(peerId);
-		}
-	}
-
-	getElevenLabsSessionManager(roomId: RoomId) {
-		if (!this.RoomToSessionManager.get(roomId)) {
-			this.RoomToSessionManager.set(roomId, new ElevenLabsSessionManager());
-		}
-		return this.RoomToSessionManager.get(roomId);
-	}
-
-	setStory(roomId: RoomId, story: Story | null) {
-		if (story === null) {
-			this.RoomToStory.delete(roomId);
-		} else {
-			this.RoomToStory.set(roomId, story);
-		}
-	}
-
-	async createPeer(roomId: RoomId, fishjam: FishjamClient) {
-		const { peer, peerToken } = await fishjam.createPeer(roomId);
-		const peers = this.RoomToPeers.get(roomId) || [];
-		peers.push(peer);
-		this.RoomToPeers.set(roomId, peers);
-		return { peer, peerToken };
-	}
-
-	async createFishjamAgent(roomId: RoomId, fishjam: FishjamClient) {
-		const { agent, peer } = await fishjam.createAgent(
-			roomId,
-			FISHJAM_AGENT_OPTIONS,
-			(msg) => {
-				console.log(`Fishjam Agent for room: ${roomId} got error: ${msg}`);
-			},
-			(code, reason) => {
-				console.log(
-					`Fishjam Agent for room: ${roomId} closed with code: ${code}, reason: ${reason}`,
-				);
-			},
-		);
-
-		this.RoomToFishjamAgent.set(roomId, agent);
-		this.RoomToFishjamAgentId.set(roomId, peer.id);
+	isGameActive(roomId: RoomId): boolean {
+		const gameSession = this.RoomToGameSession.get(roomId);
+		return gameSession !== undefined && gameSession.getStory() !== undefined;
 	}
 }
 

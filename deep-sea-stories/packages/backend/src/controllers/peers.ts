@@ -10,19 +10,24 @@ export const createPeer = publicProcedure
 		if (!room) {
 			throw new Error(`Room with id ${input.roomId} does not exist`);
 		}
-		const roomAgent = roomService.getAgent(room.id);
+
+		const gameSession = roomService.getGameSession(room.id);
+		if (!gameSession) {
+			throw new Error(`No game session found for room with id ${input.roomId}`);
+		}
+
+		const roomAgent = gameSession.getFishjamAgent();
 		if (room.peers.length > 0 && !roomAgent) {
 			throw new Error(
 				`Room with id ${input.roomId} already has a peer and no agent`,
 			);
 		}
+
 		if (room.peers.length === 0) {
-			await roomService.createFishjamAgent(room.id, ctx.fishjam);
+			await gameSession.createFishjamAgent(ctx.fishjam);
 		}
-		const { peer, peerToken } = await roomService.createPeer(
-			room.id,
-			ctx.fishjam,
-		);
+
+		const { peer, peerToken } = await gameSession.createPeer(ctx.fishjam);
 
 		return {
 			peer: peer,

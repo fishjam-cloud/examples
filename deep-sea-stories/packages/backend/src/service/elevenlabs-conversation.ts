@@ -126,10 +126,6 @@ export class ElevenLabsConversation
 		});
 	}
 
-	/**
-	 * Send raw audio data to ElevenLabs
-	 * @param audioBuffer Raw audio data as Buffer
-	 */
 	sendAudio(audioBuffer: Buffer): void {
 		if (!this.isConnected || !this.ws) {
 			console.warn('Cannot send audio: WebSocket not connected');

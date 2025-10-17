@@ -1,8 +1,8 @@
 import { publicProcedure } from '../trpc.js';
 import { stories } from '../config.js';
 import { startStoryInputSchema } from '../schemas.js';
-import { gameService } from '../service/game.js';
 import type { RoomId } from '@fishjam-cloud/js-server-sdk';
+import { roomService } from '../service/room.js';
 
 export const startStory = publicProcedure
 	.input(startStoryInputSchema)
@@ -13,7 +13,8 @@ export const startStory = publicProcedure
 		}
 
 		try {
-			await gameService.startGame(input.roomId as RoomId, selectedStory);
+			const gameSession = roomService.getGameSession(input.roomId as RoomId);
+			await gameSession?.startGame(selectedStory);
 
 			return {
 				success: true,
