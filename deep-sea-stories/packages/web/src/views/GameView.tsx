@@ -18,7 +18,8 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 				<RoomControls roomId={roomId} />
 			</section>
 			<section
-				className={`w-full h-1/2 grid grid-cols-${peers} place-items-center gap-4 py-10 px-10`}
+				className="w-full h-1/2 grid place-items-center gap-4 py-10 px-10"
+				style={{ gridTemplateColumns: `repeat(${peers}, minmax(0, 1fr))` }}
 			>
 				<PeerTile
 					className="max-w-2xl"
