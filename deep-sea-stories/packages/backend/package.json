@@ -21,10 +21,10 @@
 		"tsx": "^4.20.6"
 	},
 	"scripts": {
-		"build": "tsc -p tsconfig.json",
+		"build": "tsc -p tsconfig.json && mkdir -p dist/src/prompts && cp -R src/prompts/* dist/src/prompts/",
 		"start": "tsx watch src/main.ts",
 		"typecheck": "tsc --noEmit",
-		"test": "node --test --import tsx/esm tests/index.test.ts",
-		"test:watch": "node --test --watch --import tsx/esm tests/index.test.ts"
+		"test": "tsx --test --test-global-setup=./tests/setup-module.ts",
+		"test:watch": "tsx --test --watch --test-global-setup=./tests/setup-module.ts"
 	}
 }
