@@ -2059,6 +2059,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"common@workspace:*, common@workspace:packages/common":
+  version: 0.0.0-use.local
+  resolution: "common@workspace:packages/common"
+  dependencies:
+    typescript: "npm:^5.9.2"
+  languageName: unknown
+  linkType: soft
+
 "convert-source-map@npm:^2.0.0":
   version: 2.0.0
   resolution: "convert-source-map@npm:2.0.0"
@@ -4111,6 +4119,7 @@ __metadata:
     backend: "workspace:*"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
+    common: "workspace:*"
     globals: "npm:^16.4.0"
     lucide-react: "npm:^0.544.0"
     next-themes: "npm:^0.4.6"

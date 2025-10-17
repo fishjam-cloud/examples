@@ -1,24 +1,8 @@
 import { LogIn, type LucideIcon, MessageSquare } from 'lucide-react';
 import type { FC, PropsWithChildren } from 'react';
+import type { AgentEvent } from 'common';
 import blob from '@/assets/blob.png';
 import { ScrollArea } from './ui/scroll-area';
-
-interface BaseEvent {
-	type: string;
-	timestamp: number;
-}
-
-interface JoinEvent extends BaseEvent {
-	type: 'join';
-	name: string;
-}
-
-interface TranscriptionEvent extends BaseEvent {
-	type: 'transcription';
-	text: string;
-}
-
-type AgentPanelEvent = JoinEvent | TranscriptionEvent;
 
 type PanelEventProps = {
 	icon: LucideIcon;
@@ -39,7 +23,7 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 	</div>
 );
 
-const renderEvent = (event: AgentPanelEvent) => {
+const renderEvent = (event: AgentEvent) => {
 	switch (event.type) {
 		case 'join':
 			return (
@@ -63,7 +47,7 @@ const renderEvent = (event: AgentPanelEvent) => {
 };
 
 const AgentPanel = () => {
-	const events: AgentPanelEvent[] = [
+	const events: AgentEvent[] = [
 		{
 			type: 'join',
 			name: 'Gordon',
