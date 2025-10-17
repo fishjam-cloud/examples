@@ -1,4 +1,4 @@
-export class DomainError extends Error {
+export abstract class DomainError extends Error {
 	code: string;
 	statusCode: number;
 
@@ -6,7 +6,6 @@ export class DomainError extends Error {
 		super(message);
 		this.code = code;
 		this.statusCode = statusCode;
-		this.name = 'DomainError';
 	}
 }
 
@@ -54,5 +53,16 @@ export class AudioConnectionError extends DomainError {
 			500,
 		);
 		this.name = 'AudioConnectionError';
+	}
+}
+
+export class FailedToStartStoryError extends DomainError {
+	constructor(storyId: number, reason: string) {
+		super(
+			'FAILED_TO_START_STORY',
+			`Failed to start story ${storyId}: ${reason}`,
+			500,
+		);
+		this.name = 'FailedToStartStoryError';
 	}
 }

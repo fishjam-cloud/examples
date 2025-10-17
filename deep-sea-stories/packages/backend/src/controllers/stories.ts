@@ -3,6 +3,7 @@ import { stories } from '../config.js';
 import { startStoryInputSchema } from '../schemas.js';
 import type { RoomId } from '@fishjam-cloud/js-server-sdk';
 import { roomService } from '../service/room.js';
+import { FailedToStartStoryError } from '../domain/errors.js';
 
 export const startStory = publicProcedure
 	.input(startStoryInputSchema)
@@ -21,9 +22,10 @@ export const startStory = publicProcedure
 				message: `Story "${input.storyId}" started successfully`,
 			};
 		} catch (error) {
-			console.error(`Failed to start story: ${error}`);
-			throw new Error(
-				`Failed to start story: ${error instanceof Error ? error.message : 'Unknown error'}`,
+			console.error(`Failed to start story: %o`, error);
+			throw new FailedToStartStoryError(
+				input.storyId,
+				(error as Error).message,
 			);
 		}
 	});
