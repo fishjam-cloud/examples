@@ -3,7 +3,6 @@ import LinkButton from '@/components/LinkButton';
 import TitleBar from '@/components/TitleBar';
 import { generateDeepSeaSlug } from '@/lib/utils';
 
-
 export default function HomeView() {
 	return (
 		<>
