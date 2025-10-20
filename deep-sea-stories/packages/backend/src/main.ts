@@ -6,6 +6,7 @@ import Fastify from 'fastify';
 import { CONFIG } from './config.js';
 import { createContext } from './context.js';
 import { type AppRouter, appRouter } from './router.js';
+import { notifierService } from './service/notifier.js';
 
 const fastify = Fastify({
 	logger: { transport: { target: 'pino-pretty' } },
@@ -23,6 +24,8 @@ fastify.register(fastifyTRPCPlugin, {
 });
 
 try {
+	await notifierService.initialize();
+
 	await fastify.ready();
 	await fastify.listen({ port: CONFIG.PORT });
 } catch (err) {

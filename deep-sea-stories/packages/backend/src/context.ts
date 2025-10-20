@@ -4,7 +4,6 @@ import { CONFIG } from './config.js';
 
 const fishjam = new FishjamClient({
 	fishjamId: CONFIG.FISHJAM_ID,
-	fishjamUrl: CONFIG.FISHJAM_URL,
 	managementToken: CONFIG.FISHJAM_MANAGEMENT_TOKEN,
 });
 
