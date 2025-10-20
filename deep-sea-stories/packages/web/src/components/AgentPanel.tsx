@@ -1,6 +1,6 @@
 import { LogIn, type LucideIcon, MessageSquare } from 'lucide-react';
 import type { FC, PropsWithChildren } from 'react';
-import type { AgentEvent } from 'common';
+import type { AgentEvent } from '@deep-sea-stories/common';
 import blob from '@/assets/blob.png';
 import { ScrollArea } from './ui/scroll-area';
 
