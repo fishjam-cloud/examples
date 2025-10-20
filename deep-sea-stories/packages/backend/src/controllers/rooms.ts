@@ -3,7 +3,8 @@ import { getRoomInputSchema } from '../schemas.js';
 import { publicProcedure } from '../trpc.js';
 
 export const createRoom = publicProcedure.mutation(async ({ ctx }) => {
-	return await ctx.fishjam.createRoom();
+	const room = await ctx.fishjam.createRoom();
+	return room;
 });
 
 export const getRoom = publicProcedure
