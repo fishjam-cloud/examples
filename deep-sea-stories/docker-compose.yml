@@ -12,12 +12,6 @@ services:
       - FISHJAM_MANAGEMENT_TOKEN=${FISHJAM_MANAGEMENT_TOKEN}
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8000/api/v1/procedure/listProcedures"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   web:
     build:
@@ -25,9 +19,20 @@ services:
       dockerfile: packages/web/Dockerfile
       args:
         - VITE_FISHJAM_ID=${FISHJAM_ID}
-        - VITE_BACKEND_URL=${BACKEND_URL:-http://localhost:8000}
-    ports:
-      - "3000:3000"
+        - VITE_BACKEND_URL=${BACKEND_URL:-http://nginx/api}
+    environment:
+      - VITE_BACKEND_URL=http://nginx/api
     restart: unless-stopped
     depends_on:
       - backend
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "5000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - web
+    restart: unless-stopped
