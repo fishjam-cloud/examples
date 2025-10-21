@@ -22,7 +22,7 @@ jobs:
       - name: Deploy backend and web via SSH
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/deep-sea-stories
+          cd ~/examples/deep-sea-stories
           export FISHJAM_ID="${{ secrets.FISHJAM_ID }}"
           export FISHJAM_MANAGEMENT_TOKEN="${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}"
           export ELEVENLABS_API_KEY="${{ secrets.ELEVENLABS_API_KEY }}"
