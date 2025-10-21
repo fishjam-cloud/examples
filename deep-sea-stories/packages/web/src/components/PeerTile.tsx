@@ -3,21 +3,29 @@ import { cn } from '@/lib/utils';
 
 export type PeerTileProps = {
 	stream?: MediaStream | null;
+	audioStream?: MediaStream | null;
 	name: string;
 } & HTMLAttributes<HTMLDivElement>;
 
 export const PeerTile: FC<PeerTileProps> = ({
 	stream,
+	audioStream,
 	name,
 	className,
 	...props
 }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const audioRef = useRef<HTMLAudioElement>(null);
 
 	useEffect(() => {
 		if (!videoRef.current) return;
 		videoRef.current.srcObject = stream ?? null;
 	}, [stream]);
+
+	useEffect(() => {
+		if (!audioRef.current) return;
+		audioRef.current.srcObject = audioStream ?? null;
+	}, [audioStream]);
 
 	return (
 		<div
@@ -39,6 +47,7 @@ export const PeerTile: FC<PeerTileProps> = ({
 			) : (
 				<div className="text-xl font-display">{name}</div>
 			)}
+			<audio ref={audioRef} autoPlay playsInline />
 		</div>
 	);
 };

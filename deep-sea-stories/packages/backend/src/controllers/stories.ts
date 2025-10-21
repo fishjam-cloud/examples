@@ -31,5 +31,9 @@ export const startStory = publicProcedure
 	});
 
 export const getStories = publicProcedure.query(() => {
-	return stories.map((s) => s.title);
+	return stories.map((s) => ({
+		id: s.id,
+		title: s.title,
+		front: s.front,
+	}));
 });

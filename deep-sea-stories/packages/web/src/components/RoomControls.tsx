@@ -1,10 +1,13 @@
 import { Check } from 'lucide-react';
 import type { FC } from 'react';
+import { useState } from 'react';
 import CopyButton from './CopyButton';
 import HowItWorks from './HowItWorks';
 import HowToPlay from './HowToPlay';
+import StorySelectionPanel from './StorySelectionPanel';
 import { Button } from './ui/button';
 import { toast } from './ui/sonner';
+import { useTRPCClient } from '@/contexts/trpc';
 
 export type RoomControlsProps = {
 	roomId: string;
@@ -12,6 +15,8 @@ export type RoomControlsProps = {
 
 const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
 	const url = `https://dss.fishjam.io/${roomId}`;
+	const [isStoryPanelOpen, setIsStoryPanelOpen] = useState(false);
+	useTRPCClient().getStories.query();
 
 	return (
 		<div className="flex flex-col py-6 gap-8">
@@ -19,7 +24,11 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
 				Deep Sea Stories
 			</section>
 			<section className="w-full grow">
-				<Button size="large" className="w-full">
+				<Button
+					size="large"
+					className="w-full"
+					onClick={() => setIsStoryPanelOpen(true)}
+				>
 					Choose a story
 				</Button>
 			</section>
@@ -34,6 +43,11 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
 					{url}
 				</CopyButton>
 			</section>
+			<StorySelectionPanel
+				isOpen={isStoryPanelOpen}
+				onClose={() => setIsStoryPanelOpen(false)}
+				roomId={roomId}
+			/>
 		</div>
 	);
 };

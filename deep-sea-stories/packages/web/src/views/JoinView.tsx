@@ -1,5 +1,6 @@
 import {
 	useCamera,
+	useConnection,
 	useInitializeDevices,
 	useMicrophone,
 } from '@fishjam-cloud/react-client';
@@ -10,11 +11,19 @@ import { DeviceSelect } from '@/components/DeviceSelect';
 import { PeerTile } from '@/components/PeerTile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTRPCClient } from '@/contexts/trpc';
 
-const JoinView: FC = () => {
+interface JoinViewProps {
+	roomId: string;
+}
+
+
+const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 	const { initializeDevices } = useInitializeDevices();
 	const wasCameraTurnedOff = useRef(false);
+	const { joinRoom } = useConnection();
 	const [name, setName] = useState('');
+	const trpcClient = useTRPCClient();
 
 	const {
 		isCameraOn,
@@ -37,6 +46,20 @@ const JoinView: FC = () => {
 	useEffect(() => {
 		initAndTurnOnCamera();
 	}, [initAndTurnOnCamera]);
+
+	const handleEnterRoom = useCallback(async () => {
+		if (!roomId) return;
+
+		try {
+			const { token } = await trpcClient.createPeer.mutate({ roomId });
+			await joinRoom({
+				peerToken: token,
+				peerMetadata: { name },
+			});
+		} catch (error) {
+			console.error('Failed to join room:', error);
+		}
+	}, [trpcClient, roomId, joinRoom, name]);
 
 	return (
 		<>
@@ -79,7 +102,9 @@ const JoinView: FC = () => {
 				</div>
 			</section>
 			<section className="w-full pt-10 pb-16 grid place-items-center">
-				<Button size="large">Enter the game room</Button>
+				<Button onClick={handleEnterRoom} size="large">
+					Enter the game room
+				</Button>
 			</section>
 		</>
 	);
