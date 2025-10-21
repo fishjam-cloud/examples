@@ -80,13 +80,18 @@ export class GameSession {
 		const { agent, peer } = await fishjam.createAgent(
 			this.roomId,
 			FISHJAM_AGENT_OPTIONS,
-			(msg) => {
-				console.log(`Fishjam Agent for room: ${this.roomId} got error: ${msg}`);
-			},
-			(code, reason) => {
-				console.log(
-					`Fishjam Agent for room: ${this.roomId} closed with code: ${code}, reason: ${reason}`,
-				);
+			{
+				onError: (event: Event) => {
+					console.log(
+						`Fishjam Agent for room: ${this.roomId} encountered an error event:`,
+						event,
+					);
+				},
+				onClose: (code: number, reason: string) => {
+					console.log(
+						`Fishjam Agent for room: ${this.roomId} closed with code: ${code}, reason: ${reason}`,
+					);
+				},
 			},
 		);
 

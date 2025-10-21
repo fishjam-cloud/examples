@@ -1980,6 +1980,7 @@ __metadata:
     nunjucks: "npm:^3.2.4"
     pino-pretty: "npm:^13.1.1"
     tsx: "npm:^4.20.6"
+    typescript: "npm:^5.9.2"
     zod: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
