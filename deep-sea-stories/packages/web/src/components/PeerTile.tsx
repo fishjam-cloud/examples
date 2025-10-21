@@ -47,7 +47,13 @@ export const PeerTile: FC<PeerTileProps> = ({
 			) : (
 				<div className="text-xl font-display">{name}</div>
 			)}
-			<audio ref={audioRef} autoPlay playsInline />
+			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
+			<audio
+				ref={audioRef}
+				autoPlay
+				playsInline
+				title={`Audio from ${name}`}
+			/>
 		</div>
 	);
 };

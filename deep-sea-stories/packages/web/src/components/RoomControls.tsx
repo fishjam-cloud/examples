@@ -40,7 +40,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
 					onCopy={() => toast('Gameroom link copied to clipboard', Check)}
 					value={url}
 				>
-					{url}
+					{url.length > 40 ? `${url.substring(0, 37)}...` : url}
 				</CopyButton>
 			</section>
 			<StorySelectionPanel

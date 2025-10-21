@@ -90,6 +90,7 @@ const StorySelectionPanel: FC<StorySelectionPanelProps> = ({
 					) : (
 						stories.map((story) => (
 							<button
+								type="button"
 								key={story.id}
 								onClick={() => setSelectedStoryId(story.id)}
 								className={`text-left p-4 rounded-lg border-2 transition-all ${

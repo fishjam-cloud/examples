@@ -17,7 +17,6 @@ interface JoinViewProps {
 	roomId: string;
 }
 
-
 const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 	const { initializeDevices } = useInitializeDevices();
 	const wasCameraTurnedOff = useRef(false);
