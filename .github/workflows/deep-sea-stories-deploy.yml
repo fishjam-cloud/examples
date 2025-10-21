@@ -1,0 +1,45 @@
+name: Deploy deep-sea-stories
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-deploy:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy backend and web via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ~/deep-sea-stories
+          export FISHJAM_ID="${{ secrets.FISHJAM_ID }}"
+          export FISHJAM_MANAGEMENT_TOKEN="${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}"
+          export ELEVENLABS_API_KEY="${{ secrets.ELEVENLABS_API_KEY }}"
+          git pull origin main
+          docker-compose down
+          docker-compose build --no-cache
+          docker-compose up -d
+          echo "Waiting for services to start..."
+          sleep 5
+          docker-compose logs
+          EOF
+
+      - name: Health check
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          echo "Checking backend health..."
+          curl -f http://localhost:8000/health && echo "✅ Backend is running" || echo "⚠️ Backend health check failed"
+          echo "Checking frontend..."
+          curl -f http://localhost && echo "✅ Frontend is running" || echo "⚠️ Frontend health check failed"
+          EOF
