@@ -19,7 +19,7 @@ await fastify.register(cors, {
 });
 
 fastify.register(fastifyTRPCPlugin, {
-	prefix: '/api/v1',
+	prefix: '/api/v1/trpc',
 	trpcOptions: {
 		router: appRouter,
 		createContext,
@@ -33,7 +33,7 @@ try {
 	await notifierService.initialize();
 
 	await fastify.ready();
-	await fastify.listen({ port: CONFIG.PORT });
+	await fastify.listen({ port: CONFIG.PORT, host: '0.0.0.0' });
 } catch (err) {
 	fastify.log.error(err);
 	process.exit(1);
