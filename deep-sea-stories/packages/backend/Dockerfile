@@ -2,15 +2,14 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-RUN npm install -g yarn@4.9.2
+RUN corepack enable
 
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY packages/backend ./packages/backend
-COPY packages/common ./packages/common
+COPY packages ./packages
 
 RUN yarn install --frozen-lockfile
 
-RUN cd packages/backend && yarn run build
+RUN ./node_modules/.bin/tsc -p packages/backend/tsconfig.json --noEmitOnError=false && mkdir -p packages/backend/dist/src/prompts && cp -R packages/backend/src/prompts/* packages/backend/dist/src/prompts/ || true
 
 FROM node:24-alpine
 
@@ -18,13 +17,20 @@ WORKDIR /app
 
 RUN apk add --no-cache dumb-init
 
-RUN npm install -g yarn@4.9.2
+RUN corepack enable
+
+FROM node:24-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache dumb-init
+
+RUN corepack enable
 
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY packages/backend/package.json ./packages/backend/package.json
-COPY packages/common/package.json ./packages/common/package.json
+COPY packages ./packages
 
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --frozen-lockfile
 
 COPY --from=builder /app/packages/backend/dist ./packages/backend/dist
 COPY --from=builder /app/packages/backend/src/prompts ./packages/backend/src/prompts

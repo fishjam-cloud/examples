@@ -2,11 +2,10 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-RUN npm install -g yarn@4.9.2
+RUN corepack enable
 
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY packages/web ./packages/web
-COPY packages/common ./packages/common
+COPY packages ./packages
 
 RUN yarn install --frozen-lockfile
 
@@ -16,7 +15,7 @@ ARG VITE_BACKEND_URL
 ENV VITE_FISHJAM_ID=$VITE_FISHJAM_ID
 ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 
-RUN cd packages/web && yarn run build
+RUN ./node_modules/.bin/vite build packages/web
 
 FROM node:24-alpine
 
