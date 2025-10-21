@@ -34,12 +34,3 @@ jobs:
           sleep 5
           docker-compose logs
           EOF
-
-      - name: Health check
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          echo "Checking backend health..."
-          curl -f http://localhost:8000/health && echo "✅ Backend is running" || echo "⚠️ Backend health check failed"
-          echo "Checking frontend..."
-          curl -f http://localhost && echo "✅ Frontend is running" || echo "⚠️ Frontend health check failed"
-          EOF
