@@ -19,9 +19,9 @@ services:
       dockerfile: packages/web/Dockerfile
       args:
         - VITE_FISHJAM_ID=${FISHJAM_ID}
-        - VITE_BACKEND_URL=${BACKEND_URL:-http://nginx/api}
+        - VITE_BACKEND_URL=${BACKEND_URL:-/api/v1/trpc}
     environment:
-      - VITE_BACKEND_URL=http://nginx/api
+      - VITE_BACKEND_URL=/api/v1/trpc
     restart: unless-stopped
     depends_on:
       - backend
