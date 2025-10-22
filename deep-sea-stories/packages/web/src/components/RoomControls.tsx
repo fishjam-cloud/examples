@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
 import type { FC } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CopyButton from './CopyButton';
 import HowItWorks from './HowItWorks';
 import HowToPlay from './HowToPlay';
@@ -16,7 +16,11 @@ export type RoomControlsProps = {
 const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
 	const url = `https://dss.fishjam.io/${roomId}`;
 	const [isStoryPanelOpen, setIsStoryPanelOpen] = useState(false);
-	useTRPCClient().getStories.query();
+	const trpc = useTRPCClient();
+
+	useEffect(() => {
+		void trpc.getStories.query();
+	}, [trpc]);
 
 	return (
 		<div className="flex flex-col py-6 gap-8">
