@@ -132,9 +132,7 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 					? (clientToolCall as Record<string, unknown>)
 					: undefined;
 			const toolName =
-				typeof call?.tool_name === 'string'
-					? (call.tool_name as string)
-					: undefined;
+				typeof call?.tool_name === 'string' ? call.tool_name : undefined;
 			if (!toolName || toolName !== 'game-ending') {
 				return;
 			}
@@ -160,7 +158,7 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 			}
 
 			try {
-				await gameSession.stopGame(roomId);
+				await gameSession.stopGame();
 				console.log(
 					`Game session for room ${roomId} ended after game-ending tool call from peer ${peerId}`,
 				);
