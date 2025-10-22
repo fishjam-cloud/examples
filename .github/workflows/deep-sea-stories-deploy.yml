@@ -1,0 +1,33 @@
+name: Deploy deep-sea-stories
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/examples/deep-sea-stories
+            git switch main
+            git pull
+
+            umask 077
+            cat > .env << 'EOF'
+
+            FISHJAM_ID=${{ secrets.FISHJAM_ID }}
+            FISHJAM_MANAGEMENT_TOKEN=${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}
+            ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}
+
+            EOF
+
+            docker compose down
+            docker compose up -d --build

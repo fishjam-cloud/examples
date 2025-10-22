@@ -1,0 +1,32 @@
+{
+	"name": "backend",
+	"private": true,
+	"main": "./src/main.ts",
+	"type": "module",
+	"dependencies": {
+		"@elevenlabs/elevenlabs-js": "^2.19.0",
+		"@fastify/cors": "^11.1.0",
+		"@fishjam-cloud/js-server-sdk": "^0.22.0",
+		"@trpc/server": "^11.6.0",
+		"@types/nunjucks": "^3.2.6",
+		"@types/ws": "^8.18.1",
+		"dotenv": "^17.2.3",
+		"fastify": "^5.6.1",
+		"nunjucks": "^3.2.4",
+		"pino-pretty": "^13.1.1",
+		"zod": "^4.1.11"
+	},
+	"devDependencies": {
+		"@tsconfig/node24": "^24.0.1",
+		"@types/node": "^24.5.2",
+		"tsx": "^4.20.6",
+		"typescript": "^5.9.2"
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.json && mkdir -p dist/src/prompts && cp -R src/prompts/* dist/src/prompts/",
+		"start": "tsx watch src/main.ts",
+		"typecheck": "tsc --noEmit",
+		"test": "tsx --test --test-global-setup=./tests/setup-module.ts",
+		"test:watch": "tsx --test --watch --test-global-setup=./tests/setup-module.ts"
+	}
+}
