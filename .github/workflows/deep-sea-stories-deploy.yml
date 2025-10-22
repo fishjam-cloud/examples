@@ -1,0 +1,33 @@
+name: Deploy deep-sea-stories
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-deploy:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ vars.KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy backend and web via SSH
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ~/examples/deep-sea-stories
+          echo "FISHJAM_ID=${{ secrets.FISHJAM_ID }}" > ./.env
+          echo "FISHJAM_MANAGEMENT_TOKEN=${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}" >> ./.env
+          echo "ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}" >> ./.env
+          git pull origin main
+          docker-compose down
+          docker-compose build --no-cache
+          docker-compose up -d
+          EOF

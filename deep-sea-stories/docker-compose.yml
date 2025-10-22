@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - FISHJAM_ID=${FISHJAM_ID}
+      - FISHJAM_MANAGEMENT_TOKEN=${FISHJAM_MANAGEMENT_TOKEN}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: packages/web/Dockerfile
+      args:
+        - VITE_FISHJAM_ID=${FISHJAM_ID}
+        - VITE_BACKEND_URL=${BACKEND_URL:-http://nginx/api}
+    environment:
+      - VITE_BACKEND_URL=http://nginx/api
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "5000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - web
+    restart: unless-stopped
