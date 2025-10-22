@@ -3,6 +3,7 @@ import {
 	fastifyTRPCPlugin,
 } from '@trpc/server/adapters/fastify';
 import Fastify from 'fastify';
+import cors from '@fastify/cors';
 import { CONFIG } from './config.js';
 import { createContext } from './context.js';
 import { type AppRouter, appRouter } from './router.js';
@@ -10,6 +11,11 @@ import { notifierService } from './service/notifier.js';
 
 const fastify = Fastify({
 	logger: { transport: { target: 'pino-pretty' } },
+});
+
+await fastify.register(cors, {
+	origin: true,
+	credentials: true,
 });
 
 fastify.register(fastifyTRPCPlugin, {

@@ -34,6 +34,7 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 						stream={
 							peer.customVideoTracks[0]?.stream ?? peer.cameraTrack?.stream
 						}
+						audioStream={peer.tracks[0]?.stream ?? peer.microphoneTrack?.stream}
 					/>
 				))}
 			</section>

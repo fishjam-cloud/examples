@@ -8,5 +8,9 @@ export default function RoomView() {
 	const { peerStatus } = useConnection();
 	const isConnected = peerStatus === 'connected';
 
-	return !isConnected ? <GameView roomId={roomId ?? ''} /> : <JoinView />;
+	return isConnected ? (
+		<GameView roomId={roomId ?? ''} />
+	) : (
+		<JoinView roomId={roomId ?? ''} />
+	);
 }

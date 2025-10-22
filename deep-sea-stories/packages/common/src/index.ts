@@ -4,3 +4,5 @@ export type {
 	JoinEvent,
 	TranscriptionEvent,
 } from './events.js';
+
+export type { StoryData } from './types';
