@@ -5,31 +5,29 @@ on:
     branches: ["main", "deep-sea-stories"]
 
 jobs:
-  build-deploy:
-    if: github.actor != 'dependabot[bot]'
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+      - name: Deploy
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          ref: deep-sea-stories
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/examples/deep-sea-stories
+            git switch deep-sea-stories
+            git pull
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          echo "${{ vars.KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+            umask 077
+            cat > .env << 'EOF'
 
-      - name: Deploy backend and web via SSH
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/examples/deep-sea-stories
-          echo "FISHJAM_ID=${{ secrets.FISHJAM_ID }}" > ./.env
-          echo "FISHJAM_MANAGEMENT_TOKEN=${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}" >> ./.env
-          echo "ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}" >> ./.env
-          git pull origin main
-          docker-compose down
-          docker-compose build --no-cache
-          docker-compose up -d
-          EOF
+            FISHJAM_ID=${{ secrets.FISHJAM_ID }}
+            FISHJAM_MANAGEMENT_TOKEN=${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}
+            ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}
+
+            EOF
+
+            docker compose down
+            docker compose up -d --build
