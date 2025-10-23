@@ -15,7 +15,6 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 	const { remotePeers, localPeer } = usePeers<{ name: string }>();
 	const trpcClient = useTRPCClient();
 	const agentAudioRef = useRef<HTMLAudioElement>(null);
-	console.log(remotePeers);
 
 	const { data: roomData } = useQuery({
 		queryKey: ['room', roomId],
@@ -24,7 +23,7 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 	});
 
 	const agentPeerId = useMemo(
-		() => roomData?.peers?.find((peer: any) => peer.type === 'agent')?.id,
+		() => roomData?.peers?.find((peer) => peer.type === 'agent')?.id,
 		[roomData?.peers],
 	);
 
@@ -48,7 +47,7 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 		if (!agentAudioRef.current) return;
 		const audioStream = agentPeer?.tracks[0]?.stream;
 		agentAudioRef.current.srcObject = audioStream ?? null;
-	}, [agentPeer?.microphoneTrack?.stream]);
+	}, [agentPeer?.tracks[0]?.stream]);
 
 	const gridColumns = displayedPeers.length + 1;
 
@@ -60,7 +59,9 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 			</section>
 			<section
 				className="w-full h-1/2 grid place-items-center gap-4 py-10 px-10"
-				style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
+				style={{
+					gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
+				}}
 			>
 				<PeerTile
 					className="max-w-2xl"
@@ -75,11 +76,12 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 						stream={
 							peer.customVideoTracks[0]?.stream ?? peer.cameraTrack?.stream
 						}
-						audioStream={ peer.microphoneTrack?.stream }
+						audioStream={peer.microphoneTrack?.stream}
 					/>
 				))}
 			</section>
-			<audio ref={agentAudioRef} autoPlay playsInline title={"Agent audio"} />
+			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
+			<audio ref={agentAudioRef} autoPlay playsInline title={'Agent audio'} />
 		</>
 	);
 };
