@@ -20,6 +20,7 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 	>();
 	private endingRooms = new Set<RoomId>();
 	private gameEndingToolId: string | undefined;
+	private peerToAgentId = new Map<PeerId, string>();
 
 	private async resolveStory(roomId: RoomId) {
 		const gameSession = roomService.getGameSession(roomId);
@@ -89,6 +90,7 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		this.registerClientToolHandler(session, peerId, roomId);
 
 		this.sessions.set(peerId, session);
+		this.peerToAgentId.set(peerId, agentId);
 		return session;
 	}
 
@@ -175,6 +177,8 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 
 	async deleteSession(peerId: PeerId): Promise<void> {
 		const session = this.sessions.get(peerId);
+		const agentId = this.peerToAgentId.get(peerId);
+
 		if (session) {
 			try {
 				await session.disconnect();
@@ -182,6 +186,19 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 				console.error(`Error closing session for peer ${peerId}:`, error);
 			}
 			this.sessions.delete(peerId);
+		}
+
+		if (agentId) {
+			try {
+				await elevenLabs.conversationalAi.agents.delete(agentId);
+				console.log(`Deleted ElevenLabs agent ${agentId} for peer ${peerId}`);
+			} catch (error) {
+				console.error(
+					`Error deleting ElevenLabs agent ${agentId} for peer ${peerId}:`,
+					error,
+				);
+			}
+			this.peerToAgentId.delete(peerId);
 		}
 	}
 
