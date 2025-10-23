@@ -1,8 +1,11 @@
 import { usePeers } from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import AgentPanel from '@/components/AgentPanel';
 import { PeerTile } from '@/components/PeerTile';
 import RoomControls from '@/components/RoomControls';
+import { useTRPCClient } from '@/contexts/trpc';
 
 export type GameViewProps = {
 	roomId: string;
@@ -10,7 +13,45 @@ export type GameViewProps = {
 
 const GameView: FC<GameViewProps> = ({ roomId }) => {
 	const { remotePeers, localPeer } = usePeers<{ name: string }>();
-	const peers = remotePeers.length + 1;
+	const trpcClient = useTRPCClient();
+	const agentAudioRef = useRef<HTMLAudioElement>(null);
+	console.log(remotePeers);
+
+	const { data: roomData } = useQuery({
+		queryKey: ['room', roomId],
+		queryFn: () => trpcClient.getRoom.query({ roomId }),
+		staleTime: Infinity,
+	});
+
+	const agentPeerId = useMemo(
+		() => roomData?.peers?.find((peer: any) => peer.type === 'agent')?.id,
+		[roomData?.peers],
+	);
+
+	const displayedPeers = useMemo(
+		() =>
+			agentPeerId
+				? remotePeers.filter((peer) => String(peer.id) !== String(agentPeerId))
+				: remotePeers,
+		[remotePeers, agentPeerId],
+	);
+
+	const agentPeer = useMemo(
+		() =>
+			agentPeerId
+				? remotePeers.find((peer) => String(peer.id) === String(agentPeerId))
+				: undefined,
+		[remotePeers, agentPeerId],
+	);
+
+	useEffect(() => {
+		if (!agentAudioRef.current) return;
+		const audioStream = agentPeer?.tracks[0]?.stream;
+		agentAudioRef.current.srcObject = audioStream ?? null;
+	}, [agentPeer?.microphoneTrack?.stream]);
+
+	const gridColumns = displayedPeers.length + 1;
+
 	return (
 		<>
 			<section className="w-full h-1/2 flex gap-8 pt-10 px-10">
@@ -19,14 +60,14 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 			</section>
 			<section
 				className="w-full h-1/2 grid place-items-center gap-4 py-10 px-10"
-				style={{ gridTemplateColumns: `repeat(${peers}, minmax(0, 1fr))` }}
+				style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
 			>
 				<PeerTile
 					className="max-w-2xl"
 					name="You"
 					stream={localPeer?.cameraTrack?.stream}
 				/>
-				{remotePeers.map((peer) => (
+				{displayedPeers.map((peer) => (
 					<PeerTile
 						className="max-w-2xl"
 						name={peer.metadata?.peer?.name ?? peer.id}
@@ -34,10 +75,11 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 						stream={
 							peer.customVideoTracks[0]?.stream ?? peer.cameraTrack?.stream
 						}
-						audioStream={peer.tracks[0]?.stream ?? peer.microphoneTrack?.stream}
+						audioStream={ peer.microphoneTrack?.stream }
 					/>
 				))}
 			</section>
+			<audio ref={agentAudioRef} autoPlay playsInline title={"Agent audio"} />
 		</>
 	);
 };
