@@ -5,7 +5,7 @@ import {
 } from './elevenlabs-conversation.js';
 import { roomService } from './room.js';
 import { getInstructionsForStory } from '../utils.js';
-import { CONFIG } from '../config.js';
+import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
 import type { VoiceAgentSessionManager } from '../types.js';
 import {
 	GameSessionNotFoundError,
@@ -18,6 +18,8 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		PeerId,
 		Promise<ElevenLabsConversation>
 	>();
+	private endingRooms = new Set<RoomId>();
+	private gameEndingToolId: string | undefined;
 
 	private async resolveStory(roomId: RoomId) {
 		const gameSession = roomService.getGameSession(roomId);
@@ -57,6 +59,8 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 	): Promise<ElevenLabsConversation> {
 		await this.deleteSession(peerId);
 
+		const toolId = await this.ensureGameEndingTool();
+
 		const story = await this.resolveStory(roomId);
 		const instructions = getInstructionsForStory(story);
 
@@ -65,9 +69,14 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 				agent: {
 					firstMessage: 'Welcome to Deepsea stories',
 					language: 'en',
-					prompt: {
-						prompt: instructions,
-					},
+					prompt: toolId
+						? {
+								prompt: instructions,
+								toolIds: [toolId],
+							}
+						: {
+								prompt: instructions,
+							},
 				},
 			},
 		});
@@ -77,9 +86,91 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 			CONFIG.ELEVENLABS_API_KEY,
 		);
 		await session.connect();
+		this.registerClientToolHandler(session, peerId, roomId);
 
 		this.sessions.set(peerId, session);
 		return session;
+	}
+
+	private async ensureGameEndingTool(): Promise<string | undefined> {
+		if (this.gameEndingToolId) {
+			return this.gameEndingToolId;
+		}
+
+		const tools = await elevenLabs.conversationalAi.tools.list();
+		const existingTool = (tools.tools ?? []).find(
+			(tool) =>
+				tool.toolConfig.type === 'client' &&
+				tool.toolConfig.name === 'game-ending',
+		);
+
+		if (existingTool?.id) {
+			this.gameEndingToolId = existingTool.id;
+			return this.gameEndingToolId;
+		}
+
+		const createdTool = await elevenLabs.conversationalAi.tools.create({
+			toolConfig: {
+				type: 'client',
+				name: 'game-ending',
+				description: AGENT_CLIENT_TOOL_INSTRUCTIONS,
+			},
+		});
+
+		this.gameEndingToolId = createdTool.id;
+		return this.gameEndingToolId;
+	}
+
+	private registerClientToolHandler(
+		session: ElevenLabsConversation,
+		peerId: PeerId,
+		roomId: RoomId,
+	): void {
+		session.on('clientToolCall', async (clientToolCall: unknown) => {
+			const call =
+				clientToolCall && typeof clientToolCall === 'object'
+					? (clientToolCall as Record<string, unknown>)
+					: undefined;
+			const toolName =
+				typeof call?.tool_name === 'string' ? call.tool_name : undefined;
+			if (!toolName || toolName !== 'game-ending') {
+				return;
+			}
+
+			if (this.endingRooms.has(roomId)) {
+				return;
+			}
+
+			this.endingRooms.add(roomId);
+			const gameSession = roomService.getGameSession(roomId);
+
+			if (!gameSession) {
+				console.warn(
+					`Received game-ending tool call for room ${roomId} without active game session`,
+				);
+				this.endingRooms.delete(roomId);
+				return;
+			}
+
+			if (!roomService.isGameActive(roomId)) {
+				this.endingRooms.delete(roomId);
+				return;
+			}
+
+			try {
+				await gameSession.stopGame();
+				console.log(
+					`Game session for room ${roomId} ended after game-ending tool call from peer ${peerId}`,
+				);
+			} catch (error) {
+				console.error(
+					`Failed to stop game for room ${roomId} after game-ending tool call from peer ${peerId}:`,
+					error,
+				);
+			} finally {
+				this.endingRooms.delete(roomId);
+			}
+		});
 	}
 
 	async deleteSession(peerId: PeerId): Promise<void> {

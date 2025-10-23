@@ -166,16 +166,16 @@ export class GameSession {
 		orchestrator.setupAudioPipelines();
 	}
 
-	async stopGame(roomId: RoomId): Promise<void> {
+	async stopGame(): Promise<void> {
 		this.voiceSessionManager?.cleanup();
 		this.setStory(undefined);
-		console.log(`Stopped game for room ${roomId}`);
+		console.log(`Stopped game for room ${this.roomId}`);
 	}
 
-	async removePeerFromGame(roomId: RoomId, peerId: PeerId): Promise<void> {
+	async removePeerFromGame(peerId: PeerId): Promise<void> {
 		if (this.voiceSessionManager) {
 			await this.voiceSessionManager.deleteSession(peerId);
-			console.log(`Removed peer ${peerId} from game in room ${roomId}`);
+			console.log(`Removed peer ${peerId} from game in room ${this.roomId}`);
 		}
 	}
 }

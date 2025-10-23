@@ -70,7 +70,7 @@ class NotifierService {
 			gameSession.removeConnectedPeer(msg.peerId);
 
 			if (roomService.isGameActive(msg.roomId)) {
-				await gameSession.removePeerFromGame(msg.roomId, msg.peerId);
+				await gameSession.removePeerFromGame(msg.peerId);
 			}
 		});
 	}
