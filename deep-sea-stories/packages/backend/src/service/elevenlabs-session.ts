@@ -90,7 +90,7 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		if (isFirstAgent) {
 			this.hasMasterAgent = true;
 		}
-		
+
 		const instructions = isFirstAgent
 			? getMasterInstructionsForStory(story)
 			: getInstructionsForStory(story);
