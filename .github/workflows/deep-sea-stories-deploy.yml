@@ -2,7 +2,7 @@ name: Deploy deep-sea-stories
 
 on:
   push:
-    branches: ["main", "2161"]
+    branches: ["main"]
 
 jobs:
   deploy:
@@ -17,7 +17,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/examples/deep-sea-stories
-            git switch 2161
+            git switch main
             git pull
 
             umask 077
