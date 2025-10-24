@@ -24,6 +24,7 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 	private endingRooms = new Set<RoomId>();
 	private gameEndingToolId: string | undefined;
 	private peerToAgentId = new Map<PeerId, string>();
+	private hasMasterAgent = false;
 
 	private async resolveStory(roomId: RoomId) {
 		const gameSession = roomService.getGameSession(roomId);
@@ -85,7 +86,11 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		story: Story,
 		toolId: string | undefined,
 	): Promise<string> {
-		const isFirstAgent = this.sessions.size === 0;
+		const isFirstAgent = !this.hasMasterAgent;
+		if (isFirstAgent) {
+			this.hasMasterAgent = true;
+		}
+		
 		const instructions = isFirstAgent
 			? getMasterInstructionsForStory(story)
 			: getInstructionsForStory(story);
@@ -162,8 +167,8 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 			if (this.endingRooms.has(roomId)) {
 				return;
 			}
-
 			this.endingRooms.add(roomId);
+
 			const gameSession = roomService.getGameSession(roomId);
 
 			if (!gameSession) {
