@@ -24,6 +24,11 @@ export const stories: Story[] = JSON.parse(
 
 export const CONFIG = configSchema.parse(process.env);
 
+export const MASTER_AGENT_INSTRUTIONS_TEMPLATE = fs.readFileSync(
+	join(__dirname, 'prompts', 'master-instructions-template.md'),
+	'utf8',
+);
+
 export const AGENT_INSTRUCTIONS_TEMPLATE = fs.readFileSync(
 	join(__dirname, 'prompts', 'instructions-template.md'),
 	'utf8',

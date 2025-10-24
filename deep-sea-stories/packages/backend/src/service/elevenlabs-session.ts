@@ -4,9 +4,12 @@ import {
 	ElevenLabsConversation,
 } from './elevenlabs-conversation.js';
 import { roomService } from './room.js';
-import { getInstructionsForStory } from '../utils.js';
+import {
+	getInstructionsForStory,
+	getMasterInstructionsForStory,
+} from '../utils.js';
 import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
-import type { VoiceAgentSessionManager } from '../types.js';
+import type { Story, VoiceAgentSessionManager } from '../types.js';
 import {
 	GameSessionNotFoundError,
 	StoryNotFoundError,
@@ -63,24 +66,8 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		const toolId = await this.ensureGameEndingTool();
 
 		const story = await this.resolveStory(roomId);
-		const instructions = getInstructionsForStory(story);
 
-		const { agentId } = await elevenLabs.conversationalAi.agents.create({
-			conversationConfig: {
-				agent: {
-					firstMessage: 'Welcome to Deepsea stories',
-					language: 'en',
-					prompt: toolId
-						? {
-								prompt: instructions,
-								toolIds: [toolId],
-							}
-						: {
-								prompt: instructions,
-							},
-				},
-			},
-		});
+		const agentId = await this.createAgent(story, toolId);
 
 		const session = new ElevenLabsConversation(
 			agentId,
@@ -92,6 +79,39 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		this.sessions.set(peerId, session);
 		this.peerToAgentId.set(peerId, agentId);
 		return session;
+	}
+
+	private async createAgent(
+		story: Story,
+		toolId: string | undefined,
+	): Promise<string> {
+		const isFirstAgent = this.sessions.size === 0;
+		const instructions = isFirstAgent
+			? getMasterInstructionsForStory(story)
+			: getInstructionsForStory(story);
+
+		console.log(
+			isFirstAgent
+				? 'Creating first ElevenLabs agent'
+				: `Creating ElevenLabs agent for story "${story.title}" (ID: ${story.id})`,
+		);
+
+		const prompt = toolId
+			? { prompt: instructions, toolIds: [toolId] }
+			: { prompt: instructions };
+
+		const config = {
+			conversationConfig: {
+				agent: {
+					language: 'en' as const,
+					prompt,
+					...(isFirstAgent && { firstMessage: 'Welcome to Deepsea stories' }),
+				},
+			},
+		};
+
+		const { agentId } = await elevenLabs.conversationalAi.agents.create(config);
+		return agentId;
 	}
 
 	private async ensureGameEndingTool(): Promise<string | undefined> {
