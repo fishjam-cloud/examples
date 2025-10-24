@@ -10,6 +10,7 @@ export interface Story {
 
 export interface Conversation extends EventEmitter {
 	sendAudio(audioBuffer: Buffer): void;
+	sendUserMessage(message: string): void;
 }
 
 export interface VoiceAgentSessionManager {

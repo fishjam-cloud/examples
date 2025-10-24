@@ -6,7 +6,7 @@ import {
 import { roomService } from './room.js';
 import { getInstructionsForStory } from '../utils.js';
 import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
-import type { VoiceAgentSessionManager } from '../types.js';
+import type { Story, VoiceAgentSessionManager } from '../types.js';
 import {
 	GameSessionNotFoundError,
 	StoryNotFoundError,
@@ -63,24 +63,8 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		const toolId = await this.ensureGameEndingTool();
 
 		const story = await this.resolveStory(roomId);
-		const instructions = getInstructionsForStory(story);
 
-		const { agentId } = await elevenLabs.conversationalAi.agents.create({
-			conversationConfig: {
-				agent: {
-					firstMessage: 'Welcome to Deepsea stories',
-					language: 'en',
-					prompt: toolId
-						? {
-								prompt: instructions,
-								toolIds: [toolId],
-							}
-						: {
-								prompt: instructions,
-							},
-				},
-			},
-		});
+		const agentId = await this.createAgent(story, toolId);
 
 		const session = new ElevenLabsConversation(
 			agentId,
@@ -94,7 +78,29 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		return session;
 	}
 
-	private async ensureGameEndingTool(): Promise<string | undefined> {
+	private async createAgent(story: Story, toolId: string): Promise<string> {
+		const instructions = getInstructionsForStory(story);
+
+		console.log(
+			`Creating ElevenLabs agent for story "${story.title}" (ID: ${story.id})`,
+		);
+
+		const prompt = { prompt: instructions, toolIds: [toolId] };
+
+		const config = {
+			conversationConfig: {
+				agent: {
+					language: 'en',
+					prompt,
+				},
+			},
+		};
+
+		const { agentId } = await elevenLabs.conversationalAi.agents.create(config);
+		return agentId;
+	}
+
+	private async ensureGameEndingTool(): Promise<string> {
 		if (this.gameEndingToolId) {
 			return this.gameEndingToolId;
 		}
@@ -142,8 +148,8 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 			if (this.endingRooms.has(roomId)) {
 				return;
 			}
-
 			this.endingRooms.add(roomId);
+
 			const gameSession = roomService.getGameSession(roomId);
 
 			if (!gameSession) {

@@ -164,6 +164,38 @@ export class GameSession {
 		);
 
 		orchestrator.setupAudioPipelines();
+
+		this.sendInitMessage();
+	}
+
+	private sendInitMessage(): void {
+		const firstPeerId = this.connectedPeers.values().next().value;
+		if (!firstPeerId) {
+			console.error(
+				`Cannot send init message: no connected peers in room ${this.roomId}`,
+			);
+			return;
+		}
+
+		if (!this.voiceSessionManager) {
+			console.error(
+				`Cannot send init message: missing session manager for room ${this.roomId}`,
+			);
+			return;
+		}
+
+		const anyAgentSession = this.voiceSessionManager.getSession(firstPeerId);
+		if (!anyAgentSession) {
+			console.error(
+				`Cannot send init message: no session for peer ${firstPeerId} in room ${this.roomId}`,
+			);
+			return;
+		}
+
+		// Request the voice agent to explain the game rules; all players will hear it
+		anyAgentSession.sendUserMessage(
+			"The riddle master welcomes all players saying 'Welcome to Deep Sea Stories' and then reads the initial scenario or mystery to the guessers. ",
+		);
 	}
 
 	async stopGame(): Promise<void> {
