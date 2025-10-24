@@ -1,12 +1,12 @@
 import nunjucks from 'nunjucks';
 import {
 	AGENT_INSTRUCTIONS_TEMPLATE,
-	MASTER_AGENT_INSTRUTIONS_TEMPLATE,
+	MASTER_AGENT_INSTRUCTIONS_TEMPLATE,
 } from './config.js';
 import type { Story } from './types.js';
 
 export function getMasterInstructionsForStory(story: Story): string {
-	return nunjucks.renderString(MASTER_AGENT_INSTRUTIONS_TEMPLATE, {
+	return nunjucks.renderString(MASTER_AGENT_INSTRUCTIONS_TEMPLATE, {
 		FRONT: story.front,
 		BACK: story.back,
 	});
