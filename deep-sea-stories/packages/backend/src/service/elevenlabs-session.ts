@@ -4,10 +4,7 @@ import {
 	ElevenLabsConversation,
 } from './elevenlabs-conversation.js';
 import { roomService } from './room.js';
-import {
-	getInstructionsForStory,
-	getMasterInstructionsForStory,
-} from '../utils.js';
+import { getInstructionsForStory } from '../utils.js';
 import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
 import type { Story, VoiceAgentSessionManager } from '../types.js';
 import {
@@ -24,7 +21,6 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 	private endingRooms = new Set<RoomId>();
 	private gameEndingToolId: string | undefined;
 	private peerToAgentId = new Map<PeerId, string>();
-	private hasMasterAgent = false;
 
 	private async resolveStory(roomId: RoomId) {
 		const gameSession = roomService.getGameSession(roomId);
@@ -82,35 +78,20 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		return session;
 	}
 
-	private async createAgent(
-		story: Story,
-		toolId: string | undefined,
-	): Promise<string> {
-		const isFirstAgent = !this.hasMasterAgent;
-		if (isFirstAgent) {
-			this.hasMasterAgent = true;
-		}
-
-		const instructions = isFirstAgent
-			? getMasterInstructionsForStory(story)
-			: getInstructionsForStory(story);
+	private async createAgent(story: Story, toolId: string): Promise<string> {
+		const instructions = getInstructionsForStory(story);
 
 		console.log(
-			isFirstAgent
-				? 'Creating first ElevenLabs agent'
-				: `Creating ElevenLabs agent for story "${story.title}" (ID: ${story.id})`,
+			`Creating ElevenLabs agent for story "${story.title}" (ID: ${story.id})`,
 		);
 
-		const prompt = toolId
-			? { prompt: instructions, toolIds: [toolId] }
-			: { prompt: instructions };
+		const prompt = { prompt: instructions, toolIds: [toolId] };
 
 		const config = {
 			conversationConfig: {
 				agent: {
-					language: 'en' as const,
+					language: 'en',
 					prompt,
-					...(isFirstAgent && { firstMessage: 'Welcome to Deepsea stories' }),
 				},
 			},
 		};
@@ -119,7 +100,7 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		return agentId;
 	}
 
-	private async ensureGameEndingTool(): Promise<string | undefined> {
+	private async ensureGameEndingTool(): Promise<string> {
 		if (this.gameEndingToolId) {
 			return this.gameEndingToolId;
 		}
