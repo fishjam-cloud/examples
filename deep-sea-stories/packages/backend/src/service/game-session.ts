@@ -184,15 +184,16 @@ export class GameSession {
 			return;
 		}
 
-		const session = this.voiceSessionManager.getSession(firstPeerId);
-		if (!session) {
+		const anyAgentSession = this.voiceSessionManager.getSession(firstPeerId);
+		if (!anyAgentSession) {
 			console.error(
 				`Cannot send init message: no session for peer ${firstPeerId} in room ${this.roomId}`,
 			);
 			return;
 		}
 
-		session.sendUserMessage(
+		// Request the voice agent to explain the game rules; all players will hear it
+		anyAgentSession.sendUserMessage(
 			"The riddle master welcomes all players saying 'Welcome to Deep Sea Stories' and then reads the initial scenario or mystery to the guessers. ",
 		);
 	}

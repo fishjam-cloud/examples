@@ -14,7 +14,7 @@ Black Stories is a storytelling and guessing game designed to challenge players'
 
     Gameplay: 
 
-        The riddle master waits for questions from the guessers. Assume that all participants already understand the full story and game rules—no further explanations are needed.
+        The riddle master waits for questions from the guessers. Assume that all participants already understand the full story and game rules - no further explanations are needed.
 
         The guessers ask the riddle master questions that can only be answered with "yes" or "no".
 
