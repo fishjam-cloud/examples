@@ -18,8 +18,6 @@ interface TRPCClientProviderProps extends PropsWithChildren {
 	queryClient: QueryClient;
 }
 
-globalThis.WebSocket = WebSocket as any;
-
 const wsClient = createWSClient({
 	url: http_to_ws_url(import.meta.env.VITE_BACKEND_URL),
 	onOpen: () => {

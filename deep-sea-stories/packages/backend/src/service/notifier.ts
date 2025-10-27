@@ -2,10 +2,11 @@ import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
 import { CONFIG } from '../config.js';
 import { roomService } from './room.js';
 import { EventEmitter } from 'node:events';
+import type { AgentEvent } from '../../../common/dist/events.js';
 
 class NotifierService extends EventEmitter {
 	private notifier: FishjamWSNotifier | null = null;
-	private eventHistory: Array<{ id: number; event: any }> = [];
+	private eventHistory: Array<{ id: number; event: AgentEvent }> = [];
 	private nextEventId = 1;
 	private readonly MAX_HISTORY = 100;
 
@@ -31,7 +32,7 @@ class NotifierService extends EventEmitter {
 		this.setupEventHandlers();
 	}
 
-	emitNotification(event: any) {
+	emitNotification(event: AgentEvent) {
 		const eventId = this.nextEventId++;
 		this.eventHistory.push({ id: eventId, event });
 
@@ -43,7 +44,7 @@ class NotifierService extends EventEmitter {
 		this.emit('notification', event, eventId);
 	}
 
-	getEventHistory(since?: number): Array<{ id: number; event: any }> {
+	getEventHistory(since?: number): Array<{ id: number; event: AgentEvent }> {
 		if (since === undefined) {
 			return [...this.eventHistory];
 		}

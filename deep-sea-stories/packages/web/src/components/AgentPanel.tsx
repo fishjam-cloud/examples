@@ -110,13 +110,10 @@ const AgentPanel = () => {
 				console.log('[AgentPanel] Subscription started successfully!');
 			},
 			onData: (data) => {
-				let event: AgentEvent;
-				if (data && typeof data === 'object' && 'data' in data) {
-					event = (data as any).data as AgentEvent;
-				} else {
-					event = data as AgentEvent;
-				}
-
+				const event =
+					data && typeof data === 'object' && 'data' in data
+						? (data as { data: AgentEvent }).data
+						: (data as AgentEvent);
 				setEvents((prev) => [...prev, event]);
 			},
 			onError: (error: unknown) => {
