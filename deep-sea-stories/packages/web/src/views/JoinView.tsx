@@ -48,6 +48,7 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 
 	const handleEnterRoom = useCallback(async () => {
 		if (!roomId) return;
+		if (!name) return;
 
 		try {
 			const { token } = await trpcClient.createPeer.mutate({

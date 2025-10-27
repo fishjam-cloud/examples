@@ -14,7 +14,7 @@ export type RoomControlsProps = {
 };
 
 const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
-	const url = `https://dss.fishjam.io/${roomId}`;
+	const url = `https://deepsea.fishjam.io/${roomId}`;
 	const [isStoryPanelOpen, setIsStoryPanelOpen] = useState(false);
 	const trpc = useTRPCClient();
 

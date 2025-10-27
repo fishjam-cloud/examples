@@ -179,9 +179,41 @@ export class GameSession {
 		);
 
 		orchestrator.setupAudioPipelines();
+
+		this.sendInitMessage();
 	}
 
-	async stopGame(roomId: RoomId): Promise<void> {
+	private sendInitMessage(): void {
+		const firstPeerId = this.connectedPeers.values().next().value;
+		if (!firstPeerId) {
+			console.error(
+				`Cannot send init message: no connected peers in room ${this.roomId}`,
+			);
+			return;
+		}
+
+		if (!this.voiceSessionManager) {
+			console.error(
+				`Cannot send init message: missing session manager for room ${this.roomId}`,
+			);
+			return;
+		}
+
+		const anyAgentSession = this.voiceSessionManager.getSession(firstPeerId);
+		if (!anyAgentSession) {
+			console.error(
+				`Cannot send init message: no session for peer ${firstPeerId} in room ${this.roomId}`,
+			);
+			return;
+		}
+
+		// Request the voice agent to explain the game rules; all players will hear it
+		anyAgentSession.sendUserMessage(
+			"The riddle master welcomes all players saying 'Welcome to Deep Sea Stories' and then reads the initial scenario or mystery to the guessers. ",
+		);
+	}
+
+	async stopGame(): Promise<void> {
 		this.voiceSessionManager?.cleanup();
 		this.setStory(undefined);
 		console.log(`Stopped game for room ${roomId}`);
@@ -190,12 +222,13 @@ export class GameSession {
 			type: 'gameEnded' as const,
 			timestamp: Date.now(),
 		});
+		console.log(`Stopped game for room ${this.roomId}`);
 	}
 
-	async removePeerFromGame(roomId: RoomId, peerId: PeerId): Promise<void> {
+	async removePeerFromGame(peerId: PeerId): Promise<void> {
 		if (this.voiceSessionManager) {
 			await this.voiceSessionManager.deleteSession(peerId);
-			console.log(`Removed peer ${peerId} from game in room ${roomId}`);
+			console.log(`Removed peer ${peerId} from game in room ${this.roomId}`);
 		}
 	}
 }

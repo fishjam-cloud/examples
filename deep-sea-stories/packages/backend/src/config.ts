@@ -29,6 +29,11 @@ export const AGENT_INSTRUCTIONS_TEMPLATE = fs.readFileSync(
 	'utf8',
 );
 
+export const AGENT_CLIENT_TOOL_INSTRUCTIONS = fs.readFileSync(
+	join(__dirname, 'prompts', 'client-tool-instructions.md'),
+	'utf8',
+);
+
 export const FISHJAM_AGENT_OPTIONS: PeerOptions = {
 	output: {
 		audioSampleRate: 16_000,
