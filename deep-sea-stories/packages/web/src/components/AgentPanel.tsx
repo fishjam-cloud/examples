@@ -17,22 +17,22 @@ type AgentPanelProps = {
 };
 
 type PanelEventProps = {
-	icon: LucideIcon;
-	timestamp: number;
+  icon: LucideIcon;
+  timestamp: number;
 };
 
 const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
-	icon: Icon,
-	children,
-	timestamp,
+  icon: Icon,
+  children,
+  timestamp,
 }) => (
-	<div key={timestamp} className="flex gap-3 py-1 items-start">
-		<Icon size={24} className="flex-none" />
-		<div className="grow flex flex-col text-lg">{children}</div>
-		<div className="text-right flex-none text-sm text-muted">
-			{new Date(timestamp).toLocaleTimeString()}
-		</div>
-	</div>
+  <div key={timestamp} className="flex gap-3 py-1 items-start">
+    <Icon size={24} className="flex-none" />
+    <div className="grow flex flex-col text-sm md:text-lg">{children}</div>
+    <div className="text-right flex-none text-xs md:text-sm text-muted">
+      {new Date(timestamp).toLocaleTimeString()}
+    </div>
+  </div>
 );
 
 const renderEvent = (event: AgentEvent, index: number) => {
@@ -44,7 +44,7 @@ const renderEvent = (event: AgentEvent, index: number) => {
 					icon={LogIn}
 					timestamp={event.timestamp}
 				>
-					<div className="text-lg">
+					<div className="text-sm md:text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has joined the game</span>
 					</div>
@@ -57,7 +57,7 @@ const renderEvent = (event: AgentEvent, index: number) => {
 					icon={LogOut}
 					timestamp={event.timestamp}
 				>
-					<div className="text-lg">
+					<div className="text-sm md:text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has left the game</span>
 					</div>
@@ -70,7 +70,7 @@ const renderEvent = (event: AgentEvent, index: number) => {
 					icon={BookCheck}
 					timestamp={event.timestamp}
 				>
-					<div className="text-lg">
+					<div className="text-sm md:text-lg">
 						<span className="text-muted-foreground">Game Started</span>
 					</div>
 				</PanelEvent>
@@ -82,7 +82,7 @@ const renderEvent = (event: AgentEvent, index: number) => {
 					icon={OctagonMinus}
 					timestamp={event.timestamp}
 				>
-					<div className="text-lg">
+					<div className="text-sm md:text-lg">
 						<span className="text-muted-foreground">Game Ended</span>
 					</div>
 				</PanelEvent>
@@ -94,8 +94,8 @@ const renderEvent = (event: AgentEvent, index: number) => {
 					icon={MessageSquare}
 					timestamp={event.timestamp}
 				>
-					<div className="text-lg font-bold grow">Storyteller</div>
-					<div className="text-lg">
+					<div className="text-sm md:text-lg font-bold grow">Storyteller</div>
+					<div className="text-sm md:text-lg">
 						<p>{event.text}</p>
 					</div>
 				</PanelEvent>
@@ -107,13 +107,13 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 	const events = useAgentEvents(roomId);
 
 	return (
-		<div className="grid grid-cols-3 p-8 border rounded-xl">
+		<div className="md:grid grid-cols-3 flex flex-col p-4 md:p-8 border rounded-xl h-full">
 			<img
 				src={blob}
 				alt="agent-visualizer"
-				className="object-contain h-full"
+				className="object-contain h-24 md:h-full flex-none"
 			/>
-			<ScrollArea className="grow col-span-2 border rounded-xl p-6">
+			<ScrollArea className="grow col-span-2 border rounded-xl p-3 md:p-6 mt-4 md:mt-0 md:ml-4">
 				{events.map((event, index) => renderEvent(event, index))}
 			</ScrollArea>
 		</div>
