@@ -1,7 +1,6 @@
 import { LogIn, type LucideIcon, MessageSquare } from "lucide-react";
 import type { FC, PropsWithChildren } from "react";
 import type { AgentEvent } from "@deep-sea-stories/common";
-import blob from "@/assets/blob.png";
 import { ScrollArea } from "./ui/scroll-area";
 
 type PanelEventProps = {
@@ -17,7 +16,7 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
   <div key={timestamp} className="flex gap-3 py-1 items-start">
     <Icon size={24} className="flex-none" />
     <div className="grow flex flex-col text-sm md:text-lg">{children}</div>
-    <div className="text-right flex-none text-xs md:text-sm text-muted">
+    <div className="text-right flex-none text-xs md:text-sm text-muted-foreground">
       {new Date(timestamp).toLocaleTimeString()}
     </div>
   </div>
@@ -61,16 +60,9 @@ const AgentPanel = () => {
   ];
 
   return (
-    <div className="md:grid grid-cols-3 flex flex-col p-4 md:p-8 border rounded-xl h-full">
-      <img
-        src={blob}
-        alt="agent-visualizer"
-        className="object-contain h-24 md:h-full flex-none"
-      />
-      <ScrollArea className="grow col-span-2 border rounded-xl p-3 md:p-6 mt-4 md:mt-0 md:ml-4">
-        {events.map(renderEvent)}
-      </ScrollArea>
-    </div>
+    <ScrollArea className="border rounded-xl px-3 py-2 md:p-6 mx-4 mb-4">
+      {events.map(renderEvent)}
+    </ScrollArea>
   );
 };
 
