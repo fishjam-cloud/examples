@@ -2,7 +2,7 @@ name: Deploy deep-sea-stories
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "one-agent-per-room"]
 
 jobs:
   deploy:
@@ -17,7 +17,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/examples/deep-sea-stories
-            git switch main
+            git switch one-agent-per-room
             git pull
 
             umask 077
