@@ -39,3 +39,5 @@ export const FISHJAM_AGENT_OPTIONS: PeerOptions = {
 		audioSampleRate: 16_000,
 	},
 };
+
+export const VAD_DEBOUNCE_MS = 300;

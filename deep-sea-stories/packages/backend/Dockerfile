@@ -2,6 +2,8 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache python3 make g++
+
 RUN corepack enable
 
 COPY package.json yarn.lock .yarnrc.yml ./
@@ -15,7 +17,8 @@ FROM node:24-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache dumb-init
+RUN apk add --no-cache dumb-init python3 make g++
+
 RUN corepack enable
 
 COPY package.json yarn.lock .yarnrc.yml ./
@@ -33,3 +36,4 @@ EXPOSE 8000
 ENTRYPOINT ["dumb-init", "--"]
 
 CMD ["node", "packages/backend/dist/src/main.js"]
+
