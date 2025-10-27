@@ -29,7 +29,10 @@ export const createPeer = publicProcedure
 			await gameSession.createFishjamAgent(ctx.fishjam);
 		}
 
-		const { peer, peerToken } = await gameSession.createPeer(ctx.fishjam);
+		const { peer, peerToken } = await gameSession.createPeer(
+			ctx.fishjam,
+			input.name,
+		);
 
 		return {
 			peer: peer,

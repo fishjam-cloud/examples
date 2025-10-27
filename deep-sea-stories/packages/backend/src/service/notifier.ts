@@ -70,9 +70,10 @@ class NotifierService extends EventEmitter {
 			const { peerId } = gameSession.getFishjamAgent();
 
 			if (msg.peerId !== peerId) {
+				const peerName = gameSession.getPeerName(msg.peerId) || msg.peerId;
 				const playerJoinedEvent = {
 					type: 'playerJoined' as const,
-					name: msg.peerId,
+					name: peerName,
 					timestamp: Date.now(),
 				};
 				this.emitNotification(playerJoinedEvent);
@@ -110,9 +111,10 @@ class NotifierService extends EventEmitter {
 			const { peerId } = gameSession.getFishjamAgent();
 
 			if (msg.peerId !== peerId) {
+				const peerName = gameSession.getPeerName(msg.peerId) || msg.peerId;
 				const playerLeftEvent = {
 					type: 'playerLeft' as const,
-					name: msg.peerId,
+					name: peerName,
 					timestamp: Date.now(),
 				};
 				this.emitNotification(playerLeftEvent);

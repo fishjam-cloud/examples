@@ -20,6 +20,7 @@ export class GameSession {
 	private story: Story | undefined;
 	private peers: Peer[];
 	private connectedPeers: Set<PeerId>;
+	private peerNames: Map<PeerId, string>;
 	private fishjamAgent: FishjamAgent | undefined;
 	private fishjamAgentId: PeerId | undefined;
 	private voiceSessionManager: VoiceAgentSessionManager | undefined;
@@ -29,6 +30,7 @@ export class GameSession {
 		this.story = undefined;
 		this.peers = [];
 		this.connectedPeers = new Set<PeerId>();
+		this.peerNames = new Map<PeerId, string>();
 	}
 
 	getStory(): Story | undefined {
@@ -63,10 +65,17 @@ export class GameSession {
 
 	async createPeer(
 		fishjam: FishjamClient,
+		name: string,
 	): Promise<{ peer: Peer; peerToken: string }> {
 		const { peer, peerToken } = await fishjam.createPeer(this.roomId);
 		this.peers.push(peer);
+		this.peerNames.set(peer.id, name);
+
 		return { peer, peerToken };
+	}
+
+	getPeerName(peerId: PeerId): string | undefined {
+		return this.peerNames.get(peerId);
 	}
 
 	setConnectedPeer(peerId: PeerId) {
