@@ -6,7 +6,11 @@ import type {
 	RoomId,
 } from '@fishjam-cloud/js-server-sdk';
 import type { Story, Conversation } from '../types.js';
-import { FISHJAM_AGENT_OPTIONS, CONFIG, AGENT_CLIENT_TOOL_INSTRUCTIONS } from '../config.js';
+import {
+	FISHJAM_AGENT_OPTIONS,
+	CONFIG,
+	AGENT_CLIENT_TOOL_INSTRUCTIONS,
+} from '../config.js';
 import { AudioStreamingOrchestrator } from './audio-streaming-orchestrator.js';
 import { NoPeersConnectedError } from '../domain/errors.js';
 import {
@@ -160,7 +164,7 @@ export class GameSession {
 	}
 
 	private setupAudioStreaming(): void {
-		if (!this.fishjamAgent ) {
+		if (!this.fishjamAgent) {
 			console.error(
 				`Cannot setup audio streaming: missing fishjam agent ${this.roomId}`,
 			);
@@ -224,7 +228,7 @@ export class GameSession {
 		const config = {
 			conversationConfig: {
 				agent: {
-					firstMessage: "Welcome to deep-sea-stories!",
+					firstMessage: 'Welcome to deep-sea-stories!',
 					language: 'en',
 					prompt,
 				},

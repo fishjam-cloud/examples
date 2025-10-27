@@ -79,12 +79,14 @@ export class ElevenLabsConversation
 			try {
 				const wsUrl = `${this.baseUrl}/v1/convai/conversation?agent_id=${this.agentId}`;
 
-				this.ws = new WebSocket(wsUrl, {
+				const wsOptions = {
 					headers: {
 						'xi-api-key': this.apiKey,
 						'User-Agent': 'Deep-Sea-Stories-Backend/1.0.0',
 					},
-				});
+				};
+
+				this.ws = new WebSocket(wsUrl, wsOptions as unknown as string[]);
 
 				this.ws.addEventListener('open', () => {
 					console.log('Connected to ElevenLabs WebSocket');

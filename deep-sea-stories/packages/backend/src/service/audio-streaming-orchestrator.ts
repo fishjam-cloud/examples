@@ -4,7 +4,7 @@ import type {
 	TrackId,
 } from '@fishjam-cloud/js-server-sdk';
 import type { Conversation } from '../types.js';
-import VAD from 'node-vad';
+import VAD, { type VADData } from 'node-vad';
 import { PassThrough } from 'node:stream';
 import { VAD_DEBOUNCE_MS } from '../config.js';
 
@@ -45,7 +45,7 @@ export class AudioStreamingOrchestrator {
 
 		this.vadStreams.set(peerId, vadStream);
 
-		audioStream.pipe(vadStream).on('data', (vadData) => {
+		audioStream.pipe(vadStream).on('data', (vadData: VADData) => {
 			const { speech } = vadData;
 
 			if (speech.start && this.activeSpeaker === null) {
@@ -132,33 +132,37 @@ export class AudioStreamingOrchestrator {
 		if (!this.peerStreams.has(peerId)) {
 			this.connectedPeers.add(peerId);
 			this.initializeVADStream(peerId);
-			console.log(`[Orchestrator] Initialized VAD stream for new peer ${peerId}`);
+			console.log(
+				`[Orchestrator] Initialized VAD stream for new peer ${peerId}`,
+			);
 		}
 	}
 
 	removePeer(peerId: PeerId): void {
 		const peerStream = this.peerStreams.get(peerId);
 		const vadStream = this.vadStreams.get(peerId);
-		
+
 		if (peerStream) {
 			peerStream.unpipe();
 			peerStream.destroy();
 			this.peerStreams.delete(peerId);
 		}
-		
+
 		if (vadStream) {
 			vadStream.unpipe();
 			this.vadStreams.delete(peerId);
 		}
-		
+
 		this.connectedPeers.delete(peerId);
 
 		if (this.activeSpeaker === peerId) {
-			console.log(`[Orchestrator] Active speaker ${peerId} left, releasing floor`);
+			console.log(
+				`[Orchestrator] Active speaker ${peerId} left, releasing floor`,
+			);
 			this.activeSpeaker = null;
 		}
-	}	
-	
+	}
+
 	private decodeAudioEvent(audioEvent: {
 		audio_base_64?: string;
 	}): Uint8Array | null {
