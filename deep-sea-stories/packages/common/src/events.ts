@@ -3,15 +3,32 @@ export interface BaseEvent {
 	timestamp: number;
 }
 
-export interface JoinEvent extends BaseEvent {
-	type: 'join';
+export interface PlayerJoinedEvent extends BaseEvent {
+	type: 'playerJoined';
 	name: string;
+}
+
+export interface PlayerLeftEvent extends BaseEvent {
+	type: 'playerLeft';
+	name: string;
+}
+
+export interface GameStartedEvent extends BaseEvent {
+	type: 'gameStarted';
+}
+
+export interface GameEndedEvent extends BaseEvent {
+	type: 'gameEnded';
 }
 
 export interface TranscriptionEvent extends BaseEvent {
 	type: 'transcription';
-	speaker: 'agent' | 'user';
 	text: string;
 }
 
-export type AgentEvent = JoinEvent | TranscriptionEvent;
+export type AgentEvent =
+	| PlayerJoinedEvent
+	| PlayerLeftEvent
+	| GameStartedEvent
+	| GameEndedEvent
+	| TranscriptionEvent;

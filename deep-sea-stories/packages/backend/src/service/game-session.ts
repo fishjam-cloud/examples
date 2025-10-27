@@ -13,6 +13,7 @@ import {
 	NoVoiceSessionManagerError,
 } from '../domain/errors.js';
 import { ElevenLabsSessionManager } from './elevenlabs-session.js';
+import { notifierService } from './notifier.js';
 
 export class GameSession {
 	private roomId: RoomId;
@@ -131,6 +132,11 @@ export class GameSession {
 			}),
 		);
 		this.setupAudioStreaming();
+
+		notifierService.emitNotification({
+			type: 'gameStarted' as const,
+			timestamp: Date.now(),
+		});
 	}
 
 	async startGameForPeer(peerId: PeerId): Promise<void> {
@@ -170,6 +176,11 @@ export class GameSession {
 		this.voiceSessionManager?.cleanup();
 		this.setStory(undefined);
 		console.log(`Stopped game for room ${roomId}`);
+
+		notifierService.emitNotification({
+			type: 'gameEnded' as const,
+			timestamp: Date.now(),
+		});
 	}
 
 	async removePeerFromGame(roomId: RoomId, peerId: PeerId): Promise<void> {

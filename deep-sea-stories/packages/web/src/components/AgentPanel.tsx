@@ -1,4 +1,11 @@
-import { LogIn, type LucideIcon, MessageSquare } from 'lucide-react';
+import {
+	LogIn,
+	LogOut,
+	BookCheck,
+	OctagonMinus,
+	type LucideIcon,
+	MessageSquare,
+} from 'lucide-react';
 import type { FC, PropsWithChildren } from 'react';
 import { useState, useEffect } from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
@@ -27,21 +34,60 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 
 const renderEvent = (event: AgentEvent, index: number) => {
 	switch (event.type) {
-		case 'join':
+		case 'playerJoined':
 			return (
-				<PanelEvent key={`${event.timestamp}-${index}`} icon={LogIn} timestamp={event.timestamp}>
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={LogIn}
+					timestamp={event.timestamp}
+				>
 					<div className="text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has joined the game</span>
 					</div>
 				</PanelEvent>
 			);
+		case 'playerLeft':
+			return (
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={LogOut}
+					timestamp={event.timestamp}
+				>
+					<div className="text-lg">
+						<span className="font-bold">{event.name}</span>
+						<span className="text-muted-foreground"> has left the game</span>
+					</div>
+				</PanelEvent>
+			);
+		case 'gameStarted':
+			return (
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={BookCheck}
+					timestamp={event.timestamp}
+				>
+					<div className="text-lg font-bold text-green-600">Game Started</div>
+				</PanelEvent>
+			);
+		case 'gameEnded':
+			return (
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={OctagonMinus}
+					timestamp={event.timestamp}
+				>
+					<div className="text-lg font-bold text-red-600">Game Ended</div>
+				</PanelEvent>
+			);
 		case 'transcription':
 			return (
-				<PanelEvent key={`${event.timestamp}-${index}`} icon={MessageSquare} timestamp={event.timestamp}>
-					<div className="text-lg font-bold grow">
-						{event.speaker === 'agent' ? 'Storyteller' : 'Player'}
-					</div>
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={MessageSquare}
+					timestamp={event.timestamp}
+				>
+					<div className="text-lg font-bold grow">Storyteller</div>
 					<div className="text-lg">
 						<p>{event.text}</p>
 					</div>
@@ -55,20 +101,18 @@ const AgentPanel = () => {
 	const trpcClient = useTRPCClient();
 
 	useEffect(() => {
-		
 		const subscription = trpcClient.Notifications.subscribe(undefined, {
 			onStarted: () => {
 				console.log('[AgentPanel] Subscription started successfully!');
 			},
 			onData: (data) => {
-				
 				let event: AgentEvent;
 				if (data && typeof data === 'object' && 'data' in data) {
 					event = (data as any).data as AgentEvent;
 				} else {
 					event = data as AgentEvent;
 				}
-				
+
 				setEvents((prev) => [...prev, event]);
 			},
 			onError: (error: unknown) => {

@@ -84,22 +84,8 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 				console.log('Agent response event:', event.agent_response);
 				const transcriptionEvent = {
 					type: 'transcription' as const,
-					speaker: 'agent',
 					text: event.agent_response,
-					timestamp: Date.now()
-				};
-				notifierService.emitNotification(transcriptionEvent);
-			}
-		});
-
-		session.on('userTranscript', (event: { user_transcript?: string }) => {
-			if (event.user_transcript) {
-				console.log('User transcript event:', event.user_transcript);
-				const transcriptionEvent = {
-					type: 'transcription' as const,
-					speaker: 'user',
-					text: event.user_transcript,
-					timestamp: Date.now()
+					timestamp: Date.now(),
 				};
 				notifierService.emitNotification(transcriptionEvent);
 			}

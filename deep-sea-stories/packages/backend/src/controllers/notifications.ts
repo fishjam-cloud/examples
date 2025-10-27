@@ -18,18 +18,15 @@ export const Notifications = publicProcedure
 			? parseInt(opts.input.lastEventId, 10)
 			: undefined;
 
-
 		const history = notifierService.getEventHistory(lastEventId);
 		console.log(`Replaying ${history.length} events from history`);
 		for (const { id, event } of history) {
 			yield tracked(id.toString(), event as AgentEvent);
 		}
 
-		
 		for await (const [event, eventId] of on(notifierService, 'notification', {
 			signal: opts.signal,
 		})) {
 			yield tracked(eventId.toString(), event as AgentEvent);
 		}
-		
 	});

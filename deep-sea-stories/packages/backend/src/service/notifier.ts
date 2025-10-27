@@ -30,24 +30,24 @@ class NotifierService extends EventEmitter {
 
 		this.setupEventHandlers();
 	}
-	
+
 	emitNotification(event: any) {
 		const eventId = this.nextEventId++;
 		this.eventHistory.push({ id: eventId, event });
-		
+
 		if (this.eventHistory.length > this.MAX_HISTORY) {
 			this.eventHistory.shift();
 		}
-		
+
 		console.log(`[NotifierService] Emitting notification #${eventId}:`, event);
 		this.emit('notification', event, eventId);
 	}
-	
+
 	getEventHistory(since?: number): Array<{ id: number; event: any }> {
 		if (since === undefined) {
 			return [...this.eventHistory];
 		}
-		return this.eventHistory.filter(item => item.id > since);
+		return this.eventHistory.filter((item) => item.id > since);
 	}
 
 	private setupEventHandlers() {
@@ -56,15 +56,10 @@ class NotifierService extends EventEmitter {
 		this.notifier.on('peerConnected', async (msg) => {
 			console.log(`Peer connected: ${msg.peerId} in room ${msg.roomId}`);
 			this.emit('peerConnected', { roomId: msg.roomId, peerId: msg.peerId });
-			
-			const joinEvent = {
-				type: 'join' as const,
-				name: msg.peerId,
-				timestamp: Date.now()
-			};
-			this.emitNotification(joinEvent);
-			
-			console.log(`Attempting to start game for newly connected peer ${msg.peerId}...`);
+
+			console.log(
+				`Attempting to start game for newly connected peer ${msg.peerId}...`,
+			);
 			const gameSession = roomService.getGameSession(msg.roomId);
 			if (!gameSession) {
 				console.warn(
@@ -73,6 +68,16 @@ class NotifierService extends EventEmitter {
 				return;
 			}
 			const { peerId } = gameSession.getFishjamAgent();
+
+			if (msg.peerId !== peerId) {
+				const playerJoinedEvent = {
+					type: 'playerJoined' as const,
+					name: msg.peerId,
+					timestamp: Date.now(),
+				};
+				this.emitNotification(playerJoinedEvent);
+			}
+
 			if (msg.peerId === peerId) {
 				return;
 			}
@@ -101,6 +106,18 @@ class NotifierService extends EventEmitter {
 				);
 				return;
 			}
+
+			const { peerId } = gameSession.getFishjamAgent();
+
+			if (msg.peerId !== peerId) {
+				const playerLeftEvent = {
+					type: 'playerLeft' as const,
+					name: msg.peerId,
+					timestamp: Date.now(),
+				};
+				this.emitNotification(playerLeftEvent);
+			}
+
 			gameSession.removeConnectedPeer(msg.peerId);
 			if (roomService.isGameActive(msg.roomId)) {
 				await gameSession.removePeerFromGame(msg.roomId, msg.peerId);
