@@ -67,7 +67,9 @@ const renderEvent = (event: AgentEvent, index: number) => {
 					icon={BookCheck}
 					timestamp={event.timestamp}
 				>
-					<div className="text-lg font-bold text-green-600">Game Started</div>
+					<div className="text-lg">
+						<span className="text-muted-foreground">Game Started</span>
+					</div>
 				</PanelEvent>
 			);
 		case 'gameEnded':
@@ -77,7 +79,9 @@ const renderEvent = (event: AgentEvent, index: number) => {
 					icon={OctagonMinus}
 					timestamp={event.timestamp}
 				>
-					<div className="text-lg font-bold text-red-600">Game Ended</div>
+					<div className="text-lg">
+						<span className="text-muted-foreground">Game Ended</span>
+					</div>
 				</PanelEvent>
 			);
 		case 'transcription':
