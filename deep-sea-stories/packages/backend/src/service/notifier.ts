@@ -1,9 +1,13 @@
 import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
 import { CONFIG } from '../config.js';
 import { roomService } from './room.js';
+import { EventEmitter } from 'node:events';
 
-class NotifierService {
+class NotifierService extends EventEmitter {
 	private notifier: FishjamWSNotifier | null = null;
+	private eventHistory: Array<{ id: number; event: any }> = [];
+	private nextEventId = 1;
+	private readonly MAX_HISTORY = 100;
 
 	async initialize() {
 		if (this.notifier !== null) {
@@ -26,12 +30,41 @@ class NotifierService {
 
 		this.setupEventHandlers();
 	}
+	
+	emitNotification(event: any) {
+		const eventId = this.nextEventId++;
+		this.eventHistory.push({ id: eventId, event });
+		
+		if (this.eventHistory.length > this.MAX_HISTORY) {
+			this.eventHistory.shift();
+		}
+		
+		console.log(`[NotifierService] Emitting notification #${eventId}:`, event);
+		this.emit('notification', event, eventId);
+	}
+	
+	getEventHistory(since?: number): Array<{ id: number; event: any }> {
+		if (since === undefined) {
+			return [...this.eventHistory];
+		}
+		return this.eventHistory.filter(item => item.id > since);
+	}
 
 	private setupEventHandlers() {
 		if (!this.notifier) return;
 
 		this.notifier.on('peerConnected', async (msg) => {
 			console.log(`Peer connected: ${msg.peerId} in room ${msg.roomId}`);
+			this.emit('peerConnected', { roomId: msg.roomId, peerId: msg.peerId });
+			
+			const joinEvent = {
+				type: 'join' as const,
+				name: msg.peerId,
+				timestamp: Date.now()
+			};
+			this.emitNotification(joinEvent);
+			
+			console.log(`Attempting to start game for newly connected peer ${msg.peerId}...`);
 			const gameSession = roomService.getGameSession(msg.roomId);
 			if (!gameSession) {
 				console.warn(
@@ -59,6 +92,7 @@ class NotifierService {
 
 		this.notifier.on('peerDisconnected', async (msg) => {
 			console.log(`Peer disconnected: ${msg.peerId} from room ${msg.roomId}`);
+			this.emit('peerDisconnected', { roomId: msg.roomId, peerId: msg.peerId });
 
 			const gameSession = roomService.getGameSession(msg.roomId);
 			if (!gameSession) {
@@ -68,7 +102,6 @@ class NotifierService {
 				return;
 			}
 			gameSession.removeConnectedPeer(msg.peerId);
-
 			if (roomService.isGameActive(msg.roomId)) {
 				await gameSession.removePeerFromGame(msg.roomId, msg.peerId);
 			}

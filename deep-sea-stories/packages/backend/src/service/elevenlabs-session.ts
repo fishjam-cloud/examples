@@ -11,6 +11,7 @@ import {
 	GameSessionNotFoundError,
 	StoryNotFoundError,
 } from '../domain/errors.js';
+import { notifierService } from './notifier.js';
 
 export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 	private sessions = new Map<PeerId, ElevenLabsConversation>();
@@ -77,6 +78,32 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 			CONFIG.ELEVENLABS_API_KEY,
 		);
 		await session.connect();
+
+		session.on('agentResponse', (event: { agent_response?: string }) => {
+			if (event.agent_response) {
+				console.log('Agent response event:', event.agent_response);
+				const transcriptionEvent = {
+					type: 'transcription' as const,
+					speaker: 'agent',
+					text: event.agent_response,
+					timestamp: Date.now()
+				};
+				notifierService.emitNotification(transcriptionEvent);
+			}
+		});
+
+		session.on('userTranscript', (event: { user_transcript?: string }) => {
+			if (event.user_transcript) {
+				console.log('User transcript event:', event.user_transcript);
+				const transcriptionEvent = {
+					type: 'transcription' as const,
+					speaker: 'user',
+					text: event.user_transcript,
+					timestamp: Date.now()
+				};
+				notifierService.emitNotification(transcriptionEvent);
+			}
+		});
 
 		this.sessions.set(peerId, session);
 		return session;

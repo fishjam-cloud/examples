@@ -25,11 +25,11 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 	</div>
 );
 
-const renderEvent = (event: AgentEvent) => {
+const renderEvent = (event: AgentEvent, index: number) => {
 	switch (event.type) {
 		case 'join':
 			return (
-				<PanelEvent icon={LogIn} timestamp={event.timestamp}>
+				<PanelEvent key={`${event.timestamp}-${index}`} icon={LogIn} timestamp={event.timestamp}>
 					<div className="text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has joined the game</span>
@@ -38,8 +38,10 @@ const renderEvent = (event: AgentEvent) => {
 			);
 		case 'transcription':
 			return (
-				<PanelEvent icon={MessageSquare} timestamp={event.timestamp}>
-					<div className="text-lg font-bold grow">Storyteller</div>
+				<PanelEvent key={`${event.timestamp}-${index}`} icon={MessageSquare} timestamp={event.timestamp}>
+					<div className="text-lg font-bold grow">
+						{event.speaker === 'agent' ? 'Storyteller' : 'Player'}
+					</div>
 					<div className="text-lg">
 						<p>{event.text}</p>
 					</div>
@@ -53,16 +55,29 @@ const AgentPanel = () => {
 	const trpcClient = useTRPCClient();
 
 	useEffect(() => {
+		
 		const subscription = trpcClient.Notifications.subscribe(undefined, {
-			onData: (event: AgentEvent) => {
+			onStarted: () => {
+				console.log('[AgentPanel] Subscription started successfully!');
+			},
+			onData: (data) => {
+				
+				let event: AgentEvent;
+				if (data && typeof data === 'object' && 'data' in data) {
+					event = (data as any).data as AgentEvent;
+				} else {
+					event = data as AgentEvent;
+				}
+				
 				setEvents((prev) => [...prev, event]);
 			},
 			onError: (error: unknown) => {
-				console.error('Subscription error:', error);
+				console.error('[AgentPanel] Subscription error:', error);
 			},
 		});
 
 		return () => {
+			console.log('[AgentPanel] Unsubscribing...');
 			subscription.unsubscribe();
 		};
 	}, [trpcClient]);
@@ -75,7 +90,7 @@ const AgentPanel = () => {
 				className="object-contain h-full"
 			/>
 			<ScrollArea className="grow col-span-2 border rounded-xl p-6">
-				{events.map(renderEvent)}
+				{events.map((event, index) => renderEvent(event, index))}
 			</ScrollArea>
 		</div>
 	);

@@ -43,3 +43,10 @@ export function generateDeepSeaSlug(): string {
 
 	return `${randomAdjective}-${randomNoun}-${Math.floor(Math.random() * 100)}`;
 }
+
+export function http_to_ws_url(httpUrl: string): string {
+	if (httpUrl.startsWith('http')) {
+		return httpUrl.replace('http', 'ws');
+	}
+	return httpUrl;
+}

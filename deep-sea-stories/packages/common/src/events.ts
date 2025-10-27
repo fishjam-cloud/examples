@@ -10,6 +10,7 @@ export interface JoinEvent extends BaseEvent {
 
 export interface TranscriptionEvent extends BaseEvent {
 	type: 'transcription';
+	speaker: 'agent' | 'user';
 	text: string;
 }
 

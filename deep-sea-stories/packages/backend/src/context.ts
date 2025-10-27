@@ -11,4 +11,8 @@ export function createContext({ req, res }: CreateFastifyContextOptions) {
 	return { req, res, fishjam };
 }
 
+export function createWSContext() {
+	return { req: null as any, res: null as any, fishjam };
+}
+
 export type Context = Awaited<ReturnType<typeof createContext>>;
