@@ -37,8 +37,8 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
           Choose a story
         </Button>
 
-        <HowToPlay className="w-full" />
-        <HowItWorks className="w-full" />
+        <HowToPlay className="w-full text-sm md:text-base" />
+        <HowItWorks className="w-full text-sm md:text-base" />
         <CopyButton
           variant="outline"
           className="col-span-2 md:col-span-1 text-sm md:text-base"
