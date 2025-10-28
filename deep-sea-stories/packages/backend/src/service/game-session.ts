@@ -19,12 +19,14 @@ import {
 } from './elevenlabs-conversation.js';
 import { getInstructionsForStory } from '../utils.js';
 import { roomService } from './room.js';
+import { notifierService } from './notifier.js';
 
 export class GameSession {
 	private roomId: RoomId;
 	private story: Story | undefined;
 	private peers: Peer[];
 	private connectedPeers: Set<PeerId>;
+	private peerNames: Map<PeerId, string>;
 	private fishjamAgent: FishjamAgent | undefined;
 	private fishjamAgentId: PeerId | undefined;
 	private sharedConversation: Conversation | undefined;
@@ -38,6 +40,7 @@ export class GameSession {
 		this.story = undefined;
 		this.peers = [];
 		this.connectedPeers = new Set<PeerId>();
+		this.peerNames = new Map<PeerId, string>();
 	}
 
 	getStory(): Story | undefined {
@@ -68,10 +71,17 @@ export class GameSession {
 
 	async createPeer(
 		fishjam: FishjamClient,
+		name: string,
 	): Promise<{ peer: Peer; peerToken: string }> {
 		const { peer, peerToken } = await fishjam.createPeer(this.roomId);
 		this.peers.push(peer);
+		this.peerNames.set(peer.id, name);
+
 		return { peer, peerToken };
+	}
+
+	getPeerName(peerId: PeerId): string | undefined {
+		return this.peerNames.get(peerId);
 	}
 
 	setConnectedPeer(peerId: PeerId) {
@@ -213,6 +223,12 @@ export class GameSession {
 
 		this.sharedConversation = undefined;
 		this.setStory(undefined);
+		console.log(`Stopped game for room ${this.roomId}`);
+
+		notifierService.emitNotification({
+			type: 'gameEnded' as const,
+			timestamp: Date.now(),
+		});
 		console.log(`Stopped game for room ${this.roomId}`);
 	}
 

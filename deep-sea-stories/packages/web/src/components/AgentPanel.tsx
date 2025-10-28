@@ -1,8 +1,16 @@
-import { LogIn, type LucideIcon, MessageSquare } from 'lucide-react';
+import {
+	LogIn,
+	LogOut,
+	BookCheck,
+	OctagonMinus,
+	type LucideIcon,
+	MessageSquare,
+} from 'lucide-react';
 import type { FC, PropsWithChildren } from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
 import blob from '@/assets/blob.png';
 import { ScrollArea } from './ui/scroll-area';
+import { useAgentEvents } from '@/hooks/useAgentEvents';
 
 type PanelEventProps = {
 	icon: LucideIcon;
@@ -23,20 +31,65 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 	</div>
 );
 
-const renderEvent = (event: AgentEvent) => {
+const renderEvent = (event: AgentEvent, index: number) => {
 	switch (event.type) {
-		case 'join':
+		case 'playerJoined':
 			return (
-				<PanelEvent icon={LogIn} timestamp={event.timestamp}>
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={LogIn}
+					timestamp={event.timestamp}
+				>
 					<div className="text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has joined the game</span>
 					</div>
 				</PanelEvent>
 			);
+		case 'playerLeft':
+			return (
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={LogOut}
+					timestamp={event.timestamp}
+				>
+					<div className="text-lg">
+						<span className="font-bold">{event.name}</span>
+						<span className="text-muted-foreground"> has left the game</span>
+					</div>
+				</PanelEvent>
+			);
+		case 'gameStarted':
+			return (
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={BookCheck}
+					timestamp={event.timestamp}
+				>
+					<div className="text-lg">
+						<span className="text-muted-foreground">Game Started</span>
+					</div>
+				</PanelEvent>
+			);
+		case 'gameEnded':
+			return (
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={OctagonMinus}
+					timestamp={event.timestamp}
+				>
+					<div className="text-lg">
+						<span className="text-muted-foreground">Game Ended</span>
+					</div>
+				</PanelEvent>
+			);
 		case 'transcription':
 			return (
-				<PanelEvent icon={MessageSquare} timestamp={event.timestamp}>
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={MessageSquare}
+					timestamp={event.timestamp}
+				>
 					<div className="text-lg font-bold grow">Storyteller</div>
 					<div className="text-lg">
 						<p>{event.text}</p>
@@ -47,18 +100,7 @@ const renderEvent = (event: AgentEvent) => {
 };
 
 const AgentPanel = () => {
-	const events: AgentEvent[] = [
-		{
-			type: 'join',
-			name: 'Gordon',
-			timestamp: Date.now(),
-		},
-		{
-			type: 'transcription',
-			text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed laoreet, dui quis tempus varius, ex ipsum suscipit ipsum, sed varius nunc arcu in lorem.',
-			timestamp: Date.now() + 1000 * 60 * 7,
-		},
-	];
+	const events = useAgentEvents();
 
 	return (
 		<div className="grid grid-cols-3 p-8 border rounded-xl">
@@ -68,7 +110,7 @@ const AgentPanel = () => {
 				className="object-contain h-full"
 			/>
 			<ScrollArea className="grow col-span-2 border rounded-xl p-6">
-				{events.map(renderEvent)}
+				{events.map((event, index) => renderEvent(event, index))}
 			</ScrollArea>
 		</div>
 	);

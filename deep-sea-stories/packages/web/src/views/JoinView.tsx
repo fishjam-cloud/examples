@@ -51,7 +51,10 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 		if (!name) return;
 
 		try {
-			const { token } = await trpcClient.createPeer.mutate({ roomId });
+			const { token } = await trpcClient.createPeer.mutate({
+				roomId,
+				name,
+			});
 			await joinRoom({
 				peerToken: token,
 				peerMetadata: { name },

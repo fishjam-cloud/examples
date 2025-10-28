@@ -1,5 +1,12 @@
+import { httpToWsUrl } from '@/lib/utils';
 import type { QueryClient } from '@tanstack/react-query';
-import { createTRPCClient, httpBatchLink } from '@trpc/client';
+import {
+	createTRPCClient,
+	createWSClient,
+	httpBatchLink,
+	splitLink,
+	wsLink,
+} from '@trpc/client';
 import { createTRPCContext } from '@trpc/tanstack-react-query';
 import type { AppRouter } from 'backend';
 import { type FC, type PropsWithChildren, useState } from 'react';
@@ -11,6 +18,16 @@ interface TRPCClientProviderProps extends PropsWithChildren {
 	queryClient: QueryClient;
 }
 
+const wsClient = createWSClient({
+	url: httpToWsUrl(import.meta.env.VITE_BACKEND_URL),
+	onOpen: () => {
+		console.log('[tRPC] WebSocket connection opened');
+	},
+	onClose: (cause) => {
+		console.log('[tRPC] WebSocket connection closed:', cause);
+	},
+});
+
 export const TRPCClientProvider: FC<TRPCClientProviderProps> = ({
 	queryClient,
 	children,
@@ -18,8 +35,16 @@ export const TRPCClientProvider: FC<TRPCClientProviderProps> = ({
 	const [trpcClient] = useState(() =>
 		createTRPCClient<AppRouter>({
 			links: [
-				httpBatchLink({
-					url: import.meta.env.VITE_BACKEND_URL,
+				splitLink({
+					condition(op) {
+						return op.type === 'subscription';
+					},
+					true: wsLink({
+						client: wsClient,
+					}),
+					false: httpBatchLink({
+						url: import.meta.env.VITE_BACKEND_URL,
+					}),
 				}),
 			],
 		}),

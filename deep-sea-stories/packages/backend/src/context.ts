@@ -1,5 +1,6 @@
 import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 import type { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 import { CONFIG } from './config.js';
 
 const fishjam = new FishjamClient({
@@ -11,4 +12,18 @@ export function createContext({ req, res }: CreateFastifyContextOptions) {
 	return { req, res, fishjam };
 }
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+export function createWSContext({ req, res }: CreateWSSContextFnOptions) {
+	return { req, res, fishjam };
+}
+
+export type Context =
+	| {
+			req: CreateFastifyContextOptions['req'];
+			res: CreateFastifyContextOptions['res'];
+			fishjam: FishjamClient;
+	  }
+	| {
+			req: CreateWSSContextFnOptions['req'];
+			res: CreateWSSContextFnOptions['res'];
+			fishjam: FishjamClient;
+	  };
