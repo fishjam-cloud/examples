@@ -18,7 +18,10 @@ interface ElevenLabsMessage {
 	user_transcription_event?: {
 		user_transcript?: string;
 	};
-	audio_event?: unknown;
+	audio_event?: {
+		audio_base_64?: string;
+		event_id?: number;
+	};
 	interruption_event?: unknown;
 	ping_event?: {
 		event_id?: string;
@@ -56,6 +59,8 @@ export class ElevenLabsConversation
 	private isConnected = false;
 	private audioFormat: string | null = null;
 	private inputFormat: string | null = null;
+	private lastUserAudioTs: number | null = null;
+	private firstUserAudioTs: number | null = null;
 	private agentId: string;
 	private apiKey: string;
 	private baseUrl: string;
@@ -128,20 +133,43 @@ export class ElevenLabsConversation
 		});
 	}
 
-	sendAudio(audioBuffer: Buffer): void {
+	sendAudio(
+		audioBuffer: Buffer | Uint8Array,
+		opts?: { keepAlive?: boolean; clientTsMs?: number },
+	): void {
 		if (!this.isConnected || !this.ws) {
-			console.warn('Cannot send audio: WebSocket not connected');
+			console.warn('[ElevenLabs] Cannot send audio: WebSocket not connected');
 			return;
 		}
 
 		try {
-			const audioBase64 = audioBuffer.toString('base64');
+			const buf = Buffer.isBuffer(audioBuffer)
+				? audioBuffer
+				: Buffer.from(audioBuffer);
+			const audioBase64 = buf.toString('base64');
+
+			const now = opts?.clientTsMs ?? Date.now();
+
+			if (!opts?.keepAlive) {
+				this.lastUserAudioTs = now;
+				if (!this.firstUserAudioTs) {
+					this.firstUserAudioTs = now;
+				}
+			}
+
+			console.log(
+				`[ElevenLabs] Sending ${buf.length} bytes of user audio (base64: ${audioBase64.length} chars)${
+					opts?.keepAlive ? ' (keep-alive)' : ''
+				} @ ${new Date(now).toISOString()}`,
+			);
 
 			this.sendMessage({
 				user_audio_chunk: audioBase64,
+				client_ts_ms: now,
+				keep_alive: !!opts?.keepAlive,
 			});
 		} catch (error) {
-			console.error('Failed to send audio to ElevenLabs:', error);
+			console.error('[ElevenLabs] Failed to send audio:', error);
 		}
 	}
 
@@ -197,6 +225,10 @@ export class ElevenLabsConversation
 	}
 
 	private handleMessage(message: ElevenLabsMessage): void {
+		if (message.type !== 'ping') {
+			console.log(`[ElevenLabs] Received message type: ${message.type}`);
+		}
+
 		switch (message.type) {
 			case 'conversation_initiation_metadata': {
 				const metadata = message.conversation_initiation_metadata_event;
@@ -219,31 +251,42 @@ export class ElevenLabsConversation
 			}
 
 			case 'agent_response':
+				const now = Date.now();
+				const deltaMs = this.lastUserAudioTs ? now - this.lastUserAudioTs : null;
 				console.log(
 					'Agent response:',
 					message.agent_response_event?.agent_response,
+					deltaMs !== null ? `(delta from last user audio: ${deltaMs} ms)` : '',
 				);
 				this.emit('agentResponse', message.agent_response_event);
 				break;
 
 			case 'user_transcript':
+				const nowTs = Date.now();
+				const firstDelta = this.firstUserAudioTs ? nowTs - this.firstUserAudioTs : null;
 				console.log(
 					'User transcript:',
 					message.user_transcription_event?.user_transcript,
+					firstDelta !== null ? `(delta from first user audio: ${firstDelta} ms)` : '',
 				);
 				this.emit('userTranscript', message.user_transcription_event);
+				this.firstUserAudioTs = null;
+				break;
 				break;
 
-			case 'audio':
-				this.emit('agentAudio', message.audio_event);
-				break;
+		case 'audio':
+			if (message.audio_event?.event_id) {
+				console.log(
+					`[ElevenLabs] Received audio event ${message.audio_event.event_id} (${message.audio_event.audio_base_64?.length || 0} base64 chars)`,
+				);
+			}
+			this.emit('agentAudio', message.audio_event);
+			break;
 
-			case 'interruption':
-				console.log('Conversation interrupted');
-				this.emit('interruption', message.interruption_event);
-				break;
-
-			case 'ping':
+		case 'interruption':
+			console.log('[ElevenLabs] Conversation interrupted:', message.interruption_event);
+			this.emit('interruption', message.interruption_event);
+			break;			case 'ping':
 				console.log('Received ping, sending pong');
 				this.sendMessage({
 					type: 'pong',

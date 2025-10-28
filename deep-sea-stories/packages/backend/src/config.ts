@@ -40,4 +40,4 @@ export const FISHJAM_AGENT_OPTIONS: PeerOptions = {
 	},
 };
 
-export const VAD_DEBOUNCE_MS = 300;
+export const VAD_DEBOUNCE_MS = 600;

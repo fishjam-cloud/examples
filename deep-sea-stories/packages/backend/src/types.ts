@@ -9,7 +9,10 @@ export interface Story {
 }
 
 export interface Conversation extends EventEmitter {
-	sendAudio(audioBuffer: Buffer): void;
+	sendAudio(
+		audioBuffer: Buffer | Uint8Array,
+		opts?: { keepAlive?: boolean; clientTsMs?: number },
+	): void;
 	sendUserMessage(message: string): void;
 }
 

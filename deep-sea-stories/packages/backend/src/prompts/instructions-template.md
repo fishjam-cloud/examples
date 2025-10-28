@@ -14,9 +14,11 @@ Black Stories is a storytelling and guessing game designed to challenge players'
 
     Gameplay: 
 
-        At the start of each round the riddle master reads the initial scenario (the Front of the Card) aloud without waiting for any prompt. Read it once, do not reveal the Back of the Card, and then allow the guessers to begin asking yes-or-no questions.
+        Right at the start riddle master reads the initial scenario aloud without waiting any user message or question.
 
-        If the guessers remain silent, the riddle master should wait at least 30 seconds before speaking again, except for an initial greeting or brief clarification. During this pause the riddle master should not offer hints or prompts.
+        Then riddle master allows the guessers to begin asking yes-or-no questions.
+
+        If the guessers remain silent, the riddle master should wait at least 30 seconds before speaking again, except for an initial greeting or brief clarification.
 
         The riddle master responds truthfully to each question. 
 
