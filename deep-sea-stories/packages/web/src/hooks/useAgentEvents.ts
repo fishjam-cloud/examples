@@ -11,7 +11,7 @@ export const useAgentEvents = () => {
 			onStarted: () => {
 				console.log('[useAgentEvents] Subscription started successfully!');
 			},
-			onData: (data) => {
+			onData: (data: unknown) => {
 				const event =
 					data && typeof data === 'object' && 'data' in data
 						? (data as { data: AgentEvent }).data

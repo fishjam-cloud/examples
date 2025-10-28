@@ -1978,6 +1978,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backend@workspace:packages/backend"
   dependencies:
+    "@deep-sea-stories/common": "workspace:*"
     "@elevenlabs/elevenlabs-js": "npm:^2.19.0"
     "@fastify/cors": "npm:^11.1.0"
     "@fishjam-cloud/js-server-sdk": "npm:^0.22.0"

@@ -2,7 +2,7 @@ import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
 import { CONFIG } from '../config.js';
 import { roomService } from './room.js';
 import { EventEmitter } from 'node:events';
-import type { AgentEvent } from '../../../common/dist/events.js';
+import type { AgentEvent } from '@deep-sea-stories/common';
 
 class NotifierService extends EventEmitter {
 	private notifier: FishjamWSNotifier | null = null;
