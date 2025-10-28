@@ -16,8 +16,14 @@ export function createWSContext({ req, res }: CreateWSSContextFnOptions) {
 	return { req, res, fishjam };
 }
 
-export type Context = {
-	req: CreateFastifyContextOptions['req'] | CreateWSSContextFnOptions['req'];
-	res: CreateFastifyContextOptions['res'] | CreateWSSContextFnOptions['res'];
-	fishjam: FishjamClient;
-};
+export type Context =
+	| {
+			req: CreateFastifyContextOptions['req'];
+			res: CreateFastifyContextOptions['res'];
+			fishjam: FishjamClient;
+	  }
+	| {
+			req: CreateWSSContextFnOptions['req'];
+			res: CreateWSSContextFnOptions['res'];
+			fishjam: FishjamClient;
+	  };

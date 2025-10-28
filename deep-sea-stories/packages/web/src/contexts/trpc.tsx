@@ -1,4 +1,4 @@
-import { http_to_ws_url } from '@/lib/utils';
+import { httpToWsUrl } from '@/lib/utils';
 import type { QueryClient } from '@tanstack/react-query';
 import {
 	createTRPCClient,
@@ -19,7 +19,7 @@ interface TRPCClientProviderProps extends PropsWithChildren {
 }
 
 const wsClient = createWSClient({
-	url: http_to_ws_url(import.meta.env.VITE_BACKEND_URL),
+	url: httpToWsUrl(import.meta.env.VITE_BACKEND_URL),
 	onOpen: () => {
 		console.log('[tRPC] WebSocket connection opened');
 	},
