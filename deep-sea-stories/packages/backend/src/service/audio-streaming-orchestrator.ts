@@ -5,7 +5,7 @@ import type {
 } from '@fishjam-cloud/js-server-sdk';
 import type { Conversation } from '../types.js';
 import VAD, { type VADData } from 'node-vad';
-import { PassThrough } from 'node:stream';
+import type { PassThrough } from 'node:stream';
 import { VAD_DEBOUNCE_MS } from '../config.js';
 
 export class AudioStreamingOrchestrator {
@@ -13,8 +13,6 @@ export class AudioStreamingOrchestrator {
 	private connectedPeers: Set<PeerId>;
 	private peerStreams: Map<PeerId, PassThrough>;
 	private vadStreams: Map<PeerId, NodeJS.ReadWriteStream>;
-	private peerAudioBaseTs: Map<PeerId, number>;
-	private peerAudioSentMs: Map<PeerId, number>;
 	private activeSpeaker: PeerId | null;
 	private sharedSession: Conversation | null;
 	private audioTrackId: TrackId | null;
@@ -35,8 +33,6 @@ export class AudioStreamingOrchestrator {
 		this.connectedPeers = connectedPeers;
 		this.peerStreams = new Map();
 		this.vadStreams = new Map();
-		this.peerAudioBaseTs = new Map();
-		this.peerAudioSentMs = new Map();
 		this.activeSpeaker = null;
 		this.sharedSession = sharedSession;
 		this.audioTrackId = null;
@@ -54,9 +50,6 @@ export class AudioStreamingOrchestrator {
 	}
 
 	private initializeVADStream(peerId: PeerId): void {
-		const audioStream = new PassThrough();
-		this.peerStreams.set(peerId, audioStream);
-
 		const vadStream = VAD.createStream({
 			mode: VAD.Mode.VERY_AGGRESSIVE,
 			audioFrequency: 16000,
@@ -65,7 +58,7 @@ export class AudioStreamingOrchestrator {
 
 		this.vadStreams.set(peerId, vadStream);
 
-		audioStream.pipe(vadStream).on('data', (vadData: VADData) => {
+		vadStream.on('data', (vadData: VADData) => {
 			const { speech } = vadData;
 
 			if (speech.start && this.activeSpeaker === null) {
@@ -85,21 +78,20 @@ export class AudioStreamingOrchestrator {
 
 				try {
 					if (this.sharedSession) {
-						if (typeof (this.sharedSession as any).sendUserActivity === 'function') {
-							(this.sharedSession as any).sendUserActivity();
-							console.log(`[Orchestrator] Sent user activity to AI session for peer ${peerId}`);
-						}
+						this.sharedSession.sendUserActivity();
+						console.log(
+							`[Orchestrator] Sent user activity to AI session for peer ${peerId}`,
+						);
 					}
 				} catch (err) {
-					console.error('[Orchestrator] Failed to send user activity on speech end:', err);
+					console.error(
+						'[Orchestrator] Failed to send user activity on speech end:',
+						err,
+					);
 				}
 			}
 
-			if (
-				shouldSendAudio &&
-				vadData.audioData &&
-				this.sharedSession
-			) {
+			if (shouldSendAudio && vadData.audioData && this.sharedSession) {
 				try {
 					if (this.pendingInterruption) {
 						this.pendingInterruption = false;
@@ -108,29 +100,16 @@ export class AudioStreamingOrchestrator {
 							this.pendingInterruptionTimer = null;
 						}
 					}
-					const BYTES_PER_SECOND = 16000 * 2; // pcm16 mono
-					const chunkDurationMs = Math.round((vadData.audioData.length / BYTES_PER_SECOND) * 1000);
-					let baseTs = this.peerAudioBaseTs.get(peerId) ?? null;
-					let sentMs = this.peerAudioSentMs.get(peerId) ?? 0;
-					if (vadData.speech && vadData.speech.start) {
-						baseTs = Date.now();
-						sentMs = 0;
-						this.peerAudioBaseTs.set(peerId, baseTs);
-						this.peerAudioSentMs.set(peerId, sentMs);
-					}
 
-					const clientTs = (baseTs ?? Date.now()) + sentMs;
 					try {
 						console.log(
-							`[Orchestrator] Sending ${vadData.audioData.length} bytes of audio from peer ${peerId} to AI agent (client_ts_ms: ${clientTs})`,
+							`[Orchestrator] Sending ${vadData.audioData.length} bytes of audio from peer ${peerId} to AI agent`,
 						);
-						this.sharedSession.sendAudio(vadData.audioData, { clientTsMs: clientTs });
+						this.sharedSession.sendAudio(vadData.audioData);
 						this.lastOutgoingTs = Date.now();
-						sentMs += chunkDurationMs;
-						this.peerAudioSentMs.set(peerId, sentMs);
 					} catch (error) {
 						console.error(
-							`[Orchestrator] Error sending audio to AI voice agent for peer ${peerId}:`,
+							` [Orchestrator] Error sending audio to AI voice agent for peer ${peerId}:`,
 							error,
 						);
 					}
@@ -154,9 +133,9 @@ export class AudioStreamingOrchestrator {
 				return;
 			}
 
-			const peerStream = this.peerStreams.get(trackMsg.peerId);
-			if (peerStream) {
-				peerStream.write(trackMsg.data);
+			const vadStream = this.vadStreams.get(trackMsg.peerId);
+			if (vadStream) {
+				vadStream.write(trackMsg.data);
 			}
 		});
 	}
@@ -175,10 +154,10 @@ export class AudioStreamingOrchestrator {
 			return;
 		}
 
-		this.sharedSession.on('agentAudio', (audioEvent: any) => {
+		this.sharedSession.on('agentAudio', (audioEvent) => {
 			try {
 				this.audioChunkCount++;
-				
+
 				console.log(
 					`[Orchestrator] Received audio chunk #${this.audioChunkCount}, event_id: ${audioEvent.event_id ?? 'none'}`,
 				);
@@ -197,7 +176,7 @@ export class AudioStreamingOrchestrator {
 			}
 		});
 
-		this.sharedSession.on('interruption', (event: any) => {
+		this.sharedSession.on('interruption', (event) => {
 			console.log('[Orchestrator] Interruption event received:', event);
 			if (this.pendingInterruptionTimer) {
 				clearTimeout(this.pendingInterruptionTimer);
@@ -206,7 +185,9 @@ export class AudioStreamingOrchestrator {
 			this.pendingInterruption = true;
 			this.pendingInterruptionTimer = setTimeout(() => {
 				if (!this.pendingInterruption) return;
-				console.log('[Orchestrator] Clearing audio queue after confirmed interruption');
+				console.log(
+					'[Orchestrator] Clearing audio queue after confirmed interruption',
+				);
 				this.audioChunkCount = 0;
 				this.audioQueue = [];
 				this.isSendingAudio = false;
@@ -224,9 +205,11 @@ export class AudioStreamingOrchestrator {
 					(!this.lastOutgoingTs || now - this.lastOutgoingTs > 1200)
 				) {
 					const silence = Buffer.alloc(1920); // 1920 bytes ~ short frame at 16kHz
-					(this.sharedSession as any).sendAudio(silence, { keepAlive: true });
+					this.sharedSession.sendAudio(silence);
 					this.lastOutgoingTs = now;
-					console.log('[Orchestrator] Sent silence packet to AI session to keep it primed');
+					console.log(
+						'[Orchestrator] Sent silence packet to AI session to keep it primed',
+					);
 				}
 			} catch (err) {
 				console.error('[Orchestrator] Failed to send silence packet:', err);
@@ -255,7 +238,11 @@ export class AudioStreamingOrchestrator {
 						`[Orchestrator] Sending audio chunk (${audioBuffer.length} bytes), ${this.audioQueue.length} remaining in queue`,
 					);
 					try {
-						for (let offset = 0; offset < audioBuffer.length; offset += FRAME_SIZE) {
+						for (
+							let offset = 0;
+							offset < audioBuffer.length;
+							offset += FRAME_SIZE
+						) {
 							const end = Math.min(offset + FRAME_SIZE, audioBuffer.length);
 							const frame = audioBuffer.slice(offset, end);
 							try {
@@ -265,11 +252,19 @@ export class AudioStreamingOrchestrator {
 							}
 							// Pace frames by their real-time duration. Minimum 10ms to avoid
 							// extremely small waits that would busy-loop.
-							const frameDurationMs = Math.max(10, Math.round((frame.length / BYTES_PER_SECOND) * 1000));
-							await new Promise(resolve => setTimeout(resolve, frameDurationMs));
+							const frameDurationMs = Math.max(
+								10,
+								Math.round((frame.length / BYTES_PER_SECOND) * 1000),
+							);
+							await new Promise((resolve) =>
+								setTimeout(resolve, frameDurationMs),
+							);
 						}
 					} catch (error) {
-						console.error('[Orchestrator] Error processing audio chunk frames:', error);
+						console.error(
+							'[Orchestrator] Error processing audio chunk frames:',
+							error,
+						);
 					}
 				}
 			}
@@ -320,7 +315,9 @@ export class AudioStreamingOrchestrator {
 		if (this.connectedPeers.size === 0 && this.silenceIntervalId) {
 			clearInterval(this.silenceIntervalId);
 			this.silenceIntervalId = null;
-			console.log('[Orchestrator] Cleared silence keep-alive interval (no connected peers)');
+			console.log(
+				'[Orchestrator] Cleared silence keep-alive interval (no connected peers)',
+			);
 		}
 	}
 

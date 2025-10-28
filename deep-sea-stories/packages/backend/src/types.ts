@@ -9,11 +9,9 @@ export interface Story {
 }
 
 export interface Conversation extends EventEmitter {
-	sendAudio(
-		audioBuffer: Buffer | Uint8Array,
-		opts?: { keepAlive?: boolean; clientTsMs?: number },
-	): void;
+	sendAudio(audioBuffer: Buffer | Uint8Array): void;
 	sendUserMessage(message: string): void;
+	sendUserActivity(): void;
 }
 
 export interface VoiceAgentSessionManager {
