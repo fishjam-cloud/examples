@@ -5,7 +5,7 @@ import type {
 	PeerId,
 	RoomId,
 } from '@fishjam-cloud/js-server-sdk';
-import type { Story, Conversation } from '../types.js';
+import type { Story } from '../types.js';
 import {
 	FISHJAM_AGENT_OPTIONS,
 	CONFIG,
@@ -17,9 +17,12 @@ import {
 	ElevenLabsConversation,
 	elevenLabs,
 } from './elevenlabs-conversation.js';
+import { ClientTools } from "@elevenlabs/elevenlabs-js/api/resources/conversationalAi/conversation/ClientTools.js";
+import { Conversation } from '@elevenlabs/elevenlabs-js/api/resources/conversationalAi/conversation/Conversation.js';
 import { getInstructionsForStory } from '../utils.js';
 import { roomService } from './room.js';
 import { notifierService } from './notifier.js';
+import { FishjamAudioInterface } from './fishjam-audio-interface.js';
 
 export class GameSession {
 	private roomId: RoomId;
@@ -40,6 +43,7 @@ export class GameSession {
 		this.story = undefined;
 		this.peers = [];
 		this.connectedPeers = new Set<PeerId>();
+		this.sharedConversation = undefined;
 		this.peerNames = new Map<PeerId, string>();
 	}
 
@@ -136,15 +140,24 @@ export class GameSession {
 			const agentId = await this.createAgent(story, toolId);
 			this.agentId = agentId;
 
-			const session = new ElevenLabsConversation(
-				agentId,
-				CONFIG.ELEVENLABS_API_KEY,
-			);
-			await session.connect();
+			const clientTools = new ClientTools();
+			clientTools.register('game-ending', async () => {
+				await this.gameEndingHandler();
+			});
 
-			this.registerClientToolHandler(session);
+			const AudioInterface = new FishjamAudioInterface();
 
-			this.sharedConversation = session;
+			const conversation = new Conversation({
+				client: elevenLabs,
+				agentId: agentId,
+				audioInterface: AudioInterface,
+				clientTools: clientTools,
+				requiresAuth: false,
+			})
+			await conversation.startSession();
+
+			this.sharedConversation = conversation;
+
 			console.log(
 				`[GameSession] Shared AI conversation created for room ${this.roomId}`,
 			);
@@ -191,16 +204,13 @@ export class GameSession {
 		this.audioOrchestrator = new AudioStreamingOrchestrator(
 			this.fishjamAgent,
 			this.connectedPeers,
-			this.sharedConversation,
 		);
-
-		this.audioOrchestrator.setupAudioPipelines();
 	}
 
 	async stopGame(): Promise<void> {
 		if (this.sharedConversation) {
 			try {
-				await (this.sharedConversation as ElevenLabsConversation).disconnect();
+				await this.sharedConversation.endSession();
 			} catch (error) {
 				console.error(`Error closing session for room ${this.roomId}:`, error);
 			}
@@ -284,42 +294,30 @@ export class GameSession {
 		return this.gameEndingToolId;
 	}
 
-	private registerClientToolHandler(session: ElevenLabsConversation): void {
-		session.on('clientToolCall', async (clientToolCall: unknown) => {
-			const call =
-				clientToolCall && typeof clientToolCall === 'object'
-					? (clientToolCall as Record<string, unknown>)
-					: undefined;
-			const toolName =
-				typeof call?.tool_name === 'string' ? call.tool_name : undefined;
-			if (!toolName || toolName !== 'game-ending') {
-				return;
-			}
+	private async gameEndingHandler() {
+		if (this.endingRoom) {
+			return;
+		}
+		this.endingRoom = true;
 
-			if (this.endingRoom) {
-				return;
-			}
-			this.endingRoom = true;
+		if (!roomService.isGameActive(this.roomId)) {
+			this.endingRoom = false;
+			return;
+		}
 
-			if (!roomService.isGameActive(this.roomId)) {
-				this.endingRoom = false;
-				return;
-			}
-
-			try {
-				await this.stopGame();
-				console.log(
-					`Game session for room ${this.roomId} ended after game-ending tool call`,
-				);
-			} catch (error) {
-				console.error(
-					`Failed to stop game for room ${this.roomId} after game-ending tool call:`,
-					error,
-				);
-			} finally {
-				this.endingRoom = false;
-			}
-		});
+		try {
+			await this.stopGame();
+			console.log(
+				`Game session for room ${this.roomId} ended after game-ending tool call`,
+			);
+		} catch (error) {
+			console.error(
+				`Failed to stop game for room ${this.roomId} after game-ending tool call:`,
+				error,
+			);
+		} finally {
+			this.endingRoom = false;
+		}
 	}
 
 	async removePeerFromGame(peerId: PeerId): Promise<void> {
