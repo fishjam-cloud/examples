@@ -11,11 +11,10 @@ export const useAgentEvents = () => {
 			onStarted: () => {
 				console.log('[useAgentEvents] Subscription started successfully!');
 			},
-			onData: (data) => {
-				const event =
-					data && typeof data === 'object' && 'data' in data
-						? (data as { data: AgentEvent }).data
-						: (data as AgentEvent);
+			onData: (data: unknown) => {
+				const event = (data && typeof data === 'object' && 'data' in data)
+					? (data as { data: AgentEvent }).data
+					: data as AgentEvent;
 				setEvents((prev) => [...prev, event]);
 			},
 			onError: (error: unknown) => {
