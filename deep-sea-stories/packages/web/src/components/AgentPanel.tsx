@@ -7,11 +7,10 @@ import {
 	MessageSquare,
 } from 'lucide-react';
 import type { FC, PropsWithChildren } from 'react';
-import { useState, useEffect } from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
 import blob from '@/assets/blob.png';
 import { ScrollArea } from './ui/scroll-area';
-import { useTRPCClient } from '@/contexts/trpc';
+import { useAgentEvents } from '@/hooks/useAgentEvents';
 
 type PanelEventProps = {
 	icon: LucideIcon;
@@ -101,31 +100,7 @@ const renderEvent = (event: AgentEvent, index: number) => {
 };
 
 const AgentPanel = () => {
-	const [events, setEvents] = useState<AgentEvent[]>([]);
-	const trpcClient = useTRPCClient();
-
-	useEffect(() => {
-		const subscription = trpcClient.Notifications.subscribe(undefined, {
-			onStarted: () => {
-				console.log('[AgentPanel] Subscription started successfully!');
-			},
-			onData: (data) => {
-				const event =
-					data && typeof data === 'object' && 'data' in data
-						? (data as { data: AgentEvent }).data
-						: (data as AgentEvent);
-				setEvents((prev) => [...prev, event]);
-			},
-			onError: (error: unknown) => {
-				console.error('[AgentPanel] Subscription error:', error);
-			},
-		});
-
-		return () => {
-			console.log('[AgentPanel] Unsubscribing...');
-			subscription.unsubscribe();
-		};
-	}, [trpcClient]);
+	const events = useAgentEvents();
 
 	return (
 		<div className="grid grid-cols-3 p-8 border rounded-xl">

@@ -19,6 +19,7 @@ import {
 } from './elevenlabs-conversation.js';
 import { getInstructionsForStory } from '../utils.js';
 import { roomService } from './room.js';
+import { notifierService } from './notifier.js';
 
 export class GameSession {
 	private roomId: RoomId;
@@ -222,7 +223,7 @@ export class GameSession {
 
 		this.sharedConversation = undefined;
 		this.setStory(undefined);
-		console.log(`Stopped game for room ${roomId}`);
+		console.log(`Stopped game for room ${this.roomId}`);
 
 		notifierService.emitNotification({
 			type: 'gameEnded' as const,
