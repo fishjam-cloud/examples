@@ -1988,6 +1988,7 @@ __metadata:
     "@types/ws": "npm:^8.18.1"
     dotenv: "npm:^17.2.3"
     fastify: "npm:^5.6.1"
+    node-vad: "npm:^1.1.4"
     nunjucks: "npm:^3.2.4"
     pino-pretty: "npm:^13.1.1"
     tsx: "npm:^4.20.6"
@@ -2009,6 +2010,15 @@ __metadata:
   bin:
     baseline-browser-mapping: dist/cli.js
   checksum: 10c0/fa319aab5761ccb78ec7f5e5905149ae1916d65b68009aa1c8b6ec7f0bdb878bfa57a553235024179ed5ba8b36d668a22f599861990ce6ceb1aeeafb1e5704ae
+  languageName: node
+  linkType: hard
+
+"bindings@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "bindings@npm:1.5.0"
+  dependencies:
+    file-uri-to-path: "npm:1.0.0"
+  checksum: 10c0/3dab2491b4bb24124252a91e656803eac24292473e56554e35bbfe3cc1875332cfa77600c3bac7564049dc95075bf6fcc63a4609920ff2d64d0fe405fcf0d4ba
   languageName: node
   linkType: hard
 
@@ -2569,6 +2579,13 @@ __metadata:
     picomatch:
       optional: true
   checksum: 10c0/e345083c4306b3aed6cb8ec551e26c36bab5c511e99ea4576a16750ddc8d3240e63826cc624f5ae17ad4dc82e68a253213b60d556c11bfad064b7607847ed07f
+  languageName: node
+  linkType: hard
+
+"file-uri-to-path@npm:1.0.0":
+  version: 1.0.0
+  resolution: "file-uri-to-path@npm:1.0.0"
+  checksum: 10c0/3b545e3a341d322d368e880e1c204ef55f1d45cdea65f7efc6c6ce9e0c4d22d802d5629320eb779d006fe59624ac17b0e848d83cc5af7cd101f206cb704f5519
   languageName: node
   linkType: hard
 
@@ -3242,6 +3259,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nan@npm:^2.14.0":
+  version: 2.23.0
+  resolution: "nan@npm:2.23.0"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/b986dd257dca53ab43a3b6ca6d0eafde697b69e1d63b242fa4aece50ce97eb169f9c4a5d8eb0eb5f58d118a9595fee11f3198fa210f023440053bb6f54109e73
+  languageName: node
+  linkType: hard
+
 "nanoid@npm:^3.3.11":
   version: 3.3.11
   resolution: "nanoid@npm:3.3.11"
@@ -3306,6 +3332,18 @@ __metadata:
   version: 2.0.25
   resolution: "node-releases@npm:2.0.25"
   checksum: 10c0/d4aeb1e04578d96e54d6c40540122e6240671b971887f04aca07b6805752a78de1f1c1522f3fa3843706bf8acf6de2cb35f104914957f269e328b41a9fa9fd2f
+  languageName: node
+  linkType: hard
+
+"node-vad@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "node-vad@npm:1.1.4"
+  dependencies:
+    bindings: "npm:^1.5.0"
+    nan: "npm:^2.14.0"
+    node-gyp: "npm:latest"
+    util-promisifyall: "npm:^1.0.6"
+  checksum: 10c0/b5480f9d48c61c0a37710893b0769a168b574888bdd8a4441cc7b0452b002a23065d0a82168372a618a04a38521e7a4ba7ac6ec9bd4418eb3559d16cba4b1e02
   languageName: node
   linkType: hard
 
@@ -4154,6 +4192,13 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/161599bf921cfaa41c85d2b01c871975ee99260f3e874c2d41c05890d41170297bdcf314bc5185e7a700de2034ac5b888e3efc8e9f35724f4918f53538d717c9
+  languageName: node
+  linkType: hard
+
+"util-promisifyall@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "util-promisifyall@npm:1.0.6"
+  checksum: 10c0/f19bb99e716014b431b92831f1476105c4c0545e91029297251fa94fb62ea676ee889b6f3d457f5c7a6a54207ed9a3a606aed6ec72d0ef5b60752d7662d60898
   languageName: node
   linkType: hard
 

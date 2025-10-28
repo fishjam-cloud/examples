@@ -18,7 +18,10 @@ interface ElevenLabsMessage {
 	user_transcription_event?: {
 		user_transcript?: string;
 	};
-	audio_event?: unknown;
+	audio_event?: {
+		audio_base_64?: string;
+		event_id?: number;
+	};
 	interruption_event?: unknown;
 	ping_event?: {
 		event_id?: string;
@@ -79,12 +82,14 @@ export class ElevenLabsConversation
 			try {
 				const wsUrl = `${this.baseUrl}/v1/convai/conversation?agent_id=${this.agentId}`;
 
-				this.ws = new WebSocket(wsUrl, {
+				const wsOptions = {
 					headers: {
 						'xi-api-key': this.apiKey,
 						'User-Agent': 'Deep-Sea-Stories-Backend/1.0.0',
 					},
-				});
+				};
+
+				this.ws = new WebSocket(wsUrl, wsOptions as unknown as string[]);
 
 				this.ws.addEventListener('open', () => {
 					console.log('Connected to ElevenLabs WebSocket');
@@ -126,20 +131,23 @@ export class ElevenLabsConversation
 		});
 	}
 
-	sendAudio(audioBuffer: Buffer): void {
+	sendAudio(audioBuffer: Buffer | Uint8Array): void {
 		if (!this.isConnected || !this.ws) {
-			console.warn('Cannot send audio: WebSocket not connected');
+			console.warn('[ElevenLabs] Cannot send audio: WebSocket not connected');
 			return;
 		}
 
 		try {
-			const audioBase64 = audioBuffer.toString('base64');
+			const buf = Buffer.isBuffer(audioBuffer)
+				? audioBuffer
+				: Buffer.from(audioBuffer);
+			const audioBase64 = buf.toString('base64');
 
 			this.sendMessage({
 				user_audio_chunk: audioBase64,
 			});
 		} catch (error) {
-			console.error('Failed to send audio to ElevenLabs:', error);
+			console.error('[ElevenLabs] Failed to send audio:', error);
 		}
 	}
 
@@ -195,6 +203,10 @@ export class ElevenLabsConversation
 	}
 
 	private handleMessage(message: ElevenLabsMessage): void {
+		if (message.type !== 'ping') {
+			console.log(`[ElevenLabs] Received message type: ${message.type}`);
+		}
+
 		switch (message.type) {
 			case 'conversation_initiation_metadata': {
 				const metadata = message.conversation_initiation_metadata_event;
@@ -233,14 +245,21 @@ export class ElevenLabsConversation
 				break;
 
 			case 'audio':
+				if (message.audio_event?.event_id) {
+					console.log(
+						`[ElevenLabs] Received audio event ${message.audio_event.event_id} (${message.audio_event.audio_base_64?.length || 0} base64 chars)`,
+					);
+				}
 				this.emit('agentAudio', message.audio_event);
 				break;
 
 			case 'interruption':
-				console.log('Conversation interrupted');
+				console.log(
+					'[ElevenLabs] Conversation interrupted:',
+					message.interruption_event,
+				);
 				this.emit('interruption', message.interruption_event);
 				break;
-
 			case 'ping':
 				console.log('Received ping, sending pong');
 				this.sendMessage({

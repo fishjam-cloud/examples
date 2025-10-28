@@ -5,14 +5,20 @@ import type {
 	PeerId,
 	RoomId,
 } from '@fishjam-cloud/js-server-sdk';
-import type { Story, VoiceAgentSessionManager } from '../types.js';
-import { FISHJAM_AGENT_OPTIONS } from '../config.js';
-import { AudioStreamingOrchestrator } from './audio-streaming-orchestrator.js';
+import type { Story, Conversation } from '../types.js';
 import {
-	NoPeersConnectedError,
-	NoVoiceSessionManagerError,
-} from '../domain/errors.js';
-import { ElevenLabsSessionManager } from './elevenlabs-session.js';
+	FISHJAM_AGENT_OPTIONS,
+	CONFIG,
+	AGENT_CLIENT_TOOL_INSTRUCTIONS,
+} from '../config.js';
+import { AudioStreamingOrchestrator } from './audio-streaming-orchestrator.js';
+import { NoPeersConnectedError } from '../domain/errors.js';
+import {
+	ElevenLabsConversation,
+	elevenLabs,
+} from './elevenlabs-conversation.js';
+import { getInstructionsForStory } from '../utils.js';
+import { roomService } from './room.js';
 
 export class GameSession {
 	private roomId: RoomId;
@@ -21,7 +27,11 @@ export class GameSession {
 	private connectedPeers: Set<PeerId>;
 	private fishjamAgent: FishjamAgent | undefined;
 	private fishjamAgentId: PeerId | undefined;
-	private voiceSessionManager: VoiceAgentSessionManager | undefined;
+	private sharedConversation: Conversation | undefined;
+	private audioOrchestrator: AudioStreamingOrchestrator | undefined;
+	private agentId: string | undefined;
+	private gameEndingToolId: string | undefined;
+	private endingRoom = false;
 
 	constructor(roomId: RoomId) {
 		this.roomId = roomId;
@@ -50,10 +60,6 @@ export class GameSession {
 			fishjamAgent: this.fishjamAgent,
 			peerId: this.fishjamAgentId,
 		};
-	}
-
-	getVoiceSessionManager(): VoiceAgentSessionManager | undefined {
-		return this.voiceSessionManager;
 	}
 
 	setStory(story: Story | undefined) {
@@ -99,10 +105,6 @@ export class GameSession {
 		this.fishjamAgentId = peer.id;
 	}
 
-	setVoiceSessionManager(manager: VoiceAgentSessionManager) {
-		this.voiceSessionManager = manager;
-	}
-
 	async startGame(story: Story): Promise<void> {
 		this.setStory(story);
 
@@ -114,100 +116,215 @@ export class GameSession {
 			`Starting game for ${this.connectedPeers.size} connected peers in room ${this.roomId}`,
 		);
 
-		const gameSession = new ElevenLabsSessionManager();
-		this.setVoiceSessionManager(gameSession);
-
-		const peerIds = Array.from(this.connectedPeers);
-		await Promise.all(
-			peerIds.map(async (peerId) => {
-				try {
-					await this.startGameForPeer(peerId);
-				} catch (error) {
-					console.error(
-						`Failed to start game for peer ${peerId} in room ${this.roomId}:`,
-						error,
-					);
-				}
-			}),
+		console.log(
+			`[GameSession] Creating shared AI session for room ${this.roomId}`,
 		);
+
+		try {
+			const toolId = await this.ensureGameEndingTool();
+
+			const agentId = await this.createAgent(story, toolId);
+			this.agentId = agentId;
+
+			const session = new ElevenLabsConversation(
+				agentId,
+				CONFIG.ELEVENLABS_API_KEY,
+			);
+			await session.connect();
+
+			this.registerClientToolHandler(session);
+
+			this.sharedConversation = session;
+			console.log(
+				`[GameSession] Shared AI conversation created for room ${this.roomId}`,
+			);
+		} catch (error) {
+			console.error(
+				`Failed to create shared AI session for room ${this.roomId}:`,
+				error,
+			);
+			throw error;
+		}
+
 		this.setupAudioStreaming();
 	}
 
 	async startGameForPeer(peerId: PeerId): Promise<void> {
-		if (!this.voiceSessionManager) {
-			throw new NoVoiceSessionManagerError(this.roomId);
-		}
+		console.log(
+			`Peer ${peerId} joined active game in room ${this.roomId} (using shared session)`,
+		);
 
-		try {
-			await this.voiceSessionManager.createSession(peerId, this.roomId);
-			console.log(
-				`Started game session for peer ${peerId} in room ${this.roomId}`,
+		if (this.audioOrchestrator) {
+			this.audioOrchestrator.addPeer(peerId);
+		} else {
+			console.warn(
+				`No audio orchestrator found when peer ${peerId} joined room ${this.roomId}`,
 			);
-		} catch (error) {
-			console.error(`Failed to start game session for peer ${peerId}:`, error);
-			throw error;
 		}
 	}
 
 	private setupAudioStreaming(): void {
-		if (!this.fishjamAgent || !this.voiceSessionManager) {
+		if (!this.fishjamAgent) {
 			console.error(
-				`Cannot setup audio streaming: missing agent or session manager for room ${this.roomId}`,
+				`Cannot setup audio streaming: missing fishjam agent ${this.roomId}`,
 			);
 			return;
 		}
 
-		const orchestrator = new AudioStreamingOrchestrator(
+		if (!this.sharedConversation) {
+			console.error(
+				`Cannot setup audio streaming: missing shared conversation for room ${this.roomId}`,
+			);
+			return;
+		}
+
+		this.audioOrchestrator = new AudioStreamingOrchestrator(
 			this.fishjamAgent,
-			this.voiceSessionManager,
 			this.connectedPeers,
+			this.sharedConversation,
 		);
 
-		orchestrator.setupAudioPipelines();
-
-		this.sendInitMessage();
-	}
-
-	private sendInitMessage(): void {
-		const firstPeerId = this.connectedPeers.values().next().value;
-		if (!firstPeerId) {
-			console.error(
-				`Cannot send init message: no connected peers in room ${this.roomId}`,
-			);
-			return;
-		}
-
-		if (!this.voiceSessionManager) {
-			console.error(
-				`Cannot send init message: missing session manager for room ${this.roomId}`,
-			);
-			return;
-		}
-
-		const anyAgentSession = this.voiceSessionManager.getSession(firstPeerId);
-		if (!anyAgentSession) {
-			console.error(
-				`Cannot send init message: no session for peer ${firstPeerId} in room ${this.roomId}`,
-			);
-			return;
-		}
-
-		// Request the voice agent to explain the game rules; all players will hear it
-		anyAgentSession.sendUserMessage(
-			"The riddle master welcomes all players saying 'Welcome to Deep Sea Stories' and then reads the initial scenario or mystery to the guessers. ",
-		);
+		this.audioOrchestrator.setupAudioPipelines();
 	}
 
 	async stopGame(): Promise<void> {
-		this.voiceSessionManager?.cleanup();
+		if (this.sharedConversation) {
+			try {
+				await (this.sharedConversation as ElevenLabsConversation).disconnect();
+			} catch (error) {
+				console.error(`Error closing session for room ${this.roomId}:`, error);
+			}
+		}
+
+		if (this.agentId) {
+			try {
+				await elevenLabs.conversationalAi.agents.delete(this.agentId);
+				console.log(
+					`Deleted ElevenLabs agent ${this.agentId} for room ${this.roomId}`,
+				);
+			} catch (error) {
+				console.error(
+					`Error deleting ElevenLabs agent ${this.agentId} for room ${this.roomId}:`,
+					error,
+				);
+			}
+			this.agentId = undefined;
+		}
+
+		this.sharedConversation = undefined;
 		this.setStory(undefined);
 		console.log(`Stopped game for room ${this.roomId}`);
 	}
 
-	async removePeerFromGame(peerId: PeerId): Promise<void> {
-		if (this.voiceSessionManager) {
-			await this.voiceSessionManager.deleteSession(peerId);
-			console.log(`Removed peer ${peerId} from game in room ${this.roomId}`);
+	private async createAgent(story: Story, toolId: string): Promise<string> {
+		const instructions = getInstructionsForStory(story);
+
+		console.log(
+			`Creating ElevenLabs agent for story "${story.title}" (ID: ${story.id})`,
+		);
+
+		const prompt = { prompt: instructions, toolIds: [toolId] };
+
+		const config = {
+			conversationConfig: {
+				agent: {
+					firstMessage: 'Welcome to deep-sea-stories!',
+					language: 'en',
+					prompt,
+				},
+			},
+		};
+
+		const { agentId } = await elevenLabs.conversationalAi.agents.create(config);
+		return agentId;
+	}
+
+	private async ensureGameEndingTool(): Promise<string> {
+		if (this.gameEndingToolId) {
+			return this.gameEndingToolId;
 		}
+
+		const tools = await elevenLabs.conversationalAi.tools.list();
+		const existingTool = (tools.tools ?? []).find(
+			(tool) =>
+				tool.toolConfig.type === 'client' &&
+				tool.toolConfig.name === 'game-ending',
+		);
+
+		if (existingTool?.id) {
+			this.gameEndingToolId = existingTool.id;
+			return this.gameEndingToolId;
+		}
+
+		const createdTool = await elevenLabs.conversationalAi.tools.create({
+			toolConfig: {
+				type: 'client',
+				name: 'game-ending',
+				description: AGENT_CLIENT_TOOL_INSTRUCTIONS,
+			},
+		});
+
+		this.gameEndingToolId = createdTool.id;
+		return this.gameEndingToolId;
+	}
+
+	private registerClientToolHandler(session: ElevenLabsConversation): void {
+		session.on('clientToolCall', async (clientToolCall: unknown) => {
+			const call =
+				clientToolCall && typeof clientToolCall === 'object'
+					? (clientToolCall as Record<string, unknown>)
+					: undefined;
+			const toolName =
+				typeof call?.tool_name === 'string' ? call.tool_name : undefined;
+			if (!toolName || toolName !== 'game-ending') {
+				return;
+			}
+
+			if (this.endingRoom) {
+				return;
+			}
+			this.endingRoom = true;
+
+			if (!roomService.isGameActive(this.roomId)) {
+				this.endingRoom = false;
+				return;
+			}
+
+			try {
+				await this.stopGame();
+				console.log(
+					`Game session for room ${this.roomId} ended after game-ending tool call`,
+				);
+			} catch (error) {
+				console.error(
+					`Failed to stop game for room ${this.roomId} after game-ending tool call:`,
+					error,
+				);
+			} finally {
+				this.endingRoom = false;
+			}
+		});
+	}
+
+	async removePeerFromGame(peerId: PeerId): Promise<void> {
+		if (this.audioOrchestrator) {
+			this.audioOrchestrator.removePeer(peerId);
+		}
+
+		if (this.connectedPeers.has(peerId)) {
+			this.connectedPeers.delete(peerId);
+		}
+
+		if (this.connectedPeers.size === 0) {
+			await this.stopGame();
+			console.log(
+				`No more connected peers in room ${this.roomId}. Game session stopped.`,
+			);
+			return;
+		}
+
+		console.log(
+			`Peer ${peerId} removed from game in room ${this.roomId} (shared session maintained)`,
+		);
 	}
 }
