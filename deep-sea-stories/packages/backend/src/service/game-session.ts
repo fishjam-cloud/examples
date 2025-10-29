@@ -8,21 +8,41 @@ import type {
 import type { Story } from '../types.js';
 import {
 	FISHJAM_AGENT_OPTIONS,
-	CONFIG,
 	AGENT_CLIENT_TOOL_INSTRUCTIONS,
+	CONFIG,
 } from '../config.js';
 import { AudioStreamingOrchestrator } from './audio-streaming-orchestrator.js';
 import { NoPeersConnectedError } from '../domain/errors.js';
-import {
-	ElevenLabsConversation,
-	elevenLabs,
-} from './elevenlabs-conversation.js';
-import { ClientTools } from "@elevenlabs/elevenlabs-js/api/resources/conversationalAi/conversation/ClientTools.js";
+import { ClientTools } from '@elevenlabs/elevenlabs-js/api/resources/conversationalAi/conversation/ClientTools.js';
 import { Conversation } from '@elevenlabs/elevenlabs-js/api/resources/conversationalAi/conversation/Conversation.js';
+import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js/Client.js';
+import type {
+	WebSocketFactory,
+	WebSocketInterface,
+} from '@elevenlabs/elevenlabs-js/api/resources/conversationalAi/conversation/interfaces/WebSocketInterface.js';
+import { WebSocket } from 'ws';
 import { getInstructionsForStory } from '../utils.js';
 import { roomService } from './room.js';
 import { notifierService } from './notifier.js';
 import { FishjamAudioInterface } from './fishjam-audio-interface.js';
+class MyWebSocketFactory implements WebSocketFactory {
+	create(url: string, options?: any): WebSocketInterface {
+		options = options || {};
+		const apiKey = CONFIG.ELEVENLABS_API_KEY || options.apiKey;
+		options.headers = {
+			...options.headers,
+			'xi-api-key': apiKey,
+			'User-Agent': 'Deep-Sea-Stories-Backend/1.0.0',
+		};
+		console.log('Creating WebSocket with options:', options);
+		console.log('Connecting to WebSocket URL:', url);
+		const ws = new WebSocket(url, options);
+		ws.on('error', (err) => {
+			console.error('WebSocket error:', err);
+		})
+		return ws;
+	}
+}
 
 export class GameSession {
 	private roomId: RoomId;
@@ -37,6 +57,9 @@ export class GameSession {
 	private agentId: string | undefined;
 	private gameEndingToolId: string | undefined;
 	private endingRoom = false;
+	private elevenLabs: ElevenLabsClient = new ElevenLabsClient({
+		apiKey: CONFIG.ELEVENLABS_API_KEY,
+	});
 
 	constructor(roomId: RoomId) {
 		this.roomId = roomId;
@@ -134,6 +157,8 @@ export class GameSession {
 			`[GameSession] Creating shared AI session for room ${this.roomId}`,
 		);
 
+		this.setupAudioStreaming();
+
 		try {
 			const toolId = await this.ensureGameEndingTool();
 
@@ -145,15 +170,19 @@ export class GameSession {
 				await this.gameEndingHandler();
 			});
 
-			const AudioInterface = new FishjamAudioInterface();
+			const AudioInterface = new FishjamAudioInterface(
+				this.fishjamAgent!,
+				this.audioOrchestrator!,
+			);
 
 			const conversation = new Conversation({
-				client: elevenLabs,
+				client: this.elevenLabs,
 				agentId: agentId,
 				audioInterface: AudioInterface,
 				clientTools: clientTools,
 				requiresAuth: false,
-			})
+				webSocketFactory: new MyWebSocketFactory(),
+			});
 			await conversation.startSession();
 
 			this.sharedConversation = conversation;
@@ -168,8 +197,6 @@ export class GameSession {
 			);
 			throw error;
 		}
-
-		this.setupAudioStreaming();
 	}
 
 	async startGameForPeer(peerId: PeerId): Promise<void> {
@@ -194,13 +221,6 @@ export class GameSession {
 			return;
 		}
 
-		if (!this.sharedConversation) {
-			console.error(
-				`Cannot setup audio streaming: missing shared conversation for room ${this.roomId}`,
-			);
-			return;
-		}
-
 		this.audioOrchestrator = new AudioStreamingOrchestrator(
 			this.fishjamAgent,
 			this.connectedPeers,
@@ -218,7 +238,7 @@ export class GameSession {
 
 		if (this.agentId) {
 			try {
-				await elevenLabs.conversationalAi.agents.delete(this.agentId);
+				await this.elevenLabs.conversationalAi.agents.delete(this.agentId);
 				console.log(
 					`Deleted ElevenLabs agent ${this.agentId} for room ${this.roomId}`,
 				);
@@ -261,7 +281,8 @@ export class GameSession {
 			},
 		};
 
-		const { agentId } = await elevenLabs.conversationalAi.agents.create(config);
+		const { agentId } =
+			await this.elevenLabs.conversationalAi.agents.create(config);
 		return agentId;
 	}
 
@@ -270,7 +291,7 @@ export class GameSession {
 			return this.gameEndingToolId;
 		}
 
-		const tools = await elevenLabs.conversationalAi.tools.list();
+		const tools = await this.elevenLabs.conversationalAi.tools.list();
 		const existingTool = (tools.tools ?? []).find(
 			(tool) =>
 				tool.toolConfig.type === 'client' &&
@@ -282,7 +303,7 @@ export class GameSession {
 			return this.gameEndingToolId;
 		}
 
-		const createdTool = await elevenLabs.conversationalAi.tools.create({
+		const createdTool = await this.elevenLabs.conversationalAi.tools.create({
 			toolConfig: {
 				type: 'client',
 				name: 'game-ending',
