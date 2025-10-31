@@ -5,13 +5,11 @@ import type {
 } from '@fishjam-cloud/js-server-sdk';
 import type { Conversation } from '../types.js';
 import VAD, { type VADData } from 'node-vad';
-import type { PassThrough } from 'node:stream';
 import { VAD_DEBOUNCE_MS } from '../config.js';
 
 export class AudioStreamingOrchestrator {
 	private fishjamAgent: FishjamAgent;
 	private connectedPeers: Set<PeerId>;
-	private peerStreams: Map<PeerId, PassThrough>;
 	private vadStreams: Map<PeerId, NodeJS.ReadWriteStream>;
 	private activeSpeaker: PeerId | null;
 	private sharedSession: Conversation | null;
@@ -31,7 +29,6 @@ export class AudioStreamingOrchestrator {
 	) {
 		this.fishjamAgent = fishjamAgent;
 		this.connectedPeers = connectedPeers;
-		this.peerStreams = new Map();
 		this.vadStreams = new Map();
 		this.activeSpeaker = null;
 		this.sharedSession = sharedSession;
@@ -279,8 +276,7 @@ export class AudioStreamingOrchestrator {
 	}
 
 	addPeer(peerId: PeerId): void {
-		if (!this.peerStreams.has(peerId)) {
-			this.connectedPeers.add(peerId);
+		if (!this.vadStreams.has(peerId)) {
 			this.initializeVADStream(peerId);
 			console.log(
 				`[Orchestrator] Initialized VAD stream for new peer ${peerId}`,
@@ -289,14 +285,7 @@ export class AudioStreamingOrchestrator {
 	}
 
 	removePeer(peerId: PeerId): void {
-		const peerStream = this.peerStreams.get(peerId);
 		const vadStream = this.vadStreams.get(peerId);
-
-		if (peerStream) {
-			peerStream.unpipe();
-			peerStream.destroy();
-			this.peerStreams.delete(peerId);
-		}
 
 		if (vadStream) {
 			vadStream.unpipe();

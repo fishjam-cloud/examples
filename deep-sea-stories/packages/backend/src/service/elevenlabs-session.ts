@@ -1,4 +1,4 @@
-import type { RoomId, PeerId } from '@fishjam-cloud/js-server-sdk';
+import type { RoomId } from '@fishjam-cloud/js-server-sdk';
 import {
 	elevenLabs,
 	ElevenLabsConversation,
@@ -6,75 +6,39 @@ import {
 import { roomService } from './room.js';
 import { getInstructionsForStory } from '../utils.js';
 import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
-import type { Story, VoiceAgentSessionManager } from '../types.js';
+import type { Story } from '../types.js';
 import {
 	GameSessionNotFoundError,
 	StoryNotFoundError,
 } from '../domain/errors.js';
 import { notifierService } from './notifier.js';
 
-export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
-	private sessions = new Map<PeerId, ElevenLabsConversation>();
-	private inFlightCreations = new Map<
-		PeerId,
-		Promise<ElevenLabsConversation>
-	>();
-	private endingRooms = new Set<RoomId>();
+export class ElevenLabsSessionManager {
+	private session: ElevenLabsConversation | null = null;
+	private endingRoom: boolean = false;
 	private gameEndingToolId: string | undefined;
-	private peerToAgentId = new Map<PeerId, string>();
+	private agentId: string | undefined;
+	private roomId: RoomId;
 
-	private async resolveStory(roomId: RoomId) {
-		const gameSession = roomService.getGameSession(roomId);
-		if (!gameSession) {
-			throw new GameSessionNotFoundError(roomId);
-		}
-
-		const story = gameSession.getStory();
-		if (!story) {
-			throw new StoryNotFoundError(roomId);
-		}
-
-		return story;
+	constructor(roomId: RoomId) {
+		this.roomId = roomId;
 	}
 
-	async createSession(
-		peerId: PeerId,
-		roomId: RoomId,
-	): Promise<ElevenLabsConversation> {
-		if (this.inFlightCreations.has(peerId)) {
-			return this.inFlightCreations.get(
-				peerId,
-			) as Promise<ElevenLabsConversation>;
-		}
-
-		const promise = this._createSessionInternal(peerId, roomId).finally(() =>
-			this.inFlightCreations.delete(peerId),
-		);
-
-		this.inFlightCreations.set(peerId, promise);
-		return promise;
-	}
-
-	private async _createSessionInternal(
-		peerId: PeerId,
-		roomId: RoomId,
-	): Promise<ElevenLabsConversation> {
-		await this.deleteSession(peerId);
-
+	async init() {
 		const toolId = await this.ensureGameEndingTool();
 
-		const story = await this.resolveStory(roomId);
+		const story = await this.resolveStory(this.roomId);
 
-		const agentId = await this.createAgent(story, toolId);
+		this.agentId = await this.createAgent(story, toolId);
 
-		const session = new ElevenLabsConversation(
-			agentId,
+		this.session = new ElevenLabsConversation(
+			this.agentId,
 			CONFIG.ELEVENLABS_API_KEY,
 		);
-		await session.connect();
-		this.registerClientToolHandler(session, peerId, roomId);
+		await this.session.connect();
+		this.registerClientToolHandler(this.session, this.roomId);
 
-		session.on('agentResponse', (event: { agent_response?: string }) => {
+		this.session.on('agentResponse', (event: { agent_response?: string }) => {
 			if (event.agent_response) {
 				console.log('Agent response event:', event.agent_response);
 				const transcriptionEvent = {
@@ -82,13 +46,9 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 					text: event.agent_response,
 					timestamp: Date.now(),
 				};
-				notifierService.emitNotification(transcriptionEvent);
+				notifierService.emitNotification(this.roomId, transcriptionEvent);
 			}
 		});
-
-		this.sessions.set(peerId, session);
-		this.peerToAgentId.set(peerId, agentId);
-		return session;
 	}
 
 	private async createAgent(story: Story, toolId: string): Promise<string> {
@@ -103,6 +63,7 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 		const config = {
 			conversationConfig: {
 				agent: {
+					firstMessage: `Welcome to deep-sea-stories!`,
 					language: 'en',
 					prompt,
 				},
@@ -144,7 +105,6 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 
 	private registerClientToolHandler(
 		session: ElevenLabsConversation,
-		peerId: PeerId,
 		roomId: RoomId,
 	): void {
 		session.on('clientToolCall', async (clientToolCall: unknown) => {
@@ -157,11 +117,11 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 			if (!toolName || toolName !== 'game-ending') {
 				return;
 			}
-
-			if (this.endingRooms.has(roomId)) {
+			if (this.endingRoom) {
 				return;
 			}
-			this.endingRooms.add(roomId);
+
+			this.endingRoom = true;
 
 			const gameSession = roomService.getGameSession(roomId);
 
@@ -169,69 +129,67 @@ export class ElevenLabsSessionManager implements VoiceAgentSessionManager {
 				console.warn(
 					`Received game-ending tool call for room ${roomId} without active game session`,
 				);
-				this.endingRooms.delete(roomId);
+				this.endingRoom = false;
 				return;
 			}
 
 			if (!roomService.isGameActive(roomId)) {
-				this.endingRooms.delete(roomId);
+				this.endingRoom = false;
 				return;
 			}
 
 			try {
 				await gameSession.stopGame();
 				console.log(
-					`Game session for room ${roomId} ended after game-ending tool call from peer ${peerId}`,
+					`Game session for room ${roomId} ended after game-ending tool call `,
 				);
 			} catch (error) {
 				console.error(
-					`Failed to stop game for room ${roomId} after game-ending tool call from peer ${peerId}:`,
+					`Failed to stop game for room ${roomId} after game-ending tool call `,
 					error,
 				);
 			} finally {
-				this.endingRooms.delete(roomId);
+				this.endingRoom = false;
 			}
 		});
 	}
 
-	async deleteSession(peerId: PeerId): Promise<void> {
-		const session = this.sessions.get(peerId);
-		const agentId = this.peerToAgentId.get(peerId);
+	getSession(): ElevenLabsConversation | null {
+		return this.session;
+	}
 
-		if (session) {
+	async deleteSession(): Promise<void> {
+		const agentId = this.agentId;
+
+		if (this.session) {
 			try {
-				await session.disconnect();
+				await this.session.disconnect();
 			} catch (error) {
-				console.error(`Error closing session for peer ${peerId}:`, error);
+				console.error(`Error closing session `, error);
 			}
-			this.sessions.delete(peerId);
 		}
 
 		if (agentId) {
 			try {
 				await elevenLabs.conversationalAi.agents.delete(agentId);
-				console.log(`Deleted ElevenLabs agent ${agentId} for peer ${peerId}`);
+				console.log(`Deleted ElevenLabs agent ${agentId} `);
 			} catch (error) {
-				console.error(
-					`Error deleting ElevenLabs agent ${agentId} for peer ${peerId}:`,
-					error,
-				);
+				console.error(`Error deleting ElevenLabs agent ${agentId} `, error);
 			}
-			this.peerToAgentId.delete(peerId);
 		}
 	}
 
-	getSession(peerId: PeerId): ElevenLabsConversation | undefined {
-		return this.sessions.get(peerId);
-	}
+	private async resolveStory(roomId: RoomId) {
+		const gameSession = roomService.getGameSession(roomId);
+		if (!gameSession) {
+			throw new GameSessionNotFoundError(roomId);
+		}
 
-	async cleanup(): Promise<void> {
-		const promises = Array.from(this.sessions.keys()).map((peerId) =>
-			this.deleteSession(peerId).catch((error) => {
-				console.error(`Failed to cleanup session for peer ${peerId}:`, error);
-			}),
-		);
+		const story = gameSession.getStory();
+		if (!story) {
+			throw new StoryNotFoundError(roomId);
+		}
 
-		await Promise.allSettled(promises);
+		return story;
 	}
 }

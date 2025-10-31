@@ -7,26 +7,31 @@ import { z } from 'zod';
 
 export const Notifications = publicProcedure
 	.input(
-		z
-			.object({
-				lastEventId: z.string().nullish(),
-			})
-			.optional(),
+		z.object({
+			lastEventId: z.string().nullish(),
+			roomId: z.string(),
+		}),
 	)
 	.subscription(async function* (opts) {
 		const lastEventId = opts.input?.lastEventId
 			? parseInt(opts.input.lastEventId, 10)
 			: undefined;
 
-		const history = notifierService.getEventHistory(lastEventId);
+		const roomId = opts.input.roomId;
+		const history = notifierService.getEventHistory(roomId, lastEventId);
 		console.log(`Replaying ${history.length} events from history`);
 		for (const { id, event } of history) {
 			yield tracked(id.toString(), event as AgentEvent);
 		}
 
-		for await (const [event, eventId] of on(notifierService, 'notification', {
-			signal: opts.signal,
-		})) {
+		for await (const [emittedRoomId, event, eventId] of on(
+			notifierService,
+			'notification',
+			{
+				signal: opts.signal,
+			},
+		)) {
+			if (emittedRoomId !== roomId) continue;
 			yield tracked(eventId.toString(), event as AgentEvent);
 		}
 	});
