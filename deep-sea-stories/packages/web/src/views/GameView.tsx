@@ -56,8 +56,8 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 	return (
 		<>
 			<section className="w-full h-1/2 flex gap-8 pt-10 px-10">
-				<AgentPanel />
-				<RoomControls roomId={roomId} userName={userName} />
+				<AgentPanel roomId={roomId} />
+				<RoomControls roomId={roomId} />
 			</section>
 			<section
 				className="w-full h-1/2 grid place-items-center gap-4 py-10 px-10"

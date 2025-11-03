@@ -12,6 +12,10 @@ import type { AgentEvent } from '@deep-sea-stories/common';
 import { ScrollArea } from './ui/scroll-area';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
 
+type AgentPanelProps = {
+	roomId: string;
+};
+
 type PanelEventProps = {
 	icon: LucideIcon;
 	timestamp: number;
@@ -113,8 +117,8 @@ const renderEvent = (event: AgentEvent, index: number) => {
 	}
 };
 
-const AgentPanel = () => {
-	const events = useAgentEvents();
+const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
+	const events = useAgentEvents(roomId);
 
 	return (
 		<ScrollArea className="grow col-span-2 border rounded-xl p-6">
