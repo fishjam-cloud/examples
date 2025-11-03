@@ -174,7 +174,11 @@ export class GameSession {
 			await this.voiceAgentSession.deleteSession();
 		}
 		this.setStory(undefined);
-		console.log(`Stopped game for room ${this.roomId}`);
+
+		if (this.audioOrchestrator) {
+			this.audioOrchestrator.shutdown();
+			this.audioOrchestrator = undefined;
+		}
 
 		notifierService.emitNotification(this.roomId, {
 			type: 'gameEnded' as const,
