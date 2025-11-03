@@ -1,6 +1,7 @@
 import {
 	LogIn,
 	LogOut,
+	BookText,
 	BookCheck,
 	OctagonMinus,
 	type LucideIcon,
@@ -8,7 +9,6 @@ import {
 } from 'lucide-react';
 import type { FC, PropsWithChildren } from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
-import blob from '@/assets/blob.png';
 import { ScrollArea } from './ui/scroll-area';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
 
@@ -71,6 +71,20 @@ const renderEvent = (event: AgentEvent, index: number) => {
 					</div>
 				</PanelEvent>
 			);
+		case 'storySelected':
+			return (
+				<PanelEvent
+					key={`${event.timestamp}-${index}`}
+					icon={BookText}
+					timestamp={event.timestamp}
+				>
+					<div className="text-lg">
+						<span className="font-bold">{event.userName}</span>
+						<span className="text-muted-foreground"> selected story </span>
+						<span className="font-bold">{event.storyTitle}</span>
+					</div>
+				</PanelEvent>
+			);
 		case 'gameEnded':
 			return (
 				<PanelEvent
@@ -103,16 +117,9 @@ const AgentPanel = () => {
 	const events = useAgentEvents();
 
 	return (
-		<div className="grid grid-cols-3 p-8 border rounded-xl">
-			<img
-				src={blob}
-				alt="agent-visualizer"
-				className="object-contain h-full"
-			/>
-			<ScrollArea className="grow col-span-2 border rounded-xl p-6">
-				{events.map((event, index) => renderEvent(event, index))}
-			</ScrollArea>
-		</div>
+		<ScrollArea className="grow col-span-2 border rounded-xl p-6">
+			{events.map((event, index) => renderEvent(event, index))}
+		</ScrollArea>
 	);
 };
 

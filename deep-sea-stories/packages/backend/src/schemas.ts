@@ -7,7 +7,16 @@ export const createPeerInputSchema = z.object({
 	name: z.string(),
 });
 
-export const startStoryInputSchema = z.object({
+export const selectStoryInputSchema = z.object({
 	roomId: z.string(),
 	storyId: z.number(),
+	userName: z.string(),
+});
+
+export const startStoryInputSchema = z.object({
+	roomId: z.string(),
+});
+
+export const stopGameInputSchema = z.object({
+	roomId: z.string(),
 });

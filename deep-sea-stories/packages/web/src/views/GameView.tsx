@@ -51,11 +51,13 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 
 	const gridColumns = displayedPeers.length + 1;
 
+	const userName = localPeer?.metadata?.peer?.name ?? 'Unknown';
+
 	return (
 		<>
 			<section className="w-full h-1/2 flex gap-8 pt-10 px-10">
 				<AgentPanel />
-				<RoomControls roomId={roomId} />
+				<RoomControls roomId={roomId} userName={userName} />
 			</section>
 			<section
 				className="w-full h-1/2 grid place-items-center gap-4 py-10 px-10"
