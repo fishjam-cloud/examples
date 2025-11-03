@@ -23,21 +23,33 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 	const [isCanceling, setIsCanceling] = useState(false);
 	const [isStarting, setIsStarting] = useState(false);
 	const trpc = useTRPCClient();
-	const events = useAgentEvents();
+	const events = useAgentEvents(roomId);
 
 	useEffect(() => {
 		void trpc.getStories.query();
 	}, [trpc]);
 
 	useEffect(() => {
-		const lastEvent = events[events.length - 1];
-		if (lastEvent?.type === 'storySelected') {
-			setSelectedStoryId(lastEvent.storyId);
-		} else if (lastEvent?.type === 'gameStarted') {
-			setIsGameActive(true);
-		} else if (lastEvent?.type === 'gameEnded') {
-			setIsGameActive(false);
+		const reverseEvents = [...events].reverse();
+		const lastGameEndedIndex = reverseEvents.findIndex(
+			(event) => event.type === 'gameEnded',
+		);
+		const startIndex =
+			lastGameEndedIndex === -1 ? 0 : events.length - lastGameEndedIndex;
+
+		setSelectedStoryId(null);
+		setIsGameActive(false);
+		for (let i = startIndex; i < events.length; i++) {
+			const event = events[i];
+			if (event.type === 'storySelected') {
+				setSelectedStoryId(event.storyId);
+			}
+			if (event.type === 'gameStarted') {
+				setIsGameActive(true);
+			}
 		}
+
+		console.log('Received agent events:', events);
 	}, [events]);
 
 	const handleStartGame = async () => {

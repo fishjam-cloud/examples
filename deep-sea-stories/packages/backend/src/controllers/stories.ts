@@ -22,7 +22,7 @@ export const selectStory = publicProcedure
 			const gameSession = roomService.getGameSession(input.roomId as RoomId);
 			gameSession?.setStory(selectedStory);
 
-			notifierService.emitNotification({
+			notifierService.emitNotification(input.roomId, {
 				type: 'storySelected' as const,
 				timestamp: Date.now(),
 				storyId: selectedStory.id,
