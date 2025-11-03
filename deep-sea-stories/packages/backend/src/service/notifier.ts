@@ -6,8 +6,11 @@ import type { AgentEvent } from '@deep-sea-stories/common';
 
 class NotifierService extends EventEmitter {
 	private notifier: FishjamWSNotifier | null = null;
-	private eventHistory: Array<{ id: number; event: AgentEvent }> = [];
-	private nextEventId = 1;
+	private eventHistories: Map<
+		string,
+		Array<{ id: number; event: AgentEvent }>
+	> = new Map();
+	private nextEventIdPerRoom: Map<string, number> = new Map();
 	private readonly MAX_HISTORY = 100;
 
 	async initialize() {
@@ -32,23 +35,30 @@ class NotifierService extends EventEmitter {
 		this.setupEventHandlers();
 	}
 
-	emitNotification(event: AgentEvent) {
-		const eventId = this.nextEventId++;
-		this.eventHistory.push({ id: eventId, event });
+	emitNotification(roomId: string, event: AgentEvent) {
+		const eventId = this.nextEventIdPerRoom.get(roomId) || 1;
+		this.nextEventIdPerRoom.set(roomId, eventId + 1);
 
-		if (this.eventHistory.length > this.MAX_HISTORY) {
-			this.eventHistory.shift();
+		const history = this.eventHistories.get(roomId) || [];
+		history.push({ id: eventId, event });
+		if (history.length > this.MAX_HISTORY) {
+			history.shift();
 		}
+		this.eventHistories.set(roomId, history);
 
 		console.log(`[NotifierService] Emitting notification #${eventId}:`, event);
-		this.emit('notification', event, eventId);
+		this.emit('notification', roomId, event, eventId);
 	}
 
-	getEventHistory(since?: number): Array<{ id: number; event: AgentEvent }> {
+	getEventHistory(
+		roomId: string,
+		since?: number,
+	): Array<{ id: number; event: AgentEvent }> {
+		const history = this.eventHistories.get(roomId) || [];
 		if (since === undefined) {
-			return [...this.eventHistory];
+			return [...history];
 		}
-		return this.eventHistory.filter((item) => item.id > since);
+		return history.filter((item) => item.id > since);
 	}
 
 	private setupEventHandlers() {
@@ -77,7 +87,7 @@ class NotifierService extends EventEmitter {
 					name: peerName,
 					timestamp: Date.now(),
 				};
-				this.emitNotification(playerJoinedEvent);
+				this.emitNotification(msg.roomId, playerJoinedEvent);
 			}
 
 			if (msg.peerId === peerId) {
@@ -118,7 +128,7 @@ class NotifierService extends EventEmitter {
 					name: peerName,
 					timestamp: Date.now(),
 				};
-				this.emitNotification(playerLeftEvent);
+				this.emitNotification(msg.roomId, playerLeftEvent);
 			}
 
 			gameSession.removeConnectedPeer(msg.peerId);
