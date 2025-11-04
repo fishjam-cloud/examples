@@ -7,7 +7,7 @@ import {
 	type LucideIcon,
 	MessageSquare,
 } from 'lucide-react';
-import type { FC, PropsWithChildren } from 'react';
+import { useEffect, useRef, type FC, type PropsWithChildren } from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
 import { ScrollArea } from './ui/scroll-area';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
@@ -119,9 +119,20 @@ const renderEvent = (event: AgentEvent, index: number) => {
 
 const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 	const events = useAgentEvents(roomId);
+	const viewportRef = useRef<HTMLDivElement>(null);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Need to scroll when events array changes
+	useEffect(() => {
+		if (viewportRef.current) {
+			viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
+		}
+	}, [events.length]);
 
 	return (
-		<ScrollArea className="grow col-span-2 border rounded-xl p-6">
+		<ScrollArea
+			viewportRef={viewportRef}
+			className="grow col-span-2 border rounded-xl p-6"
+		>
 			{events.map((event, index) => renderEvent(event, index))}
 		</ScrollArea>
 	);
