@@ -65,24 +65,25 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
   }, [trpcClient, roomId, joinRoom, name]);
 
   return (
-    <section className="space-y-8 py-8">
-      <h1 className="font-title w-full text-center text-3xl">
+    <section className="space-y-4 py-8">
+      <h1 className="font-title w-full text-center text-4xl">
         Deep Sea Stories
       </h1>
 
-      <section className="w-full md:pt-8 text-center flex flex-col gap-8">
-        <div className="text-2xl md:text-4xl font-display">
+      <section className="w-full md:pt-8 text-center flex flex-col gap-4">
+        <div className="text-2xl md:text-3xl font-display">
           Finish a player setup
         </div>
-        <div className="text-lg md:text-2xl">
+        <div className="text-lg md:text-xl">
           Enter your player’s name and test out your camera and microphone.
         </div>
       </section>
 
-      <section className="w-full flex-1 grid place-items-center">
-        <div className="max-w-2xl h-full flex flex-col gap-4 items-center justify-between">
+      <section className="flex-1 grid place-items-center">
+        <div className="max-w-xl h-full flex flex-col gap-4 items-center justify-between">
           <Input
             className="font-display"
+            autoFocus
             onChange={(e) => setName(e.target.value)}
             value={name}
             placeholder="Enter your name"
