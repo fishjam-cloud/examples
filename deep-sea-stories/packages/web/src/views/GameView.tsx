@@ -53,14 +53,17 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 
   return (
     <>
-      <section className="w-full h-1/2 flex gap-8 pt-10 px-10">
+      <section className="w-full h-1/2 flex flex-col md:flex-row gap-8 pt-10 px-10">
         <AgentPanel roomId={roomId} />
         <RoomControls roomId={roomId} />
       </section>
+
       <section
         className="w-full h-1/2 grid place-items-center gap-4 py-10 px-10"
         style={{
-          gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
+          gridTemplateColumns: `repeat(${Math.min(2, gridColumns)}, minmax(0, 1fr))`,
+          gridTemplateRows: `repeat(${Math.floor(Math.min(2, gridColumns) / 2)}, minmax(0, 1fr))`,
+          gridAutoRows: "1fr",
         }}
       >
         <PeerTile
@@ -68,6 +71,7 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
           name="You"
           stream={localPeer?.cameraTrack?.stream}
         />
+
         {displayedPeers.map((peer) => (
           <PeerTile
             className="max-w-2xl"

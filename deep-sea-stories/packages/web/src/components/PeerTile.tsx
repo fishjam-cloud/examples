@@ -30,7 +30,7 @@ export const PeerTile: FC<PeerTileProps> = ({
   return (
     <div
       className={cn(
-        "h-full w-full grid place-items-center border rounded-xl min-h-32 md:min-h-48",
+        "h-full w-full grid place-items-center border rounded-xl min-h-32",
         className,
       )}
       {...props}
@@ -45,7 +45,9 @@ export const PeerTile: FC<PeerTileProps> = ({
           ref={videoRef}
         ></video>
       ) : (
-        <div className="text-sm md:text-xl font-display text-center p-2">{name}</div>
+        <div className="text-sm md:text-xl font-display text-center p-2">
+          {name}
+        </div>
       )}
       {/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
       <audio ref={audioRef} autoPlay playsInline title={`Audio from ${name}`} />

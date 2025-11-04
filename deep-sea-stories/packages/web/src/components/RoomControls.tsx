@@ -8,6 +8,7 @@ import StorySelectionPanel from "./StorySelectionPanel";
 import { Button } from "./ui/button";
 import { toast } from "./ui/sonner";
 import { useTRPCClient } from "@/contexts/trpc";
+import { DeepSeaLogo } from "./DeepSeaLogo";
 
 export type RoomControlsProps = {
   roomId: string;
@@ -24,9 +25,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
 
   return (
     <div className="flex flex-col py-2 md:py-6 gap-4 md:gap-8">
-      <section className="font-title text-xl md:text-2xl text-center hidden md:block">
-        Deep Sea Stories
-      </section>
+      <DeepSeaLogo className="hidden md:block" />
 
       <section className="w-full flex-none grid grid-cols-2 md:flex md:flex-col gap-4">
         <Button
