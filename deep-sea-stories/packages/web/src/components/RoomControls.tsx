@@ -18,39 +18,27 @@ export type RoomControlsProps = {
 const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 	const url = `https://deepsea.fishjam.io/${roomId}`;
 	const [isStoryPanelOpen, setIsStoryPanelOpen] = useState(false);
-	const [selectedStoryId, setSelectedStoryId] = useState<number | null>(null);
-	const [isGameActive, setIsGameActive] = useState(false);
 	const [isCanceling, setIsCanceling] = useState(false);
 	const [isStarting, setIsStarting] = useState(false);
 	const trpc = useTRPCClient();
 	const events = useAgentEvents(roomId);
 
+	const reversedEvents = [...events].reverse();
+	const lastGameEndedIndex = reversedEvents.findIndex(
+		(event) => event.type === 'gameEnded',
+	);
+	const startIndex = (events.length - 1 - lastGameEndedIndex) % events.length;
+	const currentGameEvents = events.slice(startIndex);
+	const isStorySelected = currentGameEvents.some(
+		(event) => event.type === 'storySelected',
+	);
+	const isGameActive = currentGameEvents.some(
+		(event) => event.type === 'gameStarted',
+	);
+
 	useEffect(() => {
 		void trpc.getStories.query();
 	}, [trpc]);
-
-	useEffect(() => {
-		const reverseEvents = [...events].reverse();
-		const lastGameEndedIndex = reverseEvents.findIndex(
-			(event) => event.type === 'gameEnded',
-		);
-		const startIndex =
-			lastGameEndedIndex === -1 ? 0 : events.length - lastGameEndedIndex;
-
-		setSelectedStoryId(null);
-		setIsGameActive(false);
-		for (let i = startIndex; i < events.length; i++) {
-			const event = events[i];
-			if (event.type === 'storySelected') {
-				setSelectedStoryId(event.storyId);
-			}
-			if (event.type === 'gameStarted') {
-				setIsGameActive(true);
-			}
-		}
-
-		console.log('Received agent events:', events);
-	}, [events]);
 
 	const handleStartGame = async () => {
 		setIsStarting(true);
@@ -71,7 +59,6 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 		try {
 			await trpc.stopGame.mutate({ roomId });
 			toast('Game cancelled successfully', Check);
-			setIsGameActive(false);
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : 'Failed to cancel game';
@@ -87,7 +74,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 				Deep Sea Stories
 			</section>
 			<section className="w-full grow flex flex-col gap-4">
-				{!selectedStoryId ? (
+				{!isStorySelected ? (
 					<Button
 						size="large"
 						className="w-full"

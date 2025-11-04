@@ -35,85 +35,69 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 	</div>
 );
 
-const renderEvent = (event: AgentEvent, index: number) => {
+const getEventConfig = (event: AgentEvent) => {
 	switch (event.type) {
 		case 'playerJoined':
-			return (
-				<PanelEvent
-					key={`${event.timestamp}-${index}`}
-					icon={LogIn}
-					timestamp={event.timestamp}
-				>
+			return {
+				icon: LogIn,
+				body: (
 					<div className="text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has joined the game</span>
 					</div>
-				</PanelEvent>
-			);
+				),
+			};
 		case 'playerLeft':
-			return (
-				<PanelEvent
-					key={`${event.timestamp}-${index}`}
-					icon={LogOut}
-					timestamp={event.timestamp}
-				>
+			return {
+				icon: LogOut,
+				body: (
 					<div className="text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has left the game</span>
 					</div>
-				</PanelEvent>
-			);
+				),
+			};
 		case 'gameStarted':
-			return (
-				<PanelEvent
-					key={`${event.timestamp}-${index}`}
-					icon={BookCheck}
-					timestamp={event.timestamp}
-				>
+			return {
+				icon: BookCheck,
+				body: (
 					<div className="text-lg">
 						<span className="text-muted-foreground">Game Started</span>
 					</div>
-				</PanelEvent>
-			);
+				),
+			};
 		case 'storySelected':
-			return (
-				<PanelEvent
-					key={`${event.timestamp}-${index}`}
-					icon={BookText}
-					timestamp={event.timestamp}
-				>
+			return {
+				icon: BookText,
+				body: (
 					<div className="text-lg">
 						<span className="font-bold">{event.userName}</span>
 						<span className="text-muted-foreground"> selected story </span>
 						<span className="font-bold">{event.storyTitle}</span>
 					</div>
-				</PanelEvent>
-			);
+				),
+			};
 		case 'gameEnded':
-			return (
-				<PanelEvent
-					key={`${event.timestamp}-${index}`}
-					icon={OctagonMinus}
-					timestamp={event.timestamp}
-				>
+			return {
+				icon: OctagonMinus,
+				body: (
 					<div className="text-lg">
 						<span className="text-muted-foreground">Game Ended</span>
 					</div>
-				</PanelEvent>
-			);
+				),
+			};
 		case 'transcription':
-			return (
-				<PanelEvent
-					key={`${event.timestamp}-${index}`}
-					icon={MessageSquare}
-					timestamp={event.timestamp}
-				>
-					<div className="text-lg font-bold grow">Storyteller</div>
-					<div className="text-lg">
-						<p>{event.text}</p>
-					</div>
-				</PanelEvent>
-			);
+			return {
+				icon: MessageSquare,
+				body: (
+					<>
+						<div className="text-lg font-bold grow">Storyteller</div>
+						<div className="text-lg">
+							<p>{event.text}</p>
+						</div>
+					</>
+				),
+			};
 	}
 };
 
@@ -133,7 +117,18 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 			viewportRef={viewportRef}
 			className="grow col-span-2 border rounded-xl p-6"
 		>
-			{events.map((event, index) => renderEvent(event, index))}
+			{events.map((event, index) => {
+				const { icon, body } = getEventConfig(event);
+				return (
+					<PanelEvent
+						key={`${event.timestamp}-${index}`}
+						icon={icon}
+						timestamp={event.timestamp}
+					>
+						{body}
+					</PanelEvent>
+				);
+			})}
 		</ScrollArea>
 	);
 };
