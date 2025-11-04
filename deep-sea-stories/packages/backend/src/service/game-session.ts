@@ -39,7 +39,7 @@ class MyWebSocketFactory implements WebSocketFactory {
 		const ws = new WebSocket(url, options);
 		ws.on('error', (err) => {
 			console.error('WebSocket error:', err);
-		})
+		});
 		return ws;
 	}
 }
