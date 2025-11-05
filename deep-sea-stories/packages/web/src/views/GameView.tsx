@@ -1,8 +1,4 @@
-import {
-	useCamera,
-	useInitializeDevices,
-	usePeers,
-} from '@fishjam-cloud/react-client';
+import { usePeers } from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
 import { useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -10,6 +6,7 @@ import AgentPanel from '@/components/AgentPanel';
 import { PeerTile } from '@/components/PeerTile';
 import RoomControls from '@/components/RoomControls';
 import { useTRPCClient } from '@/contexts/trpc';
+import { cn } from '@/lib/utils';
 
 export type GameViewProps = {
 	roomId: string;
@@ -25,12 +22,6 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 		queryFn: () => trpcClient.getRoom.query({ roomId }),
 		staleTime: Infinity,
 	});
-
-	const { cameraStream } = useCamera();
-	const { initializeDevices } = useInitializeDevices();
-	useEffect(() => {
-		initializeDevices();
-	}, [initializeDevices]);
 
 	const agentPeerId = useMemo(
 		() => roomData?.peers?.find((peer) => peer.type === 'agent')?.id,
@@ -59,8 +50,6 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 		agentAudioRef.current.srcObject = audioStream ?? null;
 	}, [agentPeer?.tracks[0]?.stream]);
 
-	const gridColumns = displayedPeers.length + 1;
-
 	return (
 		<>
 			<section className="w-full h-1/2 flex flex-col md:flex-row gap-8 pt-10 px-10">
@@ -69,17 +58,19 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 			</section>
 
 			<section
-				className="w-full h-1/2 grid gap-4 py-10 px-10 overflow-hidden"
-				style={{
-					gridTemplateColumns: `repeat(${Math.min(2, gridColumns)}, minmax(0, 1fr))`,
-					gridTemplateRows: `repeat(${Math.ceil(gridColumns / 2)}, minmax(0, 1fr))`,
-				}}
+				className={cn(
+					'h-1/2 items-center mx-auto grid gap-4 py-10 px-10 overflow-hidden grid-cols-2 grid-rows-2 md:grid-cols-4 md:grid-rows-1',
+					{
+						'grid-cols-1 grid-rows-1': displayedPeers.length === 0,
+						'grid-rows-2 grid-cols-1 md:grid-cols-2':
+							displayedPeers.length <= 1,
+					},
+				)}
 			>
-				<PeerTile name="You" stream={cameraStream} />
+				<PeerTile name="You" stream={localPeer?.cameraTrack?.stream} />
 
 				{displayedPeers.map((peer) => (
 					<PeerTile
-						className="max-w-2xl"
 						name={peer.metadata?.peer?.name ?? peer.id}
 						key={peer.id}
 						stream={

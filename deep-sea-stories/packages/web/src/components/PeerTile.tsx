@@ -37,7 +37,7 @@ export const PeerTile: FC<PeerTileProps> = ({
 		>
 			{stream ? (
 				<video
-					className="h-fit md:h-full rounded-xl max-w-full object-contain"
+					className="h-fit  rounded-xl max-w-full object-contain"
 					autoPlay
 					muted
 					disablePictureInPicture
