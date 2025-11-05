@@ -12,14 +12,14 @@ const HowToPlay: FC<ButtonProps> = ({ variant, ...props }) => (
 	<Dialog>
 		<DialogTrigger asChild>
 			<Button variant={variant ?? 'outline'} {...props}>
-				How to play?
+				Help
 			</Button>
 		</DialogTrigger>
-		<DialogContent className="bg-accent p-12 w-4xl rounded-4xl">
+		<DialogContent className="bg-accent p-12 max-w-4xl rounded-4xl">
 			<DialogHeader className="font-display text-2xl pb-4">
 				How to play Deep Sea Stories?
 			</DialogHeader>
-			<DialogDescription className="text-lg text-primary flex flex-col gap-4">
+			<DialogDescription className="text-lg text-primary flex flex-col gap-4 overflow-auto max-h-[50vh]">
 				<p>
 					“Deep Sea Stories” are a loose adaptation of the well-known game
 					called “Dark Stories”. With the help of an AI agent and room you can

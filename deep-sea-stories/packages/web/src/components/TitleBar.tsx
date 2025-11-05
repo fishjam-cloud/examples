@@ -1,10 +1,12 @@
 import type { FC } from 'react';
+import { DeepSeaLogo } from './DeepSeaLogo';
 
 const TitleBar: FC = () => {
 	return (
-		<div className="flex w-full pt-16 flex-col items-center justify-between gap-10">
-			<h1 className="font-title text-8xl">Deep Sea Stories</h1>
-			<h2 className="font-display text-3xl">
+		<div className="w-full space-y-4 text-center">
+			<DeepSeaLogo className="text-6xl xl:text-8xl" />
+
+			<h2 className="font-display text-xl lg:text-3xl">
 				Hear the most mysterious stories and try to deduce how they happened.
 			</h2>
 		</div>

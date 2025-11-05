@@ -23,7 +23,7 @@ export default function HomeView() {
 	};
 
 	return (
-		<>
+		<section className="h-full w-full flex justify-between flex-col py-16 px-4 lg:px-16">
 			<TitleBar />
 			<section className="flex-1 py-16 grid place-items-center">
 				<Button
@@ -36,6 +36,6 @@ export default function HomeView() {
 				</Button>
 			</section>
 			<Footer />
-		</>
+		</section>
 	);
 }
