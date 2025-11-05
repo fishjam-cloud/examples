@@ -30,14 +30,14 @@ export const PeerTile: FC<PeerTileProps> = ({
 	return (
 		<div
 			className={cn(
-				'h-full flex items-center justify-center rounded-xl overflow-hidden',
+				'h-full w-full border flex items-center justify-center rounded-xl overflow-hidden',
 				className,
 			)}
 			{...props}
 		>
 			{stream ? (
 				<video
-					className="h-fit  rounded-xl max-w-full object-contain"
+					className="h-fit rounded-xl max-w-full object-contain"
 					autoPlay
 					muted
 					disablePictureInPicture
