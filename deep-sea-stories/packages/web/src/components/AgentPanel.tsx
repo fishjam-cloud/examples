@@ -107,7 +107,7 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 	const events = useAgentEvents(roomId);
 
 	return (
-		<div className="md:grid grid-cols-3 flex flex-col md:p-8 md:border rounded-xl h-full">
+		<div className="md:grid grid-cols-3 flex flex-col md:p-8 md:border rounded-xl overflow-y-auto">
 			<img
 				src={blob}
 				alt="agent-visualizer"
