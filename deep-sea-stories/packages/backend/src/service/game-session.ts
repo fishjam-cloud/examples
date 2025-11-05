@@ -22,6 +22,7 @@ export class GameSession {
 	private fishjamAgentId: PeerId | undefined;
 	private audioOrchestrator: AudioStreamingOrchestrator | undefined;
 	private voiceAgentSession: ElevenLabsSessionManager | undefined;
+	private isGameStarting: boolean = false;
 
 	constructor(roomId: RoomId) {
 		this.roomId = roomId;
@@ -103,8 +104,12 @@ export class GameSession {
 		this.fishjamAgentId = peer.id;
 	}
 
-	async startGame(story: Story): Promise<void> {
-		this.setStory(story);
+	async startGame(): Promise<void> {
+		if (this.isGameStarting || this.voiceAgentSession) {
+			console.log(`Game is already starting or active for room ${this.roomId}`);
+			return;
+		}
+		this.isGameStarting = true;
 
 		if (this.connectedPeers.size === 0) {
 			throw new NoPeersConnectedError(this.roomId);
@@ -127,6 +132,7 @@ export class GameSession {
 			type: 'gameStarted' as const,
 			timestamp: Date.now(),
 		});
+		this.isGameStarting = false;
 	}
 
 	async startGameForPeer(peerId: PeerId): Promise<void> {
@@ -172,6 +178,7 @@ export class GameSession {
 	async stopGame(): Promise<void> {
 		if (this.voiceAgentSession) {
 			await this.voiceAgentSession.deleteSession();
+			this.voiceAgentSession = undefined;
 		}
 		this.setStory(undefined);
 

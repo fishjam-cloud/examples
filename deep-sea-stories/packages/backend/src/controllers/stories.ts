@@ -51,7 +51,7 @@ export const startStory = publicProcedure
 				throw new Error('No story selected. Please select a story first.');
 			}
 
-			await gameSession?.startGame(story);
+			await gameSession?.startGame();
 
 			return {
 				success: true,
