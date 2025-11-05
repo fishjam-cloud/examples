@@ -1,4 +1,8 @@
-import { usePeers } from '@fishjam-cloud/react-client';
+import {
+	useCamera,
+	useInitializeDevices,
+	usePeers,
+} from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
 import { useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -21,6 +25,12 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 		queryFn: () => trpcClient.getRoom.query({ roomId }),
 		staleTime: Infinity,
 	});
+
+	const { cameraStream } = useCamera();
+	const { initializeDevices } = useInitializeDevices();
+	useEffect(() => {
+		initializeDevices();
+	}, [initializeDevices]);
 
 	const agentPeerId = useMemo(
 		() => roomData?.peers?.find((peer) => peer.type === 'agent')?.id,
@@ -59,18 +69,13 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 			</section>
 
 			<section
-				className="w-full h-1/2 grid place-items-center gap-4 py-10 px-10"
+				className="w-full h-1/2 grid gap-4 py-10 px-10 overflow-hidden"
 				style={{
 					gridTemplateColumns: `repeat(${Math.min(2, gridColumns)}, minmax(0, 1fr))`,
-					gridTemplateRows: `repeat(${Math.floor(Math.min(2, gridColumns) / 2)}, minmax(0, 1fr))`,
-					gridAutoRows: '1fr',
+					gridTemplateRows: `repeat(${Math.ceil(gridColumns / 2)}, minmax(0, 1fr))`,
 				}}
 			>
-				<PeerTile
-					className="max-w-2xl"
-					name="You"
-					stream={localPeer?.cameraTrack?.stream}
-				/>
+				<PeerTile name="You" stream={cameraStream} />
 
 				{displayedPeers.map((peer) => (
 					<PeerTile
