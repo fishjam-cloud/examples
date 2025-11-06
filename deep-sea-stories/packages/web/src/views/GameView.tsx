@@ -1,6 +1,4 @@
-import {
-	usePeers,
-} from '@fishjam-cloud/react-client';
+import { usePeers } from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
 import { useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -55,14 +53,14 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 	const userName = localPeer?.metadata?.peer?.name ?? 'Unknown';
 	return (
 		<>
-			<section className="w-full h-1/2 flex flex-col md:flex-row gap-8 pt-10 px-10">
+			<section className="w-full h-1/2 md:h-1/2 flex flex-col md:flex-row gap-4 md:gap-8 pt-6 md:pt-10 px-6 md:px-10">
 				<AgentPanel roomId={roomId} />
 				<RoomControls roomId={roomId} userName={userName} />
 			</section>
 
 			<section
 				className={cn(
-					'h-1/2 items-center w-full justify-items-center grid gap-4 py-10 overflow-hidden grid-cols-2 grid-rows-2 xl:grid-cols-4 xl:grid-rows-1',
+					'h-1/2 md:h-1/2 items-center w-full justify-items-center grid gap-4 py-10 overflow-hidden grid-cols-2 grid-rows-2 xl:grid-cols-4 xl:grid-rows-1',
 					{
 						'grid-cols-1 grid-rows-1 xl:grid-cols-1 md:grid-rows-1':
 							displayedPeers.length === 0,
