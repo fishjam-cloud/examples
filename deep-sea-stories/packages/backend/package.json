@@ -5,7 +5,7 @@
 	"type": "module",
 	"dependencies": {
 		"@deep-sea-stories/common": "workspace:*",
-		"@elevenlabs/elevenlabs-js": "^2.19.0",
+		"@elevenlabs/elevenlabs-js": "^2.20.0",
 		"@fastify/cors": "^11.1.0",
 		"@fishjam-cloud/js-server-sdk": "^0.22.0",
 		"@trpc/server": "^11.6.0",
