@@ -35,70 +35,76 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 	</div>
 );
 
-const getEventConfig = (event: AgentEvent) => {
-	switch (event.type) {
-		case 'playerJoined':
-			return {
-				icon: LogIn,
-				body: (
-					<div className="text-xs md:text-lg">
-						<span className="font-bold">{event.name}</span>
-						<span className="text-muted-foreground"> has joined the game</span>
-					</div>
-				),
-			};
-		case 'playerLeft':
-			return {
-				icon: LogOut,
-				body: (
-					<div className="text-xs md:text-lg">
-						<span className="font-bold">{event.name}</span>
-						<span className="text-muted-foreground"> has left the game</span>
-					</div>
-				),
-			};
-		case 'gameStarted':
-			return {
-				icon: BookCheck,
-				body: (
-					<div className="text-xs md:text-lg">
-						<span className="text-muted-foreground">Game Started</span>
-					</div>
-				),
-			};
-		case 'storySelected':
-			return {
-				icon: BookText,
-				body: (
-					<div className="text-xs md:text-lg">
-						<span className="font-bold">{event.userName}</span>
-						<span className="text-muted-foreground"> selected story </span>
-						<span className="font-bold">{event.storyTitle}</span>
-					</div>
-				),
-			};
-		case 'gameEnded':
-			return {
-				icon: OctagonMinus,
-				body: (
-					<div className="text-xs md:text-lg">
-						<span className="text-muted-foreground">Game Ended</span>
-					</div>
-				),
-			};
-		case 'transcription':
-			return {
-				icon: MessageSquare,
-				body: (
-					<>
-						<div className="text-xs md:text-lg font-bold grow">Storyteller</div>
-						<div className="text-xs md:text-lg">
-							<p>{event.text}</p>
-						</div>
-					</>
-				),
-			};
+const eventConfigMap: Record<
+	AgentEvent['type'],
+	{
+		icon: LucideIcon;
+		renderBody: (event: AgentEvent) => React.ReactElement;
 	}
+> = {
+	playerJoined: {
+		icon: LogIn,
+		renderBody: (event) => (
+			<div className="text-xs md:text-lg">
+				<span className="font-bold">
+					{event.type === 'playerJoined' ? event.name : ''}
+				</span>
+				<span className="text-muted-foreground"> has joined the game</span>
+			</div>
+		),
+	},
+	playerLeft: {
+		icon: LogOut,
+		renderBody: (event) => (
+			<div className="text-xs md:text-lg">
+				<span className="font-bold">
+					{event.type === 'playerLeft' ? event.name : ''}
+				</span>
+				<span className="text-muted-foreground"> has left the game</span>
+			</div>
+		),
+	},
+	gameStarted: {
+		icon: BookCheck,
+		renderBody: () => (
+			<div className="text-xs md:text-lg">
+				<span className="text-muted-foreground">Game Started</span>
+			</div>
+		),
+	},
+	storySelected: {
+		icon: BookText,
+		renderBody: (event) => (
+			<div className="text-xs md:text-lg">
+				<span className="font-bold">
+					{event.type === 'storySelected' ? event.userName : ''}
+				</span>
+				<span className="text-muted-foreground"> selected story </span>
+				<span className="font-bold">
+					{event.type === 'storySelected' ? event.storyTitle : ''}
+				</span>
+			</div>
+		),
+	},
+	gameEnded: {
+		icon: OctagonMinus,
+		renderBody: () => (
+			<div className="text-xs md:text-lg">
+				<span className="text-muted-foreground">Game Ended</span>
+			</div>
+		),
+	},
+	transcription: {
+		icon: MessageSquare,
+		renderBody: (event) => (
+			<>
+				<div className="text-xs md:text-lg font-bold grow">Storyteller</div>
+				<div className="text-xs md:text-lg">
+					<p>{event.type === 'transcription' ? event.text : ''}</p>
+				</div>
+			</>
+		),
+	},
 };
 
 const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
@@ -118,14 +124,14 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 			className="grow col-span-2 border rounded-xl p-2 md:p-6 md:mt-0 md:ml-4"
 		>
 			{events.map((event, index) => {
-				const { icon, body } = getEventConfig(event);
+				const config = eventConfigMap[event.type];
 				return (
 					<PanelEvent
 						key={`${event.timestamp}-${index}`}
-						icon={icon}
+						icon={config.icon}
 						timestamp={event.timestamp}
 					>
-						{body}
+						{config.renderBody(event)}
 					</PanelEvent>
 				);
 			})}
