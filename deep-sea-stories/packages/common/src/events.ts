@@ -21,6 +21,13 @@ export interface GameEndedEvent extends BaseEvent {
 	type: 'gameEnded';
 }
 
+export interface StorySelectedEvent extends BaseEvent {
+	type: 'storySelected';
+	storyId: number;
+	storyTitle: string;
+	userName: string;
+}
+
 export interface TranscriptionEvent extends BaseEvent {
 	type: 'transcription';
 	text: string;
@@ -31,4 +38,5 @@ export type AgentEvent =
 	| PlayerLeftEvent
 	| GameStartedEvent
 	| GameEndedEvent
+	| StorySelectedEvent
 	| TranscriptionEvent;

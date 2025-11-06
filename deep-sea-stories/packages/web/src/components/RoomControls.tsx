@@ -8,39 +8,115 @@ import StorySelectionPanel from './StorySelectionPanel';
 import { Button } from './ui/button';
 import { toast } from './ui/sonner';
 import { useTRPCClient } from '@/contexts/trpc';
+import { useAgentEvents } from '@/hooks/useAgentEvents';
 import { DeepSeaLogo } from './DeepSeaLogo';
 
 export type RoomControlsProps = {
 	roomId: string;
+	userName: string;
 };
 
-const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
+const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 	const url = `https://deepsea.fishjam.io/${roomId}`;
 	const [isStoryPanelOpen, setIsStoryPanelOpen] = useState(false);
+	const [isCanceling, setIsCanceling] = useState(false);
+	const [isStarting, setIsStarting] = useState(false);
 	const trpc = useTRPCClient();
+	const events = useAgentEvents(roomId);
+
+	const reversedEvents = [...events].reverse();
+	const lastGameEndedIndex = reversedEvents.findIndex(
+		(event) => event.type === 'gameEnded',
+	);
+	const startIndex = (events.length - 1 - lastGameEndedIndex) % events.length;
+	const currentGameEvents = events.slice(startIndex);
+	const isStorySelected = currentGameEvents.some(
+		(event) => event.type === 'storySelected',
+	);
+	const isGameActive = currentGameEvents.some(
+		(event) => event.type === 'gameStarted',
+	);
 
 	useEffect(() => {
 		void trpc.getStories.query();
 	}, [trpc]);
 
+	const handleStartGame = async () => {
+		setIsStarting(true);
+		try {
+			await trpc.startStory.mutate({ roomId });
+			toast('Game started successfully', Check);
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to start game';
+			toast(`Error: ${errorMessage}`, Check);
+		} finally {
+			setIsStarting(false);
+		}
+	};
+
+	const handleCancelGame = async () => {
+		setIsCanceling(true);
+		try {
+			await trpc.stopGame.mutate({ roomId });
+			toast('Game cancelled successfully', Check);
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to cancel game';
+			toast(`Error: ${errorMessage}`, Check);
+		} finally {
+			setIsCanceling(false);
+		}
+	};
+
 	return (
-		<div className="flex flex-col py-2 md:py-6 gap-4 md:gap-8">
+		<div className="flex flex-col py-2 md:py-6 gap-2 md:gap-8">
 			<DeepSeaLogo className="hidden md:block" />
+			<section className="w-full flex-none grid grid-cols-2 md:flex md:flex-col gap-2 md:gap-4">
+				{!isStorySelected ? (
+					<Button
+						size="large"
+						className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-16"
+						onClick={() => setIsStoryPanelOpen(true)}
+					>
+						Choose a story
+					</Button>
+				) : isGameActive ? (
+					<Button
+						size="large"
+						variant="outline"
+						className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-16"
+						onClick={handleCancelGame}
+						disabled={isCanceling}
+					>
+						{isCanceling ? 'Cancelling...' : 'Cancel the Game'}
+					</Button>
+				) : (
+					<>
+						<Button
+							className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-12"
+							onClick={handleStartGame}
+							disabled={isStarting}
+						>
+							{isStarting ? 'Starting...' : 'Start the Game'}
+						</Button>
+						<Button
+							className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-12"
+							variant="outline"
+							onClick={() => setIsStoryPanelOpen(true)}
+						>
+							Change the scenario
+						</Button>
+					</>
+				)}
+			</section>
+			<section className="w-full flex-none flex flex-col gap-2 md:gap-4">
+				<HowToPlay className="w-full text-xs md:text-base h-9 md:h-12" />
+				<HowItWorks className="w-full text-xs md:text-base h-9 md:h-12" />
 
-			<section className="w-full flex-none grid grid-cols-2 md:flex md:flex-col gap-4">
-				<Button
-					size="large"
-					className="col-span-2 md:w-full text-sm md:text-base"
-					onClick={() => setIsStoryPanelOpen(true)}
-				>
-					Choose a story
-				</Button>
-
-				<HowToPlay className="w-full text-sm md:text-base" />
-				<HowItWorks className="w-full text-sm md:text-base" />
 				<CopyButton
 					variant="outline"
-					className="col-span-2 md:col-span-1 text-sm md:text-base"
+					className="col-span-2 md:col-span-1 text-xs md:text-base h-9 md:h-12"
 					onCopy={() => toast('Gameroom link copied to clipboard', Check)}
 					value={url}
 				>
@@ -52,6 +128,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId }) => {
 				isOpen={isStoryPanelOpen}
 				onClose={() => setIsStoryPanelOpen(false)}
 				roomId={roomId}
+				userName={userName}
 			/>
 		</div>
 	);

@@ -275,6 +275,26 @@ export class AudioStreamingOrchestrator {
 		this.setupOutgoingAudioPipeline();
 	}
 
+	shutdown(): void {
+		for (const vadStream of this.vadStreams.values()) {
+			vadStream.unpipe();
+		}
+		this.vadStreams.clear();
+
+		if (this.silenceIntervalId) {
+			clearInterval(this.silenceIntervalId);
+			this.silenceIntervalId = null;
+			console.log(
+				'[Orchestrator] Cleared silence keep-alive interval (cleanup)',
+			);
+		}
+
+		if (this.fishjamAgent) {
+			this.fishjamAgent.removeAllListeners('trackData');
+			this.fishjamAgent.deleteTrack(this.audioTrackId as TrackId);
+		}
+	}
+
 	addPeer(peerId: PeerId): void {
 		if (!this.vadStreams.has(peerId)) {
 			this.initializeVADStream(peerId);

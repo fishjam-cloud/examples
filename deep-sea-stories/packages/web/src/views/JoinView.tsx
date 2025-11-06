@@ -4,8 +4,9 @@ import {
 	useInitializeDevices,
 	useMicrophone,
 } from '@fishjam-cloud/react-client';
-import { Camera, Mic } from 'lucide-react';
+import { Camera, Mic, User } from 'lucide-react';
 import type { FC } from 'react';
+import { toast } from '@/components/ui/sonner';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeviceSelect } from '@/components/DeviceSelect';
 import { PeerTile } from '@/components/PeerTile';
@@ -48,7 +49,10 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 
 	const handleEnterRoom = useCallback(async () => {
 		if (!roomId) return;
-		if (!name) return;
+		if (!name) {
+			toast('Please enter your name', User);
+			return;
+		}
 
 		try {
 			const { token } = await trpcClient.createPeer.mutate({

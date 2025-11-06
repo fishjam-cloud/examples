@@ -1,13 +1,7 @@
 import { Check } from 'lucide-react';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { useTRPCClient } from '@/contexts/trpc';
 import { toast } from './ui/sonner';
@@ -17,6 +11,7 @@ export type StorySelectionPanelProps = {
 	isOpen: boolean;
 	onClose: () => void;
 	roomId: string;
+	userName: string;
 	onStorySelected?: (storyIndex: number) => void;
 };
 
@@ -24,6 +19,7 @@ const StorySelectionPanel: FC<StorySelectionPanelProps> = ({
 	isOpen,
 	onClose,
 	roomId,
+	userName,
 	onStorySelected,
 }) => {
 	const trpcClient = useTRPCClient();
@@ -56,16 +52,17 @@ const StorySelectionPanel: FC<StorySelectionPanelProps> = ({
 
 		setIsStarting(true);
 		try {
-			await trpcClient.startStory.mutate({
+			await trpcClient.selectStory.mutate({
 				roomId,
 				storyId: selectedStoryId,
+				userName,
 			});
-			toast('Story started successfully', Check);
+			toast('Story selected successfully', Check);
 			onStorySelected?.(selectedStoryId);
 			onClose();
 		} catch (error) {
 			const errorMessage =
-				error instanceof Error ? error.message : 'Failed to start story';
+				error instanceof Error ? error.message : 'Failed to select story';
 			toast(`Error: ${errorMessage}`, Check);
 		} finally {
 			setIsStarting(false);
@@ -76,10 +73,7 @@ const StorySelectionPanel: FC<StorySelectionPanelProps> = ({
 		<Dialog open={isOpen} onOpenChange={onClose}>
 			<DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
 				<DialogHeader>
-					<DialogTitle>Choose a Story</DialogTitle>
-					<DialogDescription>
-						Select a mystery story to play with your friends
-					</DialogDescription>
+					<DialogTitle>Choose a scenario to play</DialogTitle>
 				</DialogHeader>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
@@ -125,7 +119,7 @@ const StorySelectionPanel: FC<StorySelectionPanelProps> = ({
 						onClick={handleStartStory}
 						disabled={!selectedStoryId || isStarting}
 					>
-						{isStarting ? 'Starting...' : 'Start Story'}
+						{isStarting ? 'Selecting...' : 'Choose Story'}
 					</Button>
 				</div>
 			</DialogContent>
