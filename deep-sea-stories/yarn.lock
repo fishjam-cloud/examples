@@ -322,13 +322,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@elevenlabs/elevenlabs-js@npm:^2.19.0":
-  version: 2.19.0
-  resolution: "@elevenlabs/elevenlabs-js@npm:2.19.0"
+"@elevenlabs/elevenlabs-js@npm:^2.20.0":
+  version: 2.22.0
+  resolution: "@elevenlabs/elevenlabs-js@npm:2.22.0"
   dependencies:
     command-exists: "npm:^1.2.9"
     node-fetch: "npm:^2.7.0"
-  checksum: 10c0/1d2a055767f1e0b5804fc85929857a7d39623fca5fc3756d35e3bf7b1e857e9bfcfe94b69ad54269f967d2d60b90b1665f3ab1c17c23f61c71b043a45425cd66
+    ws: "npm:^8.18.3"
+  checksum: 10c0/398fcc850b8d9b1735d090fc0579138b54923ac945ec11941d3375c3733857ed37e126db289010f2de039b55f82cbff8f7596f36d049ffa728e86b85b6eb6a6b
   languageName: node
   linkType: hard
 
@@ -1979,7 +1980,7 @@ __metadata:
   resolution: "backend@workspace:packages/backend"
   dependencies:
     "@deep-sea-stories/common": "workspace:*"
-    "@elevenlabs/elevenlabs-js": "npm:^2.19.0"
+    "@elevenlabs/elevenlabs-js": "npm:^2.20.0"
     "@fastify/cors": "npm:^11.1.0"
     "@fishjam-cloud/js-server-sdk": "npm:^0.22.0"
     "@trpc/server": "npm:^11.6.0"
@@ -4373,7 +4374,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.0":
+"ws@npm:^8.18.0, ws@npm:^8.18.3":
   version: 8.18.3
   resolution: "ws@npm:8.18.3"
   peerDependencies:
