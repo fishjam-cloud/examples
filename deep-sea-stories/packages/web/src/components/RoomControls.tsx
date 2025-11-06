@@ -9,6 +9,7 @@ import { Button } from './ui/button';
 import { toast } from './ui/sonner';
 import { useTRPCClient } from '@/contexts/trpc';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
+import { DeepSeaLogo } from './DeepSeaLogo';
 
 export type RoomControlsProps = {
 	roomId: string;
@@ -69,15 +70,13 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 	};
 
 	return (
-		<div className="flex flex-col py-6 gap-8">
-			<section className="font-title text-2xl text-center">
-				Deep Sea Stories
-			</section>
-			<section className="w-full grow flex flex-col gap-4">
+		<div className="flex flex-col py-2 md:py-6 gap-4 md:gap-8">
+			<DeepSeaLogo className="hidden md:block" />
+			<section className="w-full flex-none grid grid-cols-2 md:flex md:flex-col gap-4">
 				{!isStorySelected ? (
 					<Button
 						size="large"
-						className="w-full"
+						className="col-span-2 md:w-full text-sm md:text-base"
 						onClick={() => setIsStoryPanelOpen(true)}
 					>
 						Choose a story
@@ -86,6 +85,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 					<Button
 						size="large"
 						variant="outline"
+						className="col-span-2 md:w-full text-sm md:text-base"
 						onClick={handleCancelGame}
 						disabled={isCanceling}
 					>
@@ -95,7 +95,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 					<>
 						<Button
 							size="large"
-							className="w-full"
+							className="col-span-2 md:w-full text-sm md:text-base"
 							onClick={handleStartGame}
 							disabled={isStarting}
 						>
@@ -103,7 +103,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 						</Button>
 						<Button
 							size="large"
-							className="w-full"
+							className="col-span-2 md:w-full text-sm md:text-base"
 							variant="outline"
 							onClick={() => setIsStoryPanelOpen(true)}
 						>
@@ -113,16 +113,19 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 				)}
 			</section>
 			<section className="w-full flex-none flex flex-col gap-4">
-				<HowToPlay className="w-full" />
-				<HowItWorks className="w-full" />
+				<HowToPlay className="w-full text-sm md:text-base" />
+				<HowItWorks className="w-full text-sm md:text-base" />
+
 				<CopyButton
 					variant="outline"
+					className="col-span-2 md:col-span-1 text-sm md:text-base"
 					onCopy={() => toast('Gameroom link copied to clipboard', Check)}
 					value={url}
 				>
-					{url.length > 40 ? `${url.substring(0, 37)}...` : url}
+					Copy room link
 				</CopyButton>
 			</section>
+
 			<StorySelectionPanel
 				isOpen={isStoryPanelOpen}
 				onClose={() => setIsStoryPanelOpen(false)}

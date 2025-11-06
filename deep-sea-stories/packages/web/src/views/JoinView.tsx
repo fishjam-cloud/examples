@@ -69,26 +69,31 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 	}, [trpcClient, roomId, joinRoom, name]);
 
 	return (
-		<>
-			<section className="font-title w-full text-center text-lg py-10">
+		<section className="space-y-4 py-8">
+			<h1 className="font-title w-full text-center text-4xl">
 				Deep Sea Stories
-			</section>
-			<section className="w-full text-center flex flex-col gap-8 py-12">
-				<div className="text-4xl font-display">Finish a player setup</div>
-				<div className="text-2xl">
+			</h1>
+
+			<section className="w-full md:pt-8 text-center flex flex-col gap-4">
+				<div className="text-2xl md:text-3xl font-display">
+					Finish a player setup
+				</div>
+				<div className="text-lg md:text-xl">
 					Enter your player’s name and test out your camera and microphone.
 				</div>
 			</section>
-			<section className="w-full flex-1 grid place-items-center">
-				<div className="w-2xl h-full flex flex-col gap-4 items-center justify-between">
+
+			<section className="flex-1 grid place-items-center">
+				<div className="max-w-xl h-full flex flex-col gap-4 items-center justify-between">
 					<Input
 						className="font-display"
+						autoFocus
 						onChange={(e) => setName(e.target.value)}
 						value={name}
 						placeholder="Enter your name"
 					/>
-					<PeerTile className="flex-1" name={name} stream={cameraStream} />
-					<div className="flex gap-4">
+					<PeerTile name={name} stream={cameraStream} />
+					<div className="flex gap-4 md:flex-row flex-col">
 						<DeviceSelect
 							placeholder="Select camera"
 							devices={cameraDevices}
@@ -97,6 +102,7 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 						>
 							<Camera size={24} className="flex-none" />
 						</DeviceSelect>
+
 						<DeviceSelect
 							placeholder="Select microphone"
 							devices={microphoneDevices}
@@ -108,12 +114,13 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 					</div>
 				</div>
 			</section>
-			<section className="w-full pt-10 pb-16 grid place-items-center">
+
+			<section className="w-full grid place-items-center">
 				<Button onClick={handleEnterRoom} size="large">
 					Enter the game room
 				</Button>
 			</section>
-		</>
+		</section>
 	);
 };
 

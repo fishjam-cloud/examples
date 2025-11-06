@@ -32,6 +32,9 @@ export const TRPCClientProvider: FC<TRPCClientProviderProps> = ({
 	queryClient,
 	children,
 }) => {
+	if (!import.meta.env.VITE_BACKEND_URL) {
+		throw new Error('VITE_BACKEND_URL is not set');
+	}
 	const [trpcClient] = useState(() =>
 		createTRPCClient<AppRouter>({
 			links: [

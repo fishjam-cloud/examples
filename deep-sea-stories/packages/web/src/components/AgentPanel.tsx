@@ -28,8 +28,8 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 }) => (
 	<div key={timestamp} className="flex gap-3 py-1 items-start">
 		<Icon size={24} className="flex-none" />
-		<div className="grow flex flex-col text-lg">{children}</div>
-		<div className="text-right flex-none text-sm text-muted">
+		<div className="grow flex flex-col text-sm md:text-lg">{children}</div>
+		<div className="text-right flex-none text-xs md:text-sm text-muted">
 			{new Date(timestamp).toLocaleTimeString()}
 		</div>
 	</div>
@@ -41,7 +41,7 @@ const getEventConfig = (event: AgentEvent) => {
 			return {
 				icon: LogIn,
 				body: (
-					<div className="text-lg">
+					<div className="text-sm md:text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has joined the game</span>
 					</div>
@@ -51,7 +51,7 @@ const getEventConfig = (event: AgentEvent) => {
 			return {
 				icon: LogOut,
 				body: (
-					<div className="text-lg">
+					<div className="text-sm md:text-lg">
 						<span className="font-bold">{event.name}</span>
 						<span className="text-muted-foreground"> has left the game</span>
 					</div>
@@ -61,7 +61,7 @@ const getEventConfig = (event: AgentEvent) => {
 			return {
 				icon: BookCheck,
 				body: (
-					<div className="text-lg">
+					<div className="text-sm md:text-lg">
 						<span className="text-muted-foreground">Game Started</span>
 					</div>
 				),
@@ -81,7 +81,7 @@ const getEventConfig = (event: AgentEvent) => {
 			return {
 				icon: OctagonMinus,
 				body: (
-					<div className="text-lg">
+					<div className="text-sm md:text-lg">
 						<span className="text-muted-foreground">Game Ended</span>
 					</div>
 				),
@@ -91,8 +91,8 @@ const getEventConfig = (event: AgentEvent) => {
 				icon: MessageSquare,
 				body: (
 					<>
-						<div className="text-lg font-bold grow">Storyteller</div>
-						<div className="text-lg">
+						<div className="text-sm md:text-lg font-bold grow">Storyteller</div>
+						<div className="text-sm md:text-lg">
 							<p>{event.text}</p>
 						</div>
 					</>
@@ -115,7 +115,7 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 	return (
 		<ScrollArea
 			viewportRef={viewportRef}
-			className="grow col-span-2 border rounded-xl p-6"
+			className="grow col-span-2 border rounded-xl p-3 md:p-6 md:mt-0 md:ml-4"
 		>
 			{events.map((event, index) => {
 				const { icon, body } = getEventConfig(event);
