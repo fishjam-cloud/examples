@@ -99,10 +99,11 @@ export class AudioStreamingOrchestrator {
 					}
 
 					try {
+						const boostedAudio = this.boostAudioVolume(vadData.audioData, 7.0);
 						console.log(
-							`[Orchestrator] Sending ${vadData.audioData.length} bytes of audio from peer ${peerId} to AI agent`,
+							`[Orchestrator] Sending ${boostedAudio.length} bytes of boosted audio from peer ${peerId} to AI agent`,
 						);
-						this.sharedSession.sendAudio(vadData.audioData);
+						this.sharedSession.sendAudio(boostedAudio);
 						this.lastOutgoingTs = Date.now();
 					} catch (error) {
 						console.error(
@@ -201,17 +202,45 @@ export class AudioStreamingOrchestrator {
 					this.activeSpeaker === null &&
 					(!this.lastOutgoingTs || now - this.lastOutgoingTs > 1200)
 				) {
-					const silence = Buffer.alloc(1920); // 1920 bytes ~ short frame at 16kHz
+					// Generate realistic background noise instead of pure silence
+					const silence = this.generateBackgroundNoise(1920);
 					this.sharedSession.sendAudio(silence);
 					this.lastOutgoingTs = now;
 					console.log(
-						'[Orchestrator] Sent silence packet to AI session to keep it primed',
+						'[Orchestrator] Sent background noise packet to AI session to keep it primed',
 					);
 				}
 			} catch (err) {
 				console.error('[Orchestrator] Failed to send silence packet:', err);
 			}
 		}, 1000);
+	}
+
+	private generateBackgroundNoise(size: number): Buffer {
+		const buffer = Buffer.alloc(size);
+		const view = new DataView(buffer.buffer, buffer.byteOffset, size);
+
+		for (let i = 0; i < size; i += 2) {
+			const noise = Math.floor((Math.random() - 0.5) * 200);
+			view.setInt16(i, noise, true); // true = little-endian
+		}
+
+		return buffer;
+	}
+
+	private boostAudioVolume(audioBuffer: Uint8Array, gain = 2.0): Uint8Array {
+		const boosted = new Uint8Array(audioBuffer.length);
+		const view = new DataView(audioBuffer.buffer, audioBuffer.byteOffset);
+		const outView = new DataView(boosted.buffer);
+
+		for (let i = 0; i < audioBuffer.length; i += 2) {
+			const sample = view.getInt16(i, true);
+			let amplified = Math.round(sample * gain);
+			amplified = Math.max(-32768, Math.min(32767, amplified));
+			outView.setInt16(i, amplified, true);
+		}
+
+		return boosted;
 	}
 
 	private async processAudioQueue(): Promise<void> {
