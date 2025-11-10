@@ -375,4 +375,13 @@ export class AudioStreamingOrchestrator {
 			return null;
 		}
 	}
+
+	async waitForAudioQueueToDrain(): Promise<void> {
+		await new Promise((resolve) => setTimeout(resolve, 10000));
+
+		while (this.audioQueue.length > 0 || this.isSendingAudio) {
+			await new Promise((resolve) => setTimeout(resolve, 100));
+		}
+		console.log('[Orchestrator] Audio queue drained successfully');
+	}
 }

@@ -4,8 +4,11 @@ import {
 	ElevenLabsConversation,
 } from './elevenlabs-conversation.js';
 import { roomService } from './room.js';
-import { getInstructionsForStory } from '../utils.js';
-import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
+import {
+	getInstructionsForStory,
+	getToolDescriptionForStory,
+} from '../utils.js';
+import { CONFIG } from '../config.js';
 import type { Story } from '../types.js';
 import {
 	GameSessionNotFoundError,
@@ -17,6 +20,7 @@ export class ElevenLabsSessionManager {
 	private session: ElevenLabsConversation | null = null;
 	private endingRoom: boolean = false;
 	private gameEndingToolId: string | undefined;
+	private gameEndingToolName: string | undefined;
 	private agentId: string | undefined;
 	private roomId: RoomId;
 
@@ -25,9 +29,9 @@ export class ElevenLabsSessionManager {
 	}
 
 	async init() {
-		const toolId = await this.ensureGameEndingTool();
-
 		const story = await this.resolveStory(this.roomId);
+
+		const toolId = await this.ensureGameEndingTool();
 
 		this.agentId = await this.createAgent(story, toolId);
 
@@ -78,31 +82,33 @@ export class ElevenLabsSessionManager {
 		if (this.gameEndingToolId) {
 			return this.gameEndingToolId;
 		}
+		const story = await this.resolveStory(this.roomId);
+		const toolName = `game-ending-${story.id}`;
+		this.gameEndingToolName = toolName;
 
 		const tools = await elevenLabs.conversationalAi.tools.list();
 		const existingTool = (tools.tools ?? []).find(
 			(tool) =>
-				tool.toolConfig.type === 'client' &&
-				tool.toolConfig.name === 'game-ending',
+				tool.toolConfig.type === 'client' && tool.toolConfig.name === toolName,
 		);
 
 		if (existingTool?.id) {
-			this.gameEndingToolId = existingTool.id;
-			return this.gameEndingToolId;
+			elevenLabs.conversationalAi.tools.delete(existingTool.id);
 		}
+
+		const toolDescription = getToolDescriptionForStory(story);
 
 		const createdTool = await elevenLabs.conversationalAi.tools.create({
 			toolConfig: {
 				type: 'client',
-				name: 'game-ending',
-				description: AGENT_CLIENT_TOOL_INSTRUCTIONS,
+				name: toolName,
+				description: toolDescription,
 			},
 		});
 
 		this.gameEndingToolId = createdTool.id;
 		return this.gameEndingToolId;
 	}
-
 	private registerClientToolHandler(
 		session: ElevenLabsConversation,
 		roomId: RoomId,
@@ -114,7 +120,7 @@ export class ElevenLabsSessionManager {
 					: undefined;
 			const toolName =
 				typeof call?.tool_name === 'string' ? call.tool_name : undefined;
-			if (!toolName || toolName !== 'game-ending') {
+			if (!toolName || toolName !== this.gameEndingToolName) {
 				return;
 			}
 			if (this.endingRoom) {
