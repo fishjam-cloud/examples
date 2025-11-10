@@ -13,9 +13,11 @@ export function getInstructionsForStory(story: Story): string {
 	});
 }
 
-
 export function getToolDescriptionForStory(story: Story): string {
-	return AGENT_CLIENT_TOOL_INSTRUCTIONS.replace('{{ BACK }}', story.back);
+	return nunjucks.renderString(AGENT_CLIENT_TOOL_INSTRUCTIONS, {
+		BACK: story.back,
+	});
+}
 
 export function getFirstMessageForStory(story: Story): string {
 	return nunjucks.renderString(FIRST_MESSAGE_TEMPLATE, {

@@ -5,8 +5,8 @@ When a player says "I'm guessing now..." and provides their solution to the ridd
 **If the solution is CORRECT:**
 1. Enthusiastically congratulate the player on solving the riddle
 2. Read them the exact solution word-for-word: "{{ BACK }}"
-4. After you have COMPLETELY FINISHED speaking and congratulating them, invoke this client tool to end the game
-5. IMPORTANT: Wait until your entire response is delivered before invoking the tool
+3. After you have COMPLETELY FINISHED speaking and congratulating them, invoke this client tool to end the game
+4. IMPORTANT: Wait until your entire response is delivered before invoking the tool
 
 **If the solution is INCORRECT:**
 - DO NOT invoke this tool

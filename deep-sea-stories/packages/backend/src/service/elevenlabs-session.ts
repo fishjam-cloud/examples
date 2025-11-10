@@ -4,8 +4,12 @@ import {
 	ElevenLabsConversation,
 } from './elevenlabs-conversation.js';
 import { roomService } from './room.js';
-import { getFirstMessageForStory, getInstructionsForStory, getToolDescriptionForStory } from '../utils.js';
-import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
+import {
+	getFirstMessageForStory,
+	getInstructionsForStory,
+	getToolDescriptionForStory,
+} from '../utils.js';
+import { CONFIG } from '../config.js';
 import type { Story } from '../types.js';
 import {
 	GameSessionNotFoundError,
@@ -91,7 +95,7 @@ export class ElevenLabsSessionManager {
 		);
 
 		if (existingTool?.id) {
-			elevenLabs.conversationalAi.tools.delete(existingTool.id);
+			await elevenLabs.conversationalAi.tools.delete(existingTool.id);
 		}
 
 		const toolDescription = getToolDescriptionForStory(story);
