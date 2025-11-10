@@ -4,7 +4,7 @@ import {
 	ElevenLabsConversation,
 } from './elevenlabs-conversation.js';
 import { roomService } from './room.js';
-import { getInstructionsForStory } from '../utils.js';
+import { getInstructionsForStory, getFirstMessageForStory } from '../utils.js';
 import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
 import type { Story } from '../types.js';
 import {
@@ -53,6 +53,7 @@ export class ElevenLabsSessionManager {
 
 	private async createAgent(story: Story, toolId: string): Promise<string> {
 		const instructions = getInstructionsForStory(story);
+		const firstMessage = getFirstMessageForStory(story);
 
 		console.log(
 			`Creating ElevenLabs agent for story "${story.title}" (ID: ${story.id})`,
@@ -63,7 +64,7 @@ export class ElevenLabsSessionManager {
 		const config = {
 			conversationConfig: {
 				agent: {
-					firstMessage: `Welcome to deep-sea-stories!`,
+					firstMessage,
 					language: 'en',
 					prompt,
 				},

@@ -11,6 +11,8 @@ COPY packages ./packages
 
 RUN yarn install --frozen-lockfile
 
+RUN yarn workspace @deep-sea-stories/common build
+
 ARG VITE_FISHJAM_ID
 ARG VITE_BACKEND_URL
 
@@ -25,6 +27,7 @@ WORKDIR /app
 
 RUN apk add --no-cache dumb-init
 
+COPY --from=builder /app/packages/common/dist ./packages/common/dist
 COPY --from=builder /app/packages/web/dist ./packages/web/dist
 
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
