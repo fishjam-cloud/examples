@@ -25,7 +25,9 @@ export class AudioStreamingOrchestrator {
 
 	setMuted(muted: boolean): void {
 		this.isInputMuted = muted;
-		console.log(`[Orchestrator] User audio input to AI is now ${muted ? 'blocked' : 'enabled'}`);
+		console.log(
+			`[Orchestrator] User audio input to AI is now ${muted ? 'blocked' : 'enabled'}`,
+		);
 	}
 
 	constructor(
@@ -94,7 +96,12 @@ export class AudioStreamingOrchestrator {
 				}
 			}
 
-			if (shouldSendAudio && vadData.audioData && this.sharedSession && !this.isInputMuted) {
+			if (
+				shouldSendAudio &&
+				vadData.audioData &&
+				this.sharedSession &&
+				!this.isInputMuted
+			) {
 				try {
 					if (this.pendingInterruption) {
 						this.pendingInterruption = false;

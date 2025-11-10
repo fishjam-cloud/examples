@@ -13,8 +13,8 @@ export const muteVoiceAgent = publicProcedure
 			return {
 				success: true,
 				message: `Voice agent in room "${input.roomId}" has been ${
-                    input.muted ? 'muted' : 'unmuted'
-                } successfully`,
+					input.muted ? 'muted' : 'unmuted'
+				} successfully`,
 			};
 		} catch (error) {
 			console.error(`Failed to select story: %o`, error);

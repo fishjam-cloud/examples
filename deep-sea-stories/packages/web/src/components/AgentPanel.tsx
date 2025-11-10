@@ -9,7 +9,13 @@ import {
 	Mic,
 	MicOff,
 } from 'lucide-react';
-import { useEffect, useRef, useState, type FC, type PropsWithChildren } from 'react';
+import {
+	useEffect,
+	useRef,
+	useState,
+	type FC,
+	type PropsWithChildren,
+} from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
 import { ScrollArea } from './ui/scroll-area';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
@@ -116,8 +122,8 @@ const eventConfigMap: Record<
 		renderBody: (event) => (
 			<div className="text-xs md:text-lg">
 				<span className="text-muted-foreground">
-					{event.type === 'aiAgentMutedStatusChanged' && event.muted 
-						? 'Agent can no longer hear players' 
+					{event.type === 'aiAgentMutedStatusChanged' && event.muted
+						? 'Agent can no longer hear players'
 						: 'Agent can now hear players'}
 				</span>
 			</div>
@@ -143,14 +149,14 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 	useEffect(() => {
 		const gameStartedEvents = events.filter((e) => e.type === 'gameStarted');
 		const gameEndedEvents = events.filter((e) => e.type === 'gameEnded');
-		
+
 		const isActive = gameStartedEvents.length > gameEndedEvents.length;
 		setIsGameActive(isActive);
 
 		const lastMuteEvent = events
 			.filter((e) => e.type === 'aiAgentMutedStatusChanged')
 			.pop();
-		
+
 		if (lastMuteEvent && lastMuteEvent.type === 'aiAgentMutedStatusChanged') {
 			setIsAiMuted(lastMuteEvent.muted);
 		}
@@ -163,11 +169,11 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 				roomId,
 				muted: !isAiMuted,
 			});
-			
+
 			toast.success(
-				!isAiMuted 
-					? 'Agent can no longer hear players' 
-					: 'Agent can now hear players'
+				!isAiMuted
+					? 'Agent can no longer hear players'
+					: 'Agent can now hear players',
 			);
 		} catch (error) {
 			console.error('Failed to toggle AI mute:', error);
@@ -186,8 +192,9 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId }) => {
 						disabled={isMutating}
 						variant={isAiMuted ? 'outline' : 'default'}
 						className={cn(
-							"flex items-center gap-2 px-4 h-10",
-							isAiMuted && "border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+							'flex items-center gap-2 px-4 h-10',
+							isAiMuted &&
+								'border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950',
 						)}
 					>
 						{isAiMuted ? (
