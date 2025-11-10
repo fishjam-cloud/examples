@@ -71,47 +71,54 @@ const StorySelectionPanel: FC<StorySelectionPanelProps> = ({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+			<DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
 				<DialogHeader>
 					<DialogTitle>Choose a scenario to play</DialogTitle>
 				</DialogHeader>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-					{isLoadingStories ? (
-						<div className="col-span-full text-center py-8 text-muted-foreground">
-							Loading stories...
+				<div className="flex-1 overflow-y-auto min-h-0">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+						{isLoadingStories ? (
+							<div className="col-span-full text-center py-8 text-muted-foreground">
+								Loading stories...
+							</div>
+						) : (
+							stories.map((story) => (
+								<button
+									type="button"
+									key={story.id}
+									onClick={() => setSelectedStoryId(story.id)}
+									className={`text-left p-4 rounded-lg border-2 transition-all ${
+										selectedStoryId === story.id
+											? 'border-primary bg-primary/10'
+											: 'border-border hover:border-primary/50'
+									}`}
+								>
+									<h3 className="font-semibold text-base mb-2">
+										{story.title}
+									</h3>
+									<p className="text-sm text-muted-foreground line-clamp-2">
+										{story.front}
+									</p>
+								</button>
+							))
+						)}
+					</div>
+
+					{selectedStoryId && stories.length > 0 && (
+						<div className="bg-muted p-4 rounded-lg mb-4">
+							<h4 className="font-semibold mb-2">Preview</h4>
+							<p className="text-sm mb-3">
+								{
+									stories.find((s: StoryData) => s.id === selectedStoryId)
+										?.front
+								}
+							</p>
 						</div>
-					) : (
-						stories.map((story) => (
-							<button
-								type="button"
-								key={story.id}
-								onClick={() => setSelectedStoryId(story.id)}
-								className={`text-left p-4 rounded-lg border-2 transition-all ${
-									selectedStoryId === story.id
-										? 'border-primary bg-primary/10'
-										: 'border-border hover:border-primary/50'
-								}`}
-							>
-								<h3 className="font-semibold text-base mb-2">{story.title}</h3>
-								<p className="text-sm text-muted-foreground line-clamp-2">
-									{story.front}
-								</p>
-							</button>
-						))
 					)}
 				</div>
 
-				{selectedStoryId && stories.length > 0 && (
-					<div className="bg-muted p-4 rounded-lg">
-						<h4 className="font-semibold mb-2">Preview</h4>
-						<p className="text-sm mb-3">
-							{stories.find((s: StoryData) => s.id === selectedStoryId)?.front}
-						</p>
-					</div>
-				)}
-
-				<div className="flex gap-3 justify-end pt-4">
+				<div className="flex gap-3 justify-end pt-4 border-t">
 					<Button variant="outline" onClick={onClose} disabled={isStarting}>
 						Cancel
 					</Button>

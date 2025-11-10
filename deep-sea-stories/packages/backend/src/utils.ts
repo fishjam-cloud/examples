@@ -1,5 +1,6 @@
 import nunjucks from 'nunjucks';
 import {
+	FIRST_MESSAGE_TEMPLATE,
 	AGENT_INSTRUCTIONS_TEMPLATE,
 	AGENT_CLIENT_TOOL_INSTRUCTIONS,
 } from './config.js';
@@ -12,6 +13,12 @@ export function getInstructionsForStory(story: Story): string {
 	});
 }
 
+
 export function getToolDescriptionForStory(story: Story): string {
 	return AGENT_CLIENT_TOOL_INSTRUCTIONS.replace('{{ BACK }}', story.back);
+
+export function getFirstMessageForStory(story: Story): string {
+	return nunjucks.renderString(FIRST_MESSAGE_TEMPLATE, {
+		FRONT: story.front,
+	});
 }
