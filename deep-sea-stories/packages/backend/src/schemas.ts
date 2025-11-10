@@ -20,3 +20,8 @@ export const startStoryInputSchema = z.object({
 export const stopGameInputSchema = z.object({
 	roomId: z.string(),
 });
+
+export const voiceAgentMuteInputSchema = z.object({
+	roomId: z.string(),
+	muted: z.boolean(),
+});
