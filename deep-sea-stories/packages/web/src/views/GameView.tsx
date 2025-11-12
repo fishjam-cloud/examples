@@ -2,11 +2,9 @@ import { usePeers } from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
 import { useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import AgentPanel from '@/components/AgentPanel';
-import { PeerTile } from '@/components/PeerTile';
-import RoomControls from '@/components/RoomControls';
+import GameControlPanel from '@/components/GameControlPanel';
+import PeerGrid from '@/components/PeerGrid';
 import { useTRPCClient } from '@/contexts/trpc';
-import { cn } from '@/lib/utils';
 
 export type GameViewProps = {
 	roomId: string;
@@ -53,41 +51,14 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 	const userName = localPeer?.metadata?.peer?.name ?? 'Unknown';
 	return (
 		<div className="h-full w-full flex flex-col">
-			<section className="w-full flex-none md:flex-1 md:min-h-0 flex flex-col md:flex-row gap-2 md:gap-4 pt-2 md:pt-10 px-2 md:px-10 max-h-[40vh] md:max-h-none">
-				<div className="flex-1 min-h-0 overflow-hidden">
-					<AgentPanel
-						roomId={roomId}
-						agentStream={agentPeer?.tracks[0]?.stream}
-					/>
-				</div>
-				<div className="flex-none md:flex-none md:w-1/4 border rounded-3xl p-2 md:p-3 lg:p-4 overflow-hidden">
-					<RoomControls roomId={roomId} userName={userName} />
-				</div>
-			</section>
+			<GameControlPanel
+				roomId={roomId}
+				userName={userName}
+				agentStream={agentPeer?.tracks[0]?.stream}
+			/>
 
-			<section
-				className={cn(
-					'flex-1 md:flex-1 items-center w-full justify-items-center grid gap-2 md:gap-4 p-2 md:py-10 md:px-6 overflow-hidden grid-cols-2 grid-rows-2 xl:grid-cols-4 xl:grid-rows-1',
-					{
-						'grid-cols-1 grid-rows-1 xl:grid-cols-1 md:grid-rows-1':
-							displayedPeers.length === 0,
-						'grid-rows-2 grid-cols-1 md:grid-cols-2 md:grid-rows-1 xl:grid-rows-1 xl:grid-cols-2':
-							displayedPeers.length === 1,
-					},
-				)}
-			>
-				<PeerTile name="You" stream={localPeer?.cameraTrack?.stream} />
-				{displayedPeers.map((peer) => (
-					<PeerTile
-						name={peer.metadata?.peer?.name ?? peer.id}
-						key={peer.id}
-						stream={
-							peer.customVideoTracks[0]?.stream ?? peer.cameraTrack?.stream
-						}
-						audioStream={peer.microphoneTrack?.stream}
-					/>
-				))}
-			</section>
+			<PeerGrid localPeer={localPeer} displayedPeers={displayedPeers} />
+
 			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
 			<audio ref={agentAudioRef} autoPlay playsInline title={'Agent audio'} />
 		</div>
