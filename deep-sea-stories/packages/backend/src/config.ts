@@ -46,3 +46,5 @@ export const FISHJAM_AGENT_OPTIONS: PeerOptions = {
 };
 
 export const VAD_DEBOUNCE_MS = 600;
+
+export const AUDIO_QUEUE_INITIAL_DELAY_MS = 10000;
