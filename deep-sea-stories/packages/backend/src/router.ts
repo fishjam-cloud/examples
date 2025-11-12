@@ -7,6 +7,7 @@ import {
 	getStories,
 } from './controllers/stories.js';
 import { Notifications } from './controllers/notifications.js';
+import { muteVoiceAgent } from './controllers/voice-agent.js';
 import { router } from './trpc.js';
 
 export const appRouter = router({
@@ -18,6 +19,7 @@ export const appRouter = router({
 	stopGame,
 	getStories,
 	Notifications,
+	muteVoiceAgent,
 });
 
 export type AppRouter = typeof appRouter;

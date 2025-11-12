@@ -33,10 +33,16 @@ export interface TranscriptionEvent extends BaseEvent {
 	text: string;
 }
 
+export interface AiAgentMutedStatusChangedEvent extends BaseEvent {
+	type: 'aiAgentMutedStatusChanged';
+	muted: boolean;
+}
+
 export type AgentEvent =
 	| PlayerJoinedEvent
 	| PlayerLeftEvent
 	| GameStartedEvent
 	| GameEndedEvent
 	| StorySelectedEvent
-	| TranscriptionEvent;
+	| TranscriptionEvent
+	| AiAgentMutedStatusChangedEvent;

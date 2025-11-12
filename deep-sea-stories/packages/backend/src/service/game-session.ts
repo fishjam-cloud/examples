@@ -23,6 +23,7 @@ export class GameSession {
 	private audioOrchestrator: AudioStreamingOrchestrator | undefined;
 	private voiceAgentSession: ElevenLabsSessionManager | undefined;
 	private isGameStarting: boolean = false;
+	private isAiAgentMuted: boolean = false;
 
 	constructor(roomId: RoomId) {
 		this.roomId = roomId;
@@ -173,6 +174,27 @@ export class GameSession {
 		);
 
 		this.audioOrchestrator.setupAudioPipelines();
+	}
+
+	setAiAgentMuted(muted: boolean) {
+		this.isAiAgentMuted = muted;
+		if (this.audioOrchestrator) {
+			this.audioOrchestrator.setMuted(muted);
+		}
+
+		notifierService.emitNotification(this.roomId, {
+			type: 'aiAgentMutedStatusChanged' as const,
+			muted: muted,
+			timestamp: Date.now(),
+		});
+
+		console.log(
+			`AI agent in room ${this.roomId} is now ${muted ? 'muted' : 'unmuted'}`,
+		);
+	}
+
+	isAiAgentMut(): boolean {
+		return this.isAiAgentMuted;
 	}
 
 	async stopGame(): Promise<void> {
