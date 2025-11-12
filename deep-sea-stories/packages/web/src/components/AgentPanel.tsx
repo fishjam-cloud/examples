@@ -121,32 +121,29 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId, agentStream }) => {
 	}, [events.length]);
 
 	return (
-		<div className="h-full flex flex-col lg:flex-row gap-2 lg:gap-4">
-			<div className="hidden lg:flex flex-col lg:w-1/3 border rounded-xl p-4 bg-card min-h-0">
-				<div className="text-sm font-semibold mb-3 text-muted-foreground">
-					Riddle Master
-				</div>
-				<div className="flex-1 min-h-0 border rounded-lg p-4 bg-background">
-					<AudioVisualizer stream={agentStream} barColor="#10b982" />
-				</div>
+		<div className="h-full flex flex-col lg:flex-row gap-2 lg:gap-4 lg:border rounded-3xl lg:p-2">
+			<div className="hidden lg:flex flex-col lg:w-1/3 p-4 bg-card min-h-0">
+				<AudioVisualizer stream={agentStream} barColor="#10b982" />
 			</div>
 
 			<ScrollArea
 				viewportRef={viewportRef}
-				className="flex-1 lg:w-2/3 border rounded-xl p-2 md:p-6 bg-card min-h-0"
+				className="flex-1 lg:w-2/3 border rounded-3xl bg-card min-h-0 lg:m-2 xl:m-4"
 			>
-				{events.map((event, index) => {
-					const config = eventConfigMap[event.type];
-					return (
-						<PanelEvent
-							key={`${event.timestamp}-${index}`}
-							icon={config.icon}
-							timestamp={event.timestamp}
-						>
-							{config.renderBody(event)}
-						</PanelEvent>
-					);
-				})}
+				<div className="p-3 md:p-6">
+					{events.map((event, index) => {
+						const config = eventConfigMap[event.type];
+						return (
+							<PanelEvent
+								key={`${event.timestamp}-${index}`}
+								icon={config.icon}
+								timestamp={event.timestamp}
+							>
+								{config.renderBody(event)}
+							</PanelEvent>
+						);
+					})}
+				</div>
 			</ScrollArea>
 		</div>
 	);

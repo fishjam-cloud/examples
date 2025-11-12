@@ -70,13 +70,13 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 	};
 
 	return (
-		<div className="flex flex-col py-2 md:py-4 lg:py-6 gap-2 md:gap-4 lg:gap-6">
-			<DeepSeaLogo className="hidden md:block" />
-			<section className="w-full flex-none grid grid-cols-2 md:flex md:flex-col gap-2 md:gap-3">
+		<div className="flex flex-col h-full py-2 md:py-2 lg:py-3 gap-2 md:gap-2 lg:gap-3">
+			<DeepSeaLogo className="hidden md:block flex-none" />
+			<section className="w-full flex-none grid grid-cols-2 md:flex md:flex-col gap-2">
 				{!isStorySelected ? (
 					<Button
 						size="large"
-						className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-12 lg:h-14"
+						className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-11 lg:h-12"
 						onClick={() => setIsStoryPanelOpen(true)}
 					>
 						Choose a story
@@ -85,7 +85,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 					<Button
 						size="large"
 						variant="outline"
-						className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-12 lg:h-14"
+						className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-11 lg:h-12"
 						onClick={handleCancelGame}
 						disabled={isCanceling}
 					>
@@ -110,7 +110,8 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 					</>
 				)}
 			</section>
-			<section className="w-full flex-none flex flex-col gap-2 md:gap-3">
+			<div className="flex-1 min-h-0" />
+			<section className="w-full flex-none flex flex-col gap-2">
 				<HowToPlay className="w-full text-xs md:text-base h-9 md:h-10 lg:h-11" />
 				<HowItWorks className="w-full text-xs md:text-base h-9 md:h-10 lg:h-11" />
 
