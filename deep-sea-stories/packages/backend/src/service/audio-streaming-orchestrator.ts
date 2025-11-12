@@ -10,6 +10,7 @@ import { VAD_DEBOUNCE_MS } from '../config.js';
 export class AudioStreamingOrchestrator {
 	private static readonly OUTPUT_FRAMES_PER_BUFFER = 1000; // 62.5ms @ 16kHz
 	private static readonly SAMPLE_RATE = 16000;
+	private static readonly BYTES_PER_SAMPLE = 2;
 	private static readonly CHANNELS = 1;
 
 	private fishjamAgent: FishjamAgent;
@@ -155,11 +156,12 @@ export class AudioStreamingOrchestrator {
 
 				const audioBuffer = this.decodeAudioEvent(audioEvent);
 				const chunkSize =
-					AudioStreamingOrchestrator.OUTPUT_FRAMES_PER_BUFFER * 2; // pcm16 mono
+					AudioStreamingOrchestrator.OUTPUT_FRAMES_PER_BUFFER *
+					AudioStreamingOrchestrator.BYTES_PER_SAMPLE; // pcm16 mono
 				if (audioBuffer && audioBuffer.length > 0) {
 					for (
 						let offset = 0;
-						audioBuffer && offset < audioBuffer.length;
+						offset < audioBuffer.length;
 						offset += chunkSize
 					) {
 						const end = Math.min(offset + chunkSize, audioBuffer.length);
@@ -196,43 +198,51 @@ export class AudioStreamingOrchestrator {
 			}, 500);
 		});
 
-		this.silenceIntervalId = setInterval(() => {
-			try {
-				if (!this.sharedSession) return;
-				const now = Date.now();
-				if (
-					this.activeSpeaker === null &&
-					(!this.lastOutgoingTs || now - this.lastOutgoingTs > 1200)
-				) {
-					// Generate realistic background noise instead of pure silence
-					const silence = this.generateBackgroundNoise(1920);
-					this.sharedSession.sendAudio(silence);
-					this.lastOutgoingTs = now;
-					console.log(
-						'[Orchestrator] Sent background noise packet to AI session to keep it primed',
-					);
+		if (!this.silenceIntervalId) {
+			this.silenceIntervalId = setInterval(() => {
+				try {
+					if (!this.sharedSession) return;
+					const now = Date.now();
+					if (
+						this.activeSpeaker === null &&
+						(!this.lastOutgoingTs || now - this.lastOutgoingTs > 1200)
+					) {
+						const silence = this.generateBackgroundNoise(1920);
+						this.sharedSession.sendAudio(silence);
+						this.lastOutgoingTs = now;
+						console.log(
+							'[Orchestrator] Sent background noise packet to AI session to keep it primed',
+						);
+					}
+				} catch (err) {
+					console.error('[Orchestrator] Failed to send silence packet:', err);
 				}
-			} catch (err) {
-				console.error('[Orchestrator] Failed to send silence packet:', err);
-			}
-		}, 1000);
+			}, 1000);
+		}
 
-		this.outputInterval = setInterval(() => {
-			if (this.interruptionCooldownTimer !== null) {
-				return;
-			}
+		if (!this.outputInterval) {
+			const outputIntervalMs =
+				(AudioStreamingOrchestrator.OUTPUT_FRAMES_PER_BUFFER /
+					AudioStreamingOrchestrator.SAMPLE_RATE) *
+				1000;
 
-			if (this.audioQueue.length > 0 && this.audioTrackId) {
-				const frame = this.audioQueue.shift();
-				if (frame) {
-					try {
-						this.fishjamAgent.sendData(this.audioTrackId, frame);
-					} catch (err) {
-						console.error('[Orchestrator] Error sending audio frame:', err);
+			this.outputInterval = setInterval(() => {
+				if (this.interruptionCooldownTimer !== null) {
+					return;
+				}
+
+				if (this.audioQueue.length > 0 && this.audioTrackId) {
+					const frame = this.audioQueue.shift();
+					if (frame) {
+						try {
+							this.fishjamAgent.sendData(this.audioTrackId, frame);
+						} catch (err) {
+							console.error('[Orchestrator] Error sending audio frame:', err);
+						}
 					}
 				}
-			}
-		}, 62.5);
+			}, outputIntervalMs);
+		}
 	}
 
 	private generateBackgroundNoise(size: number): Buffer {
