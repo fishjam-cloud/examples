@@ -121,14 +121,14 @@ const AgentPanel: FC<AgentPanelProps> = ({ roomId, agentStream }) => {
 	}, [events.length]);
 
 	return (
-		<div className="h-full flex flex-col lg:flex-row gap-2 lg:gap-4 lg:border rounded-3xl lg:p-2">
-			<div className="hidden lg:flex flex-col lg:w-1/3 p-4 bg-card min-h-0">
+		<div className="h-full flex flex-col lg:flex-row gap-2 lg:gap-1 lg:border rounded-3xl lg:p-2">
+			<div className="hidden lg:flex flex-col lg:w-1/3 bg-card min-h-0 lg:m-2">
 				<AudioVisualizer stream={agentStream} barColor="#10b982" />
 			</div>
 
 			<ScrollArea
 				viewportRef={viewportRef}
-				className="flex-1 lg:w-2/3 border rounded-3xl bg-card min-h-0 lg:m-2 xl:m-4"
+				className="flex-1 lg:w-2/3 border rounded-3xl bg-card min-h-0 lg:m-2 xl:m-2"
 			>
 				<div className="p-3 md:p-6">
 					{events.map((event, index) => {
