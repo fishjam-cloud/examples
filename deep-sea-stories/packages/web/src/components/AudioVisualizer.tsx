@@ -82,15 +82,16 @@ const AudioVisualizer: FC<AudioVisualizerProps> = ({
 			};
 		}
 
-		const audioContext = new AudioContext();
-		const analyser = audioContext.createAnalyser();
-		const source = audioContext.createMediaStreamSource(stream);
+		if (!audioContextRef.current) {
+			audioContextRef.current = new AudioContext();
+		}
+		const analyser = audioContextRef.current.createAnalyser();
+		const source = audioContextRef.current.createMediaStreamSource(stream);
 
 		analyser.fftSize = 512;
 		analyser.smoothingTimeConstant = 0.75;
 		source.connect(analyser);
 
-		audioContextRef.current = audioContext;
 		analyserRef.current = analyser;
 
 		const bufferLength = analyser.frequencyBinCount;
@@ -137,11 +138,17 @@ const AudioVisualizer: FC<AudioVisualizerProps> = ({
 			if (animationRef.current) {
 				cancelAnimationFrame(animationRef.current);
 			}
+		};
+	}, [stream, dimensions, barColor, barWidth, barGap]);
+
+	useEffect(() => {
+		return () => {
+			// Clean up AudioContext on unmount
 			if (audioContextRef.current?.state !== 'closed') {
 				audioContextRef.current?.close();
 			}
 		};
-	}, [stream, dimensions, barColor, barWidth, barGap]);
+	}, []);
 
 	return (
 		<div ref={containerRef} className="w-full h-full">
