@@ -63,6 +63,9 @@ export class ElevenLabsSessionManager {
 
 		const config = {
 			conversationConfig: {
+				conversation: {
+					maxDurationSeconds: 1800,
+				},
 				agent: {
 					firstMessage,
 					language: 'en',
