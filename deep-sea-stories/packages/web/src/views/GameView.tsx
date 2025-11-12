@@ -52,15 +52,22 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 
 	const userName = localPeer?.metadata?.peer?.name ?? 'Unknown';
 	return (
-		<>
-			<section className="w-full h-1/2 md:h-1/2 flex flex-col md:flex-row gap-4 md:gap-8 pt-6 md:pt-10 px-6 md:px-10">
-				<AgentPanel roomId={roomId} />
-				<RoomControls roomId={roomId} userName={userName} />
+		<div className="h-full w-full flex flex-col">
+			<section className="w-full flex-none md:flex-1 md:min-h-0 flex flex-col md:flex-row gap-2 md:gap-8 pt-2 md:pt-10 px-2 md:px-10 max-h-[40vh] md:max-h-none">
+				<div className="flex-1 min-h-0 overflow-hidden">
+					<AgentPanel
+						roomId={roomId}
+						agentStream={agentPeer?.tracks[0]?.stream}
+					/>
+				</div>
+				<div className="flex-none md:flex-none md:w-auto">
+					<RoomControls roomId={roomId} userName={userName} />
+				</div>
 			</section>
 
 			<section
 				className={cn(
-					'h-1/2 md:h-1/2 items-center w-full justify-items-center grid gap-4 py-10 overflow-hidden grid-cols-2 grid-rows-2 xl:grid-cols-4 xl:grid-rows-1',
+					'flex-1 md:flex-1 items-center w-full justify-items-center grid gap-2 md:gap-4 p-2 md:py-10 md:px-6 overflow-hidden grid-cols-2 grid-rows-2 xl:grid-cols-4 xl:grid-rows-1',
 					{
 						'grid-cols-1 grid-rows-1 xl:grid-cols-1 md:grid-rows-1':
 							displayedPeers.length === 0,
@@ -83,7 +90,7 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 			</section>
 			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
 			<audio ref={agentAudioRef} autoPlay playsInline title={'Agent audio'} />
-		</>
+		</div>
 	);
 };
 export default GameView;
