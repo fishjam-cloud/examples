@@ -22,7 +22,9 @@ interface ElevenLabsMessage {
 		audio_base_64?: string;
 		event_id?: number;
 	};
-	interruption_event?: unknown;
+	interruption_event?: {
+		event_id?: number;
+	};
 	ping_event?: {
 		event_id?: string;
 	};
