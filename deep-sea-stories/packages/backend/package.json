@@ -29,7 +29,7 @@
 		"build": "tsc -p tsconfig.json && mkdir -p dist/src/prompts && cp -R src/prompts/* dist/src/prompts/",
 		"start": "tsx watch src/main.ts",
 		"typecheck": "tsc --noEmit",
-		"test": "tsx --test --test-global-setup=./tests/setup-module.ts",
-		"test:watch": "tsx --test --watch --test-global-setup=./tests/setup-module.ts"
+		"test": "yarn workspace @deep-sea-stories/common build && tsx --test --test-global-setup=./tests/setup-module.ts",
+		"test:watch": "yarn workspace @deep-sea-stories/common build && tsx --test --watch --test-global-setup=./tests/setup-module.ts"
 	}
 }
