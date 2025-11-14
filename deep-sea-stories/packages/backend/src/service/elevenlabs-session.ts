@@ -4,8 +4,12 @@ import {
 	ElevenLabsConversation,
 } from './elevenlabs-conversation.js';
 import { roomService } from './room.js';
-import { getInstructionsForStory, getFirstMessageForStory, getToolDescriptionForStory } from '../utils.js';
-import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
+import {
+	getInstructionsForStory,
+	getFirstMessageForStory,
+	getToolDescriptionForStory,
+} from '../utils.js';
+import { CONFIG } from '../config.js';
 import { GAME_TIME_LIMIT_SECONDS } from '@deep-sea-stories/common';
 import type { Story } from '../types.js';
 import {
