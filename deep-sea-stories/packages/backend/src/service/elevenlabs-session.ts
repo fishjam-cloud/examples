@@ -6,6 +6,7 @@ import {
 import { roomService } from './room.js';
 import { getInstructionsForStory, getFirstMessageForStory } from '../utils.js';
 import { AGENT_CLIENT_TOOL_INSTRUCTIONS, CONFIG } from '../config.js';
+import { GAME_TIME_LIMIT_SECONDS } from '@deep-sea-stories/common';
 import type { Story } from '../types.js';
 import {
 	GameSessionNotFoundError,
@@ -49,6 +50,16 @@ export class ElevenLabsSessionManager {
 				notifierService.emitNotification(this.roomId, transcriptionEvent);
 			}
 		});
+
+		this.session.on(
+			'disconnected',
+			async (event: { code: number; reason: string }) => {
+				console.log(
+					`ElevenLabs session disconnected for room ${this.roomId}: ${event.code} - ${event.reason}`,
+				);
+				await this.handleSessionEnd('WebSocket disconnected');
+			},
+		);
 	}
 
 	private async createAgent(story: Story, toolId: string): Promise<string> {
@@ -64,7 +75,7 @@ export class ElevenLabsSessionManager {
 		const config = {
 			conversationConfig: {
 				conversation: {
-					maxDurationSeconds: 1800,
+					maxDurationSeconds: GAME_TIME_LIMIT_SECONDS,
 				},
 				agent: {
 					firstMessage,
@@ -195,5 +206,40 @@ export class ElevenLabsSessionManager {
 		}
 
 		return story;
+	}
+
+	private async handleSessionEnd(reason: string): Promise<void> {
+		if (this.endingRoom) {
+			return;
+		}
+
+		this.endingRoom = true;
+
+		const gameSession = roomService.getGameSession(this.roomId);
+
+		if (!gameSession) {
+			console.warn(
+				`Session ended for room ${this.roomId} but no active game session found`,
+			);
+			this.endingRoom = false;
+			return;
+		}
+
+		if (!roomService.isGameActive(this.roomId)) {
+			this.endingRoom = false;
+			return;
+		}
+
+		try {
+			console.log(`Stopping game for room ${this.roomId} due to: ${reason}`);
+			await gameSession.stopGame();
+		} catch (error) {
+			console.error(
+				`Failed to stop game for room ${this.roomId} after session end`,
+				error,
+			);
+		} finally {
+			this.endingRoom = false;
+		}
 	}
 }

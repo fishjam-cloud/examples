@@ -1,5 +1,6 @@
 import { Clock } from 'lucide-react';
 import { useEffect, useState, type FC } from 'react';
+import { GAME_TIME_LIMIT_SECONDS } from '@deep-sea-stories/common';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
 
 type GameTimerProps = {
@@ -20,7 +21,7 @@ const formatDuration = (seconds: number): string => {
 const GameTimer: FC<GameTimerProps> = ({ roomId }) => {
 	const events = useAgentEvents(roomId);
 	const [gameStartTime, setGameStartTime] = useState<number | null>(null);
-	const [elapsedTime, setElapsedTime] = useState(0);
+	const [remainingTime, setRemainingTime] = useState(GAME_TIME_LIMIT_SECONDS);
 
 	useEffect(() => {
 		const reversedEvents = [...events].reverse();
@@ -37,7 +38,7 @@ const GameTimer: FC<GameTimerProps> = ({ roomId }) => {
 
 			if (!gameStartEvent) {
 				setGameStartTime(null);
-				setElapsedTime(0);
+				setRemainingTime(GAME_TIME_LIMIT_SECONDS);
 				return;
 			}
 		}
@@ -59,7 +60,8 @@ const GameTimer: FC<GameTimerProps> = ({ roomId }) => {
 
 		const interval = setInterval(() => {
 			const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
-			setElapsedTime(elapsed);
+			const remaining = Math.max(GAME_TIME_LIMIT_SECONDS - elapsed, 0);
+			setRemainingTime(remaining);
 		}, 1000);
 
 		return () => clearInterval(interval);
@@ -70,7 +72,9 @@ const GameTimer: FC<GameTimerProps> = ({ roomId }) => {
 	return (
 		<div className="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-4xl font-medium w-fit self-center">
 			<Clock size={18} />
-			<span className="text-base font-mono">{formatDuration(elapsedTime)}</span>
+			<span className="text-base font-mono">
+				{formatDuration(remainingTime)}
+			</span>
 		</div>
 	);
 };
