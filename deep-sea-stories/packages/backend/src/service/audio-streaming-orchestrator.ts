@@ -5,7 +5,7 @@ import type {
 } from '@fishjam-cloud/js-server-sdk';
 import type { Conversation } from '../types.js';
 import VAD, { type VADData } from 'node-vad';
-import { VAD_DEBOUNCE_MS } from '../config.js';
+import { VAD_DEBOUNCE_MS, AUDIO_QUEUE_INITIAL_DELAY_MS } from '../config.js';
 
 export class AudioStreamingOrchestrator {
 	private fishjamAgent: FishjamAgent;
@@ -374,5 +374,16 @@ export class AudioStreamingOrchestrator {
 			console.error('Error decoding audio event:', error);
 			return null;
 		}
+	}
+
+	async waitForAudioQueueToDrain(): Promise<void> {
+		await new Promise((resolve) =>
+			setTimeout(resolve, AUDIO_QUEUE_INITIAL_DELAY_MS),
+		);
+
+		while (this.audioQueue.length > 0 || this.isSendingAudio) {
+			await new Promise((resolve) => setTimeout(resolve, 100));
+		}
+		console.log('[Orchestrator] Audio queue drained successfully');
 	}
 }
