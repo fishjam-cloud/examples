@@ -23,7 +23,7 @@ export class AudioStreamingOrchestrator {
 	private audioQueue: Uint8Array[];
 	private lastOutgoingTs: number | null;
 	private silenceIntervalId: NodeJS.Timeout | null;
-	private interruptionCooldownTimer: NodeJS.Timeout | null;
+	private interruptedEventId: number | null;
 	private outputInterval?: NodeJS.Timeout | null;
 
 	constructor(
@@ -41,7 +41,7 @@ export class AudioStreamingOrchestrator {
 		this.audioQueue = [];
 		this.lastOutgoingTs = null;
 		this.silenceIntervalId = null;
-		this.interruptionCooldownTimer = null;
+		this.interruptedEventId = null;
 
 		for (const peerId of connectedPeers) {
 			this.initializeVADStream(peerId);
@@ -147,9 +147,12 @@ export class AudioStreamingOrchestrator {
 					`[Orchestrator] Received audio chunk #${this.audioChunkCount}, event_id: ${audioEvent.event_id ?? 'none'}`,
 				);
 
-				if (this.interruptionCooldownTimer !== null) {
+				if (
+					this.interruptedEventId !== null &&
+					audioEvent.event_id === this.interruptedEventId
+				) {
 					console.log(
-						`[Orchestrator] Discarding audio chunk #${this.audioChunkCount} due to interruption cooldown`,
+						`[Orchestrator] Discarding audio chunk #${this.audioChunkCount} with event_id ${audioEvent.event_id} (interrupted)`,
 					);
 					return;
 				}
@@ -178,24 +181,20 @@ export class AudioStreamingOrchestrator {
 			}
 		});
 
-		this.sharedSession.on('interruption', (event) => {
+		this.sharedSession.on('interruption', (event: { event_id?: number }) => {
 			console.log('[Orchestrator] Interruption event received:', event);
 
-			if (this.interruptionCooldownTimer) {
-				clearTimeout(this.interruptionCooldownTimer);
+			if (event.event_id !== undefined) {
+				this.interruptedEventId = event.event_id;
+				console.log(
+					`[Orchestrator] Marked event_id ${event.event_id} as interrupted`,
+				);
 			}
 
 			console.log('[Orchestrator] Clearing audio queue due to interruption');
 			this.audioChunkCount = 0;
 			this.audioQueue = [];
 			this.fishjamAgent.interruptTrack(this.audioTrackId as TrackId);
-
-			this.interruptionCooldownTimer = setTimeout(() => {
-				this.interruptionCooldownTimer = null;
-				console.log(
-					'[Orchestrator] Interruption cooldown ended, resuming normal audio playback',
-				);
-			}, 500);
 		});
 
 		if (!this.silenceIntervalId) {
@@ -227,10 +226,6 @@ export class AudioStreamingOrchestrator {
 				1000;
 
 			this.outputInterval = setInterval(() => {
-				if (this.interruptionCooldownTimer !== null) {
-					return;
-				}
-
 				if (this.audioQueue.length > 0 && this.audioTrackId) {
 					const frame = this.audioQueue.shift();
 					if (frame) {
@@ -297,10 +292,7 @@ export class AudioStreamingOrchestrator {
 			console.log('[Orchestrator] Cleared output interval (cleanup)');
 		}
 
-		if (this.interruptionCooldownTimer) {
-			clearTimeout(this.interruptionCooldownTimer);
-			this.interruptionCooldownTimer = null;
-		}
+		this.interruptedEventId = null;
 
 		if (this.fishjamAgent) {
 			this.fishjamAgent.removeAllListeners('trackData');
