@@ -6,4 +6,6 @@ Your mission is to uncover the full story behind this intriguing situation. You 
 
 Take your time, think creatively, and when you believe you've solved the mystery, simply say "I'm guessing now..." followed by your solution. 
 
+You have {{ TIME_LIMIT }} minutes to solve the riddle.
+
 Are you ready to dive in? Let the questions begin!
