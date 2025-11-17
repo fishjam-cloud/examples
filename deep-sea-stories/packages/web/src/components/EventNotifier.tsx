@@ -6,6 +6,8 @@ import {
 	OctagonMinus,
 	type LucideIcon,
 	MessageSquare,
+	Users,
+	Bot,
 } from 'lucide-react';
 import { useEffect, useRef, type FC, type PropsWithChildren } from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
@@ -38,7 +40,7 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 const eventConfigMap: Record<
 	AgentEvent['type'],
 	{
-		icon: LucideIcon;
+		icon: LucideIcon | ((event: AgentEvent) => LucideIcon);
 		renderBody: (event: AgentEvent) => React.ReactElement;
 	}
 > = {
@@ -105,6 +107,19 @@ const eventConfigMap: Record<
 			</>
 		),
 	},
+	aiAgentMutedStatusChanged: {
+		icon: (event: AgentEvent) =>
+			event.type === 'aiAgentMutedStatusChanged' && event.muted ? Users : Bot,
+		renderBody: (event) => (
+			<div className="text-xs md:text-lg">
+				<span className="text-muted-foreground">
+					{event.type === 'aiAgentMutedStatusChanged' && event.muted
+						? 'Switched to Conference Mode'
+						: 'Switched to Agent Question Mode'}
+				</span>
+			</div>
+		),
+	},
 };
 
 const EventNotifier: FC<EventNotifierProps> = ({ roomId }) => {
@@ -126,10 +141,13 @@ const EventNotifier: FC<EventNotifierProps> = ({ roomId }) => {
 			<div className="p-3 md:p-6">
 				{events.map((event, index) => {
 					const config = eventConfigMap[event.type];
+					const icon = (
+						typeof config.icon === 'function' ? config.icon(event) : config.icon
+					) as LucideIcon;
 					return (
 						<PanelEvent
 							key={`${event.timestamp}-${index}`}
-							icon={config.icon}
+							icon={icon}
 							timestamp={event.timestamp}
 						>
 							{config.renderBody(event)}

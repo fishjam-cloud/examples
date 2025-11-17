@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import AudioVisualizer from './AudioVisualizer';
 import GameTimer from './GameTimer';
+import AgentModeToggle from './AgentModeToggle';
 
 type RiddleMasterPanelProps = {
 	roomId: string;
@@ -17,6 +18,7 @@ const RiddleMasterPanel: FC<RiddleMasterPanelProps> = ({
 			<div className="flex-1 min-h-0">
 				<AudioVisualizer stream={agentStream} barColor="#10b982" />
 			</div>
+			<AgentModeToggle roomId={roomId} />
 		</div>
 	);
 };
