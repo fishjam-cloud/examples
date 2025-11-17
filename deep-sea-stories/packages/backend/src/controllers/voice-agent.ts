@@ -17,7 +17,7 @@ export const muteVoiceAgent = publicProcedure
 				} successfully`,
 			};
 		} catch (error) {
-			console.error(`Failed to select story: %o`, error);
+			console.error(`Error muting/unmuting voice agent in room "${input.roomId}": `, error)
 			throw new Error((error as Error).message);
 		}
 	});
