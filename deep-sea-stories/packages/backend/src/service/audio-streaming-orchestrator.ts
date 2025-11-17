@@ -26,7 +26,7 @@ export class AudioStreamingOrchestrator {
 	private interruptedEventId: number | null;
 	private outputInterval?: NodeJS.Timeout | null;
 	private isInputMuted: boolean = false;
-  
+
 	setMuted(muted: boolean): void {
 		this.isInputMuted = muted;
 		console.log(
