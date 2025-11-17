@@ -363,7 +363,7 @@ export class AudioStreamingOrchestrator {
 			setTimeout(resolve, AUDIO_QUEUE_INITIAL_DELAY_MS),
 		);
 
-		while (this.audioQueue.length > 0 || this.isSendingAudio) {
+		while (this.audioQueue.length > 0) {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 		}
 		console.log('[Orchestrator] Audio queue drained successfully');

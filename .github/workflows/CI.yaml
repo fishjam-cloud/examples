@@ -34,6 +34,9 @@ jobs:
 
       - name: Run lint
         run: yarn lint
-      
+
+      - name: Run build
+        run: yarn build
+
       - name: Run backend tests
         run: yarn workspace backend test
