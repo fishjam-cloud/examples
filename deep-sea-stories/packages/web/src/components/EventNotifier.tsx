@@ -6,8 +6,8 @@ import {
 	OctagonMinus,
 	type LucideIcon,
 	MessageSquare,
-	Users,
-	Bot,
+	EarOff,
+	Headphones,
 } from 'lucide-react';
 import { useEffect, useRef, type FC, type PropsWithChildren } from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
@@ -109,13 +109,15 @@ const eventConfigMap: Record<
 	},
 	aiAgentMutedStatusChanged: {
 		icon: (event: AgentEvent) =>
-			event.type === 'aiAgentMutedStatusChanged' && event.muted ? Users : Bot,
+			event.type === 'aiAgentMutedStatusChanged' && event.muted
+				? EarOff
+				: Headphones,
 		renderBody: (event) => (
 			<div className="text-xs md:text-lg">
 				<span className="text-muted-foreground">
 					{event.type === 'aiAgentMutedStatusChanged' && event.muted
-						? 'Switched to Conference Mode'
-						: 'Switched to Agent Question Mode'}
+						? 'Agent deafened'
+						: 'Agent listening'}
 				</span>
 			</div>
 		),

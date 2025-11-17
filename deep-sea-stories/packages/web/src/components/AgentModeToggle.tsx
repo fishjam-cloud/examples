@@ -1,5 +1,5 @@
 import { useEffect, useState, type FC } from 'react';
-import { Users, Bot } from 'lucide-react';
+import { Headphones, EarOff } from 'lucide-react';
 import { Button } from './ui/button';
 import { useTRPCClient } from '@/contexts/trpc';
 import { toast } from 'sonner';
@@ -40,11 +40,7 @@ const AgentModeToggle: FC<AgentModeToggleProps> = ({ roomId }) => {
 				muted: !isAiMuted,
 			});
 
-			toast.success(
-				!isAiMuted
-					? 'Switched to conference mode'
-					: 'Switched to agent question mode',
-			);
+			toast.success(!isAiMuted ? 'Agent deafened' : 'Agent listening');
 		} catch (error) {
 			console.error('Failed to toggle AI mode:', error);
 			toast.error('Failed to toggle mode');
@@ -67,13 +63,13 @@ const AgentModeToggle: FC<AgentModeToggleProps> = ({ roomId }) => {
 			>
 				{isAiMuted ? (
 					<>
-						<Users size={16} />
-						<span>Conference Mode</span>
+						<Headphones size={16} />
+						<span>Undeafen Agent</span>
 					</>
 				) : (
 					<>
-						<Bot size={16} />
-						<span>Agent Question Mode</span>
+						<EarOff size={16} />
+						<span>Deafen Agent</span>
 					</>
 				)}
 			</Button>
