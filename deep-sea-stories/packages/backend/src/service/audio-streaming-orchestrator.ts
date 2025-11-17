@@ -5,9 +5,14 @@ import type {
 } from '@fishjam-cloud/js-server-sdk';
 import type { Conversation } from '../types.js';
 import VAD, { type VADData } from 'node-vad';
-import { VAD_DEBOUNCE_MS } from '../config.js';
+import { VAD_DEBOUNCE_MS, AUDIO_QUEUE_INITIAL_DELAY_MS } from '../config.js';
 
 export class AudioStreamingOrchestrator {
+	private static readonly OUTPUT_FRAMES_PER_BUFFER = 1000; // 62.5ms @ 16kHz
+	private static readonly SAMPLE_RATE = 16000;
+	private static readonly BYTES_PER_SAMPLE = 2;
+	private static readonly CHANNELS = 1;
+
 	private fishjamAgent: FishjamAgent;
 	private connectedPeers: Set<PeerId>;
 	private vadStreams: Map<PeerId, NodeJS.ReadWriteStream>;
@@ -15,14 +20,13 @@ export class AudioStreamingOrchestrator {
 	private sharedSession: Conversation | null;
 	private audioTrackId: TrackId | null;
 	private audioChunkCount: number;
-	private isSendingAudio: boolean;
 	private audioQueue: Uint8Array[];
 	private lastOutgoingTs: number | null;
 	private silenceIntervalId: NodeJS.Timeout | null;
-	private pendingInterruption: boolean;
-	private pendingInterruptionTimer: NodeJS.Timeout | null;
+	private interruptedEventId: number | null;
+	private outputInterval?: NodeJS.Timeout | null;
 	private isInputMuted: boolean = false;
-
+  
 	setMuted(muted: boolean): void {
 		this.isInputMuted = muted;
 		console.log(
@@ -42,12 +46,10 @@ export class AudioStreamingOrchestrator {
 		this.sharedSession = sharedSession;
 		this.audioTrackId = null;
 		this.audioChunkCount = 0;
-		this.isSendingAudio = false;
 		this.audioQueue = [];
 		this.lastOutgoingTs = null;
 		this.silenceIntervalId = null;
-		this.pendingInterruption = false;
-		this.pendingInterruptionTimer = null;
+		this.interruptedEventId = null;
 
 		for (const peerId of connectedPeers) {
 			this.initializeVADStream(peerId);
@@ -103,27 +105,12 @@ export class AudioStreamingOrchestrator {
 				!this.isInputMuted
 			) {
 				try {
-					if (this.pendingInterruption) {
-						this.pendingInterruption = false;
-						if (this.pendingInterruptionTimer) {
-							clearTimeout(this.pendingInterruptionTimer);
-							this.pendingInterruptionTimer = null;
-						}
-					}
-
-					try {
-						const boostedAudio = this.boostAudioVolume(vadData.audioData, 7.0);
-						console.log(
-							`[Orchestrator] Sending ${boostedAudio.length} bytes of boosted audio from peer ${peerId} to AI agent`,
-						);
-						this.sharedSession.sendAudio(boostedAudio);
-						this.lastOutgoingTs = Date.now();
-					} catch (error) {
-						console.error(
-							` [Orchestrator] Error sending audio to AI voice agent for peer ${peerId}:`,
-							error,
-						);
-					}
+					const boostedAudio = this.boostAudioVolume(vadData.audioData, 7.0);
+					console.log(
+						`[Orchestrator] Sending ${boostedAudio.length} bytes of boosted audio from peer ${peerId} to AI agent`,
+					);
+					this.sharedSession.sendAudio(boostedAudio);
+					this.lastOutgoingTs = Date.now();
 				} catch (error) {
 					console.error(
 						`[Orchestrator] Error sending audio to AI voice agent for peer ${peerId}:`,
@@ -154,8 +141,8 @@ export class AudioStreamingOrchestrator {
 	setupOutgoingAudioPipeline(): void {
 		const audioTrack = this.fishjamAgent.createTrack({
 			encoding: 'pcm16',
-			sampleRate: 16000,
-			channels: 1,
+			sampleRate: AudioStreamingOrchestrator.SAMPLE_RATE,
+			channels: AudioStreamingOrchestrator.CHANNELS,
 		});
 
 		this.audioTrackId = audioTrack.id as TrackId;
@@ -173,10 +160,30 @@ export class AudioStreamingOrchestrator {
 					`[Orchestrator] Received audio chunk #${this.audioChunkCount}, event_id: ${audioEvent.event_id ?? 'none'}`,
 				);
 
+				if (
+					this.interruptedEventId !== null &&
+					audioEvent.event_id === this.interruptedEventId
+				) {
+					console.log(
+						`[Orchestrator] Discarding audio chunk #${this.audioChunkCount} with event_id ${audioEvent.event_id} (interrupted)`,
+					);
+					return;
+				}
+
 				const audioBuffer = this.decodeAudioEvent(audioEvent);
+				const chunkSize =
+					AudioStreamingOrchestrator.OUTPUT_FRAMES_PER_BUFFER *
+					AudioStreamingOrchestrator.BYTES_PER_SAMPLE; // pcm16 mono
 				if (audioBuffer && audioBuffer.length > 0) {
-					this.audioQueue.push(audioBuffer);
-					this.processAudioQueue();
+					for (
+						let offset = 0;
+						offset < audioBuffer.length;
+						offset += chunkSize
+					) {
+						const end = Math.min(offset + chunkSize, audioBuffer.length);
+						const chunk = audioBuffer.slice(offset, end);
+						this.audioQueue.push(chunk);
+					}
 				} else {
 					console.warn(
 						`[Orchestrator] Received empty audio buffer from agent (chunk #${this.audioChunkCount})`,
@@ -187,46 +194,63 @@ export class AudioStreamingOrchestrator {
 			}
 		});
 
-		this.sharedSession.on('interruption', (event) => {
+		this.sharedSession.on('interruption', (event: { event_id?: number }) => {
 			console.log('[Orchestrator] Interruption event received:', event);
-			if (this.pendingInterruptionTimer) {
-				clearTimeout(this.pendingInterruptionTimer);
-				this.pendingInterruptionTimer = null;
-			}
-			this.pendingInterruption = true;
-			this.pendingInterruptionTimer = setTimeout(() => {
-				if (!this.pendingInterruption) return;
+
+			if (event.event_id !== undefined) {
+				this.interruptedEventId = event.event_id;
 				console.log(
-					'[Orchestrator] Clearing audio queue after confirmed interruption',
+					`[Orchestrator] Marked event_id ${event.event_id} as interrupted`,
 				);
-				this.audioChunkCount = 0;
-				this.audioQueue = [];
-				this.isSendingAudio = false;
-				this.pendingInterruption = false;
-				this.pendingInterruptionTimer = null;
-			}, 150);
+			}
+
+			console.log('[Orchestrator] Clearing audio queue due to interruption');
+			this.audioChunkCount = 0;
+			this.audioQueue = [];
+			this.fishjamAgent.interruptTrack(this.audioTrackId as TrackId);
 		});
 
-		this.silenceIntervalId = setInterval(() => {
-			try {
-				if (!this.sharedSession) return;
-				const now = Date.now();
-				if (
-					this.activeSpeaker === null &&
-					(!this.lastOutgoingTs || now - this.lastOutgoingTs > 1200)
-				) {
-					// Generate realistic background noise instead of pure silence
-					const silence = this.generateBackgroundNoise(1920);
-					this.sharedSession.sendAudio(silence);
-					this.lastOutgoingTs = now;
-					console.log(
-						'[Orchestrator] Sent background noise packet to AI session to keep it primed',
-					);
+		if (!this.silenceIntervalId) {
+			this.silenceIntervalId = setInterval(() => {
+				try {
+					if (!this.sharedSession) return;
+					const now = Date.now();
+					if (
+						this.activeSpeaker === null &&
+						(!this.lastOutgoingTs || now - this.lastOutgoingTs > 1200)
+					) {
+						const silence = this.generateBackgroundNoise(1920);
+						this.sharedSession.sendAudio(silence);
+						this.lastOutgoingTs = now;
+						console.log(
+							'[Orchestrator] Sent background noise packet to AI session to keep it primed',
+						);
+					}
+				} catch (err) {
+					console.error('[Orchestrator] Failed to send silence packet:', err);
 				}
-			} catch (err) {
-				console.error('[Orchestrator] Failed to send silence packet:', err);
-			}
-		}, 1000);
+			}, 1000);
+		}
+
+		if (!this.outputInterval) {
+			const outputIntervalMs =
+				(AudioStreamingOrchestrator.OUTPUT_FRAMES_PER_BUFFER /
+					AudioStreamingOrchestrator.SAMPLE_RATE) *
+				1000;
+
+			this.outputInterval = setInterval(() => {
+				if (this.audioQueue.length > 0 && this.audioTrackId) {
+					const frame = this.audioQueue.shift();
+					if (frame) {
+						try {
+							this.fishjamAgent.sendData(this.audioTrackId, frame);
+						} catch (err) {
+							console.error('[Orchestrator] Error sending audio frame:', err);
+						}
+					}
+				}
+			}, outputIntervalMs);
+		}
 	}
 
 	private generateBackgroundNoise(size: number): Buffer {
@@ -256,62 +280,6 @@ export class AudioStreamingOrchestrator {
 		return boosted;
 	}
 
-	private async processAudioQueue(): Promise<void> {
-		if (this.isSendingAudio) {
-			return;
-		}
-
-		this.isSendingAudio = true;
-
-		try {
-			// We'll stream each agent audio buffer in smaller frames and pace them
-			// according to real-time playback duration. This prevents sending very
-			// large blobs at once which can cause clients to play only the first
-			// part and drop the rest.
-			const BYTES_PER_SECOND = 16000 * 2; // pcm16 mono: 16k samples/sec * 2 bytes/sample
-			const FRAME_SIZE = 1920; // bytes per frame (~60ms at 16kHz pcm16)
-			while (this.audioQueue.length > 0) {
-				const audioBuffer = this.audioQueue.shift();
-				if (audioBuffer && this.audioTrackId) {
-					console.log(
-						`[Orchestrator] Sending audio chunk (${audioBuffer.length} bytes), ${this.audioQueue.length} remaining in queue`,
-					);
-					try {
-						for (
-							let offset = 0;
-							offset < audioBuffer.length;
-							offset += FRAME_SIZE
-						) {
-							const end = Math.min(offset + FRAME_SIZE, audioBuffer.length);
-							const frame = audioBuffer.slice(offset, end);
-							try {
-								this.fishjamAgent.sendData(this.audioTrackId, frame);
-							} catch (err) {
-								console.error('[Orchestrator] Error sending audio frame:', err);
-							}
-							// Pace frames by their real-time duration. Minimum 10ms to avoid
-							// extremely small waits that would busy-loop.
-							const frameDurationMs = Math.max(
-								10,
-								Math.round((frame.length / BYTES_PER_SECOND) * 1000),
-							);
-							await new Promise((resolve) =>
-								setTimeout(resolve, frameDurationMs),
-							);
-						}
-					} catch (error) {
-						console.error(
-							'[Orchestrator] Error processing audio chunk frames:',
-							error,
-						);
-					}
-				}
-			}
-		} finally {
-			this.isSendingAudio = false;
-		}
-	}
-
 	setupAudioPipelines(): void {
 		this.setupIncomingAudioPipeline();
 		this.setupOutgoingAudioPipeline();
@@ -330,6 +298,14 @@ export class AudioStreamingOrchestrator {
 				'[Orchestrator] Cleared silence keep-alive interval (cleanup)',
 			);
 		}
+
+		if (this.outputInterval) {
+			clearInterval(this.outputInterval);
+			this.outputInterval = null;
+			console.log('[Orchestrator] Cleared output interval (cleanup)');
+		}
+
+		this.interruptedEventId = null;
 
 		if (this.fishjamAgent) {
 			this.fishjamAgent.removeAllListeners('trackData');
@@ -363,9 +339,15 @@ export class AudioStreamingOrchestrator {
 			this.activeSpeaker = null;
 		}
 
-		if (this.connectedPeers.size === 0 && this.silenceIntervalId) {
-			clearInterval(this.silenceIntervalId);
-			this.silenceIntervalId = null;
+		if (this.connectedPeers.size === 0) {
+			if (this.silenceIntervalId) {
+				clearInterval(this.silenceIntervalId);
+				this.silenceIntervalId = null;
+			}
+			if (this.outputInterval) {
+				clearInterval(this.outputInterval);
+				this.outputInterval = null;
+			}
 			console.log(
 				'[Orchestrator] Cleared silence keep-alive interval (no connected peers)',
 			);
@@ -387,5 +369,16 @@ export class AudioStreamingOrchestrator {
 			console.error('Error decoding audio event:', error);
 			return null;
 		}
+	}
+
+	async waitForAudioQueueToDrain(): Promise<void> {
+		await new Promise((resolve) =>
+			setTimeout(resolve, AUDIO_QUEUE_INITIAL_DELAY_MS),
+		);
+
+		while (this.audioQueue.length > 0 || this.isSendingAudio) {
+			await new Promise((resolve) => setTimeout(resolve, 100));
+		}
+		console.log('[Orchestrator] Audio queue drained successfully');
 	}
 }

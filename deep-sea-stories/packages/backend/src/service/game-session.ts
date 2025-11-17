@@ -198,6 +198,11 @@ export class GameSession {
 	}
 
 	async stopGame(): Promise<void> {
+		if (this.audioOrchestrator) {
+			console.log(`Waiting for audio queue to drain for room ${this.roomId}`);
+			await this.audioOrchestrator.waitForAudioQueueToDrain();
+		}
+
 		if (this.voiceAgentSession) {
 			await this.voiceAgentSession.deleteSession();
 			this.voiceAgentSession = undefined;

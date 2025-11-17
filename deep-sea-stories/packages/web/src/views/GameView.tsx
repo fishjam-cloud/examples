@@ -2,11 +2,9 @@ import { usePeers } from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
 import { useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import AgentPanel from '@/components/AgentPanel';
-import { PeerTile } from '@/components/PeerTile';
-import RoomControls from '@/components/RoomControls';
+import GameControlPanel from '@/components/GameControlPanel';
+import PeerGrid from '@/components/PeerGrid';
 import { useTRPCClient } from '@/contexts/trpc';
-import { cn } from '@/lib/utils';
 
 export type GameViewProps = {
 	roomId: string;
@@ -52,38 +50,18 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 
 	const userName = localPeer?.metadata?.peer?.name ?? 'Unknown';
 	return (
-		<>
-			<section className="w-full h-1/2 md:h-1/2 flex flex-col md:flex-row gap-4 md:gap-8 pt-6 md:pt-10 px-6 md:px-10">
-				<AgentPanel roomId={roomId} />
-				<RoomControls roomId={roomId} userName={userName} />
-			</section>
+		<div className="h-full w-full flex flex-col">
+			<GameControlPanel
+				roomId={roomId}
+				userName={userName}
+				agentStream={agentPeer?.tracks[0]?.stream}
+			/>
 
-			<section
-				className={cn(
-					'h-1/2 md:h-1/2 items-center w-full justify-items-center grid gap-4 py-10 overflow-hidden grid-cols-2 grid-rows-2 xl:grid-cols-4 xl:grid-rows-1',
-					{
-						'grid-cols-1 grid-rows-1 xl:grid-cols-1 md:grid-rows-1':
-							displayedPeers.length === 0,
-						'grid-rows-2 grid-cols-1 md:grid-cols-2 md:grid-rows-1 xl:grid-rows-1 xl:grid-cols-2':
-							displayedPeers.length === 1,
-					},
-				)}
-			>
-				<PeerTile name="You" stream={localPeer?.cameraTrack?.stream} />
-				{displayedPeers.map((peer) => (
-					<PeerTile
-						name={peer.metadata?.peer?.name ?? peer.id}
-						key={peer.id}
-						stream={
-							peer.customVideoTracks[0]?.stream ?? peer.cameraTrack?.stream
-						}
-						audioStream={peer.microphoneTrack?.stream}
-					/>
-				))}
-			</section>
+			<PeerGrid localPeer={localPeer} displayedPeers={displayedPeers} />
+
 			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
 			<audio ref={agentAudioRef} autoPlay playsInline title={'Agent audio'} />
-		</>
+		</div>
 	);
 };
 export default GameView;
