@@ -25,6 +25,14 @@ export class AudioStreamingOrchestrator {
 	private silenceIntervalId: NodeJS.Timeout | null;
 	private interruptedEventId: number | null;
 	private outputInterval?: NodeJS.Timeout | null;
+	private isInputMuted: boolean = false;
+
+	setMuted(muted: boolean): void {
+		this.isInputMuted = muted;
+		console.log(
+			`[Orchestrator] User audio input to AI is now ${muted ? 'blocked' : 'enabled'}`,
+		);
+	}
 
 	constructor(
 		fishjamAgent: FishjamAgent,
@@ -90,7 +98,12 @@ export class AudioStreamingOrchestrator {
 				}
 			}
 
-			if (shouldSendAudio && vadData.audioData && this.sharedSession) {
+			if (
+				shouldSendAudio &&
+				vadData.audioData &&
+				this.sharedSession &&
+				!this.isInputMuted
+			) {
 				try {
 					const boostedAudio = this.boostAudioVolume(vadData.audioData, 7.0);
 					console.log(
