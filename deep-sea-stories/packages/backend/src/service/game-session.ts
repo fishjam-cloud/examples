@@ -10,7 +10,7 @@ import { FISHJAM_AGENT_OPTIONS } from '../config.js';
 import { AudioStreamingOrchestrator } from './audio-streaming-orchestrator.js';
 import { NoPeersConnectedError } from '../domain/errors.js';
 import { notifierService } from './notifier.js';
-import { ElevenLabsSessionManager } from './elevenlabs-session.js';
+import { GeminiSessionManager } from './gemini-session.js';
 
 export class GameSession {
 	private roomId: RoomId;
@@ -21,7 +21,7 @@ export class GameSession {
 	private fishjamAgent: FishjamAgent | undefined;
 	private fishjamAgentId: PeerId | undefined;
 	private audioOrchestrator: AudioStreamingOrchestrator | undefined;
-	private voiceAgentSession: ElevenLabsSessionManager | undefined;
+	private voiceAgentSession: GeminiSessionManager | undefined;
 	private isGameStarting: boolean = false;
 	private isAiAgentMuted: boolean = false;
 
@@ -124,7 +124,7 @@ export class GameSession {
 			`[GameSession] Creating shared AI session for room ${this.roomId}`,
 		);
 
-		this.voiceAgentSession = new ElevenLabsSessionManager(this.roomId);
+		this.voiceAgentSession = new GeminiSessionManager(this.roomId);
 		await this.voiceAgentSession.init();
 
 		this.setupAudioStreaming();

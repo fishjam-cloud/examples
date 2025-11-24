@@ -10,6 +10,7 @@ import { VAD_DEBOUNCE_MS, AUDIO_QUEUE_INITIAL_DELAY_MS } from '../config.js';
 export class AudioStreamingOrchestrator {
 	private static readonly OUTPUT_FRAMES_PER_BUFFER = 1000; // 62.5ms @ 16kHz
 	private static readonly SAMPLE_RATE = 16000;
+	private static readonly GEMINI_OUTPUT_SAMPLE_RATE = 24000; // Gemini outputs at 24kHz
 	private static readonly BYTES_PER_SAMPLE = 2;
 	private static readonly CHANNELS = 1;
 
@@ -280,6 +281,44 @@ export class AudioStreamingOrchestrator {
 		return boosted;
 	}
 
+	/**
+	 * Resample audio from Gemini's 24kHz output to Fishjam's 16kHz input
+	 * Uses simple linear interpolation for downsampling (24000 -> 16000 = 2/3 ratio)
+	 */
+	private resampleAudio(
+		inputBuffer: Uint8Array,
+		fromRate: number,
+		toRate: number,
+	): Uint8Array {
+		if (fromRate === toRate) {
+			return inputBuffer;
+		}
+
+		const ratio = fromRate / toRate;
+		const inputSamples = inputBuffer.length / AudioStreamingOrchestrator.BYTES_PER_SAMPLE;
+		const outputSamples = Math.floor(inputSamples / ratio);
+		const outputBuffer = new Uint8Array(outputSamples * AudioStreamingOrchestrator.BYTES_PER_SAMPLE);
+
+		const inputView = new DataView(inputBuffer.buffer, inputBuffer.byteOffset);
+		const outputView = new DataView(outputBuffer.buffer);
+
+		for (let i = 0; i < outputSamples; i++) {
+			const srcIndex = i * ratio;
+			const srcIndexFloor = Math.floor(srcIndex);
+			const srcIndexCeil = Math.min(srcIndexFloor + 1, inputSamples - 1);
+			const fraction = srcIndex - srcIndexFloor;
+
+			const sample1 = inputView.getInt16(srcIndexFloor * 2, true);
+			const sample2 = inputView.getInt16(srcIndexCeil * 2, true);
+
+			// Linear interpolation
+			const interpolated = Math.round(sample1 + (sample2 - sample1) * fraction);
+			outputView.setInt16(i * 2, interpolated, true);
+		}
+
+		return outputBuffer;
+	}
+
 	setupAudioPipelines(): void {
 		this.setupIncomingAudioPipeline();
 		this.setupOutgoingAudioPipeline();
@@ -362,11 +401,21 @@ export class AudioStreamingOrchestrator {
 		}
 
 		try {
-			return Uint8Array.from(atob(audioEvent.audio_base_64), (c) =>
+			// Decode base64 to Uint8Array
+			const rawAudio = Uint8Array.from(atob(audioEvent.audio_base_64), (c) =>
 				c.charCodeAt(0),
 			);
+
+			// Resample from Gemini's 24kHz to Fishjam's 16kHz
+			const resampledAudio = this.resampleAudio(
+				rawAudio,
+				AudioStreamingOrchestrator.GEMINI_OUTPUT_SAMPLE_RATE,
+				AudioStreamingOrchestrator.SAMPLE_RATE,
+			);
+
+			return resampledAudio;
 		} catch (error) {
-			console.error('Error decoding audio event:', error);
+			console.error('[Orchestrator] Error decoding audio event:', error);
 			return null;
 		}
 	}

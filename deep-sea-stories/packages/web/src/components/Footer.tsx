@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import elevenlabs from '@/assets/elevenlabs.svg';
+import gemini from '@/assets/gemini.svg';
 import fishjam from '@/assets/fishjam.svg';
 import HowItWorks from './HowItWorks';
 import HowToPlay from './HowToPlay';
@@ -21,8 +21,9 @@ const Footer: FC = () => {
 						<img src={fishjam} alt="Fishjam logo" className="size-6 block" />
 					</LinkButton>
 
-					<LinkButton to="https://elevenlabs.io" variant="outline" newTab>
-						<img src={elevenlabs} alt="Elevenlabs logo" className="h-4 block" />
+					<LinkButton to="https://ai.google.dev/gemini-api/docs/live" variant="outline" newTab>
+						Gemini Live
+						<img src={gemini} alt="Gemini logo" className="size-5 block" />
 					</LinkButton>
 				</div>
 			</div>

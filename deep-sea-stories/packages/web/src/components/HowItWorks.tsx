@@ -40,12 +40,12 @@ const HowItWorks: FC<ButtonProps> = ({ variant, ...props }) => (
 						</li>
 						<li>
 							<a
-								href="https://elevenlabs.io/conversational-ai"
+								href="https://ai.google.dev/gemini-api/docs/live"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="underline hover:text-primary/80"
 							>
-								<strong>ElevenLabs Conversational AI</strong>
+								<strong>Google Gemini Live API</strong>
 							</a>{' '}
 							- Powers the AI Storyteller with natural voice interaction
 						</li>
@@ -82,11 +82,11 @@ const HowItWorks: FC<ButtonProps> = ({ variant, ...props }) => (
 								Fishjam Agent
 							</a>{' '}
 							that connects to the same room. This agent acts as a bridge
-							between Fishjam and the ElevenLabs Voice AI.
+							between Fishjam and the Google Gemini Live API.
 						</li>
 						<li className="leading-relaxed">
 							<strong>Starting the Game:</strong> When players press "Start
-							Game", the backend initializes an ElevenLabs Conversational AI
+							Game", the backend initializes a Gemini Live API
 							session with custom storytelling instructions. The Fishjam Agent
 							establishes a WebSocket connection to stream audio
 							bidirectionally.
@@ -94,7 +94,7 @@ const HowItWorks: FC<ButtonProps> = ({ variant, ...props }) => (
 						<li className="leading-relaxed">
 							<strong>Deafen/Undeafen Control:</strong> Players can toggle the
 							Storyteller between listening and deafened states. When deafened,
-							the Fishjam Agent stops forwarding player audio to ElevenLabs –
+							the Fishjam Agent stops forwarding player audio to Gemini –
 							allowing players to discuss theories privately while still hearing
 							each other through Fishjam. When undeafened, the agent resumes
 							listening to player questions.
@@ -109,7 +109,7 @@ const HowItWorks: FC<ButtonProps> = ({ variant, ...props }) => (
 							voice at a time while still allowing natural conversation flow.
 						</li>
 						<li className="leading-relaxed">
-							<strong>AI Responses:</strong> The ElevenLabs voice agent
+							<strong>AI Responses:</strong> The Gemini voice agent
 							processes players' questions and generates natural spoken
 							responses. Audio is streamed back through the Fishjam Agent and
 							broadcast to all players in real-time.

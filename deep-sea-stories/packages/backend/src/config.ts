@@ -15,7 +15,7 @@ export const configSchema = z.object({
 	PORT: z.coerce.number().int().default(8000),
 	FISHJAM_ID: z.string(),
 	FISHJAM_MANAGEMENT_TOKEN: z.string(),
-	ELEVENLABS_API_KEY: z.string(),
+	GEMINI_API_KEY: z.string(),
 });
 
 export const stories: Story[] = JSON.parse(
