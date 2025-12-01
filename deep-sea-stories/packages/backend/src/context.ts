@@ -2,18 +2,24 @@ import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 import type { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
 import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 import { CONFIG } from './config.js';
+import { NotifierService } from './service/notifier.js';
 
 const fishjam = new FishjamClient({
 	fishjamId: CONFIG.FISHJAM_ID,
 	managementToken: CONFIG.FISHJAM_MANAGEMENT_TOKEN,
 });
 
+const notifierService = new NotifierService(
+	CONFIG.FISHJAM_ID,
+	CONFIG.FISHJAM_MANAGEMENT_TOKEN,
+);
+
 export function createContext({ req, res }: CreateFastifyContextOptions) {
-	return { req, res, fishjam };
+	return { req, res, fishjam, notifierService };
 }
 
 export function createWSContext({ req, res }: CreateWSSContextFnOptions) {
-	return { req, res, fishjam };
+	return { req, res, fishjam, notifierService };
 }
 
 export type Context =
@@ -21,9 +27,11 @@ export type Context =
 			req: CreateFastifyContextOptions['req'];
 			res: CreateFastifyContextOptions['res'];
 			fishjam: FishjamClient;
+			notifierService: NotifierService;
 	  }
 	| {
 			req: CreateWSSContextFnOptions['req'];
 			res: CreateWSSContextFnOptions['res'];
 			fishjam: FishjamClient;
+			notifierService: NotifierService;
 	  };

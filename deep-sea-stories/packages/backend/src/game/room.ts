@@ -1,0 +1,205 @@
+import type {
+	FishjamClient,
+	Peer,
+	PeerId,
+	RoomId,
+} from '@fishjam-cloud/js-server-sdk';
+import type { VoiceAgentApi } from '../agent/api.js';
+import { ElevenLabsApi } from '../agent/elevenlabs/api.js';
+import { CONFIG, FISHJAM_AGENT_OPTIONS } from '../config.js';
+import { AudioStreamingOrchestrator } from '../service/audio-streaming-orchestrator.js';
+import type { NotifierService } from '../service/notifier.js';
+import type { Story } from '../types.js';
+import { GameSession } from './session.js';
+
+type Player = {
+	name: string;
+};
+
+export class GameRoom {
+	private fishjamClient: FishjamClient;
+	private notifierService: NotifierService;
+	private roomId: RoomId;
+	private story?: Story;
+	private players: Map<PeerId, Player>;
+	private gameStarted: boolean = false;
+	private gameSession: GameSession | null = null;
+	private voiceAgentApi: VoiceAgentApi;
+
+	constructor(
+		fishjamClient: FishjamClient,
+		notifierService: NotifierService,
+		roomId: RoomId,
+	) {
+		this.fishjamClient = fishjamClient;
+		this.notifierService = notifierService;
+		this.roomId = roomId;
+		this.story = undefined;
+		this.players = new Map();
+
+		this.voiceAgentApi = new ElevenLabsApi(CONFIG.ELEVENLABS_API_KEY);
+	}
+
+	getStory(): Story | undefined {
+		return this.story;
+	}
+
+	setStory(story: Story | undefined) {
+		this.story = story;
+	}
+
+	getGameSession() {
+		return this.gameSession ?? undefined;
+	}
+
+	async addPlayer(name: string): Promise<{ peer: Peer; peerToken: string }> {
+		const { peer, peerToken } = await this.fishjamClient.createPeer(
+			this.roomId,
+		);
+
+		this.players.set(peer.id, { name });
+
+		this.connectPlayer(peer.id);
+
+		return { peer, peerToken };
+	}
+
+	async removePlayer(peerId: PeerId): Promise<string | null> {
+		const player = this.players.get(peerId);
+		this.players.delete(peerId);
+
+		if (this.gameSession) {
+			this.gameSession.removePlayer(peerId);
+		}
+		await this.fishjamClient.deletePeer(this.roomId, peerId);
+
+		console.log('Player %s removed from game room %s', peerId, this.roomId);
+
+		if (this.players.size === 0) {
+			await this.stopGame();
+		}
+
+		return player?.name ?? null;
+	}
+
+	connectPlayer(peerId: PeerId) {
+		const player = this.players.get(peerId);
+		if (!player) return null;
+
+		this.gameSession?.addPlayer(peerId);
+
+		return player.name;
+	}
+
+	getPlayerName(peerId: PeerId): string | undefined {
+		return this.players.get(peerId)?.name;
+	}
+
+	async startGame() {
+		if (!this.story) {
+			console.warn(
+				'Attempted to start game without selected story for room %s',
+				this.roomId,
+			);
+			return;
+		}
+
+		if (this.gameStarted) {
+			console.log(`Game is already starting or active for room ${this.roomId}`);
+			return;
+		}
+
+		this.gameStarted = true;
+
+		const { agent: fishjamAgent, agentId: fishjamAgentId } =
+			await this.createFishjamAgent();
+
+		const voiceAgentSession = await this.voiceAgentApi.createAgentSession({
+			story: this.story,
+			onEndGame: () => {},
+			gameTimeLimitSeconds: 20 * 60,
+			onTranscription: (transcription) => {
+				this.notifierService.emitNotification(this.roomId, {
+					type: 'transcription',
+					text: transcription,
+					timestamp: Date.now(),
+				});
+			},
+		});
+
+		const audioOrchestrator = new AudioStreamingOrchestrator(
+			voiceAgentSession,
+			fishjamAgent,
+		);
+
+		this.gameSession = new GameSession(
+			this.roomId,
+			fishjamAgentId,
+			this.story,
+			audioOrchestrator,
+			this.notifierService,
+		);
+
+		console.log(
+			`Starting game for ${this.players.size} players in room ${this.roomId}`,
+		);
+
+		console.log(`Creating shared AI session for room ${this.roomId}`);
+
+		await this.gameSession.startGame();
+
+		await Promise.all(
+			this.players.keys().map((peerId) => this.gameSession?.addPlayer(peerId)),
+		);
+
+		this.notifierService.emitNotification(this.roomId, {
+			type: 'gameStarted' as const,
+			timestamp: Date.now(),
+		});
+	}
+
+	async stopGame() {
+		console.log('Stopping game room %s', this.roomId);
+
+		if (this.gameSession) {
+			await this.gameSession.stopGame();
+			await this.fishjamClient.deletePeer(
+				this.roomId,
+				this.gameSession.agentId,
+			);
+			this.gameSession = null;
+		}
+
+		this.story = undefined;
+
+		this.notifierService.emitNotification(this.roomId, {
+			type: 'gameEnded' as const,
+			timestamp: Date.now(),
+		});
+
+		this.gameStarted = false;
+		console.log(`Stopped game for room ${this.roomId}`);
+	}
+
+	private async createFishjamAgent() {
+		const { agent, peer } = await this.fishjamClient.createAgent(
+			this.roomId,
+			FISHJAM_AGENT_OPTIONS,
+			{
+				onError: (event: Event) => {
+					console.log(
+						`Fishjam Agent for room: ${this.roomId} encountered an error event:`,
+						event,
+					);
+				},
+				onClose: (code: number, reason: string) => {
+					console.log(
+						`Fishjam Agent for room: ${this.roomId} closed with code: ${code}, reason: ${reason}`,
+					);
+				},
+			},
+		);
+
+		return { agent, agentId: peer.id };
+	}
+}

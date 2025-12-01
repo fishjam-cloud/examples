@@ -1,20 +1,19 @@
 import type { RoomId } from '@fishjam-cloud/js-server-sdk';
-import type { GameSession } from './game-session.js';
+import type { GameRoom } from '../game/room.js';
 
 class RoomService {
-	private RoomToGameSession = new Map<RoomId, GameSession>();
+	private rooms = new Map<RoomId, GameRoom>();
 
-	getGameSession(roomId: RoomId): GameSession | undefined {
-		return this.RoomToGameSession.get(roomId);
+	getGameRoom(roomId: RoomId): GameRoom | undefined {
+		return this.rooms.get(roomId);
 	}
 
-	setGameSession(roomId: RoomId, gameSession: GameSession) {
-		this.RoomToGameSession.set(roomId, gameSession);
+	setGameRoom(roomId: RoomId, gameRoom: GameRoom) {
+		this.rooms.set(roomId, gameRoom);
 	}
 
 	isGameActive(roomId: RoomId): boolean {
-		const gameSession = this.RoomToGameSession.get(roomId);
-		return gameSession !== undefined && gameSession.getStory() !== undefined;
+		return this.rooms.get(roomId)?.getGameSession() !== undefined;
 	}
 }
 

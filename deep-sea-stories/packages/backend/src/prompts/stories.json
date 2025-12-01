@@ -58,5 +58,11 @@
 		"title": "Shot in a Locked Car",
 		"front": "A man is found shot to death in a car. All the doors are locked from the inside, and there is no gun in the vehicle.",
 		"back": "The man was killed in a drive-by shooting. After he was shot, his car rolled forward and hit an obstacle, automatically locking the central locking system on impact. The attacker left with the weapon, leaving behind a locked car with a dead man inside."
+	},
+	{
+		"id": 11,
+		"title": "The Flying Diver",
+		"front": "A man is found dead in the middle of a burnt forest. He is wearing a full wet suit, flippers, and a scuba tank.",
+		"back": "The man was diving in the ocean near the coast. A massive forest fire was raging nearby. A firefighting plane scooped up a load of water from the ocean to dump on the fire. The diver was accidentally scooped up along with the water and dropped from a great height onto the burning forest."
 	}
 ]

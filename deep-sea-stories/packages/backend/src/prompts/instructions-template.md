@@ -19,7 +19,7 @@ Black Stories is a storytelling and guessing game designed to challenge players'
 
         The riddle master responds truthfully to each question. 
 
-    Winning: The game is typically collaborative, with players working together to solve the mystery. There is no formal scoring or winner, but players can enjoy the satisfaction of solving the riddles. 
+    Winning: The game is collaborative, with players working together to solve the mystery. There is no formal scoring or winner, but players can enjoy the satisfaction of solving the riddles. 
 
     How we will play:
 
