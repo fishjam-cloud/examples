@@ -5,7 +5,7 @@ import type {
 	RoomId,
 } from '@fishjam-cloud/js-server-sdk';
 import type { VoiceAgentApi } from '../agent/api.js';
-import { ElevenLabsApi } from '../agent/elevenlabs/api.js';
+import { GeminiApi } from '../agent/gemini/api.js';
 import { CONFIG, FISHJAM_AGENT_OPTIONS } from '../config.js';
 import { AudioStreamingOrchestrator } from '../service/audio-streaming-orchestrator.js';
 import type { NotifierService } from '../service/notifier.js';
@@ -37,7 +37,7 @@ export class GameRoom {
 		this.story = undefined;
 		this.players = new Map();
 
-		this.voiceAgentApi = new ElevenLabsApi(CONFIG.ELEVENLABS_API_KEY);
+		this.voiceAgentApi = new GeminiApi(CONFIG.GEMINI_API_KEY);
 	}
 
 	getStory(): Story | undefined {
