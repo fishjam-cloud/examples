@@ -116,7 +116,7 @@ export class GameRoom {
 
 		const voiceAgentSession = await this.voiceAgentApi.createAgentSession({
 			story: this.story,
-			onEndGame: () => {},
+			onEndGame: () => this.stopGame(),
 			gameTimeLimitSeconds: 20 * 60,
 			onTranscription: (transcription) => {
 				this.notifierService.emitNotification(this.roomId, {
@@ -190,11 +190,6 @@ export class GameRoom {
 					console.log(
 						`Fishjam Agent for room: ${this.roomId} encountered an error event:`,
 						event,
-					);
-				},
-				onClose: (code: number, reason: string) => {
-					console.log(
-						`Fishjam Agent for room: ${this.roomId} closed with code: ${code}, reason: ${reason}`,
 					);
 				},
 			},

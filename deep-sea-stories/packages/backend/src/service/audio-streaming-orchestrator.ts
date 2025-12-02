@@ -13,7 +13,6 @@ export class AudioStreamingOrchestrator {
 	private fishjamTrack: AgentTrack;
 	private vadStreams: Map<PeerId, NodeJS.ReadWriteStream>;
 	private activeSpeaker: PeerId | null;
-	private lastOutgoingTs: number | null;
 	private outputInterval?: NodeJS.Timeout | null;
 	private isInputMuted: boolean = false;
 
@@ -25,7 +24,6 @@ export class AudioStreamingOrchestrator {
 		this.fishjamAgent = fishjamAgent;
 		this.vadStreams = new Map();
 		this.activeSpeaker = null;
-		this.lastOutgoingTs = null;
 
 		this.fishjamTrack = fishjamAgent.createTrack({
 			channels: 1,
@@ -80,6 +78,8 @@ export class AudioStreamingOrchestrator {
 	}
 
 	async shutdown() {
+		await this.voiceAgentSession.close();
+
 		for (const vadStream of this.vadStreams.values()) {
 			vadStream.unpipe();
 		}
@@ -94,8 +94,6 @@ export class AudioStreamingOrchestrator {
 			this.fishjamAgent.removeAllListeners('trackData');
 			this.fishjamAgent.deleteTrack(this.fishjamTrack.id);
 		}
-
-		await this.voiceAgentSession.close();
 
 		console.log('[Orchestrator] Cleaned up all resources');
 	}
@@ -132,10 +130,7 @@ export class AudioStreamingOrchestrator {
 			}
 
 			try {
-				this.voiceAgentSession.sendAudio(
-					this.boostAudioVolume(vadData.audioData, 7.0),
-				);
-				this.lastOutgoingTs = Date.now();
+				this.voiceAgentSession.sendAudio(vadData.audioData);
 			} catch (error) {
 				console.error(
 					`[Orchestrator] Error sending audio to AI voice agent for peer ${peerId}:`,
@@ -166,19 +161,7 @@ export class AudioStreamingOrchestrator {
 		});
 
 		this.voiceAgentSession.registerAgentAudioCallback((audio) => {
-			console.log('[Orchestrator] Received Agent Audio, sending to Fishjam');
 			this.fishjamAgent.sendData(this.fishjamTrack.id, audio);
 		});
-	}
-
-	private boostAudioVolume(audioBuffer: Buffer, gain = 2.0): Buffer {
-		for (let offset = 0; offset < audioBuffer.length - 1; offset += 2) {
-			const sample = audioBuffer.readInt16LE(offset);
-			const amplified = Math.round(sample * gain);
-			const clamped = Math.max(-32768, Math.min(32767, amplified));
-			audioBuffer.writeInt16LE(clamped, offset);
-		}
-
-		return audioBuffer;
 	}
 }

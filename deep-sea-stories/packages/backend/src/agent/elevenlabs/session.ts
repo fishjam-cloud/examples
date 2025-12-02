@@ -12,7 +12,7 @@ export class ElevenLabsSession implements VoiceAgentSession {
 	}
 
 	sendAudio(audio: Buffer) {
-		this.audioInterface.sendAudio(audio);
+		this.audioInterface.sendAudio(this.boostAudioVolume(audio, 7.0));
 	}
 
 	registerInterruptionCallback(onInterrupt: () => void) {
@@ -29,5 +29,16 @@ export class ElevenLabsSession implements VoiceAgentSession {
 
 	async close() {
 		this.session.endSession();
+	}
+
+	private boostAudioVolume(audioBuffer: Buffer, gain = 2.0): Buffer {
+		for (let offset = 0; offset < audioBuffer.length - 1; offset += 2) {
+			const sample = audioBuffer.readInt16LE(offset);
+			const amplified = Math.round(sample * gain);
+			const clamped = Math.max(-32768, Math.min(32767, amplified));
+			audioBuffer.writeInt16LE(clamped, offset);
+		}
+
+		return audioBuffer;
 	}
 }

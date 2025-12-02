@@ -19,6 +19,8 @@ export const configSchema = z.object({
 	GEMINI_API_KEY: z.string(),
 });
 
+export const GEMINI_MODEL = 'gemini-live-2.5-flash-preview';
+
 export const stories: Story[] = JSON.parse(
 	fs.readFileSync(join(__dirname, 'prompts', 'stories.json'), 'utf8'),
 );

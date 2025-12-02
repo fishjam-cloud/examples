@@ -5,16 +5,32 @@ export class GeminiSession implements VoiceAgentSession {
 	private onInterrupt: (() => void) | null = null;
 	private onAgentAudio: ((audio: Buffer) => void) | null = null;
 	private session: Session | null = null;
+	private closing = false;
+	private talking = false;
 
 	start(session: Session, firstMessage: string) {
 		this.session = session;
+		const prompt = `Please say exactly this to the user: "${firstMessage}"`;
+		console.log(prompt);
 		this.session.sendClientContent({
 			turns: [
 				{
-					text: `introduce yourself`,
+					role: 'user',
+					parts: [{ text: prompt }],
 				},
 			],
+			turnComplete: true,
 		});
+	}
+
+	endTurn() {
+		this.talking = false;
+	}
+
+	startTurn() {
+		if (this.closing) return;
+
+		this.talking = true;
 	}
 
 	sendAudio(audio: Buffer) {
@@ -42,9 +58,17 @@ export class GeminiSession implements VoiceAgentSession {
 		this.onAgentAudio = onAgentAudio;
 	}
 
+	async waitUntilDone() {
+		while (this.talking) {
+			await new Promise((resolve) => setTimeout(resolve, 100));
+		}
+	}
+
 	async open() {}
 
 	async close() {
+		this.closing = true;
+		await this.waitUntilDone();
 		this.session?.close();
 	}
 }

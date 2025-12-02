@@ -1,9 +1,10 @@
 import {
 	Behavior,
 	GoogleGenAI,
-	Modality,
 	type LiveConnectParameters,
+	Modality,
 } from '@google/genai';
+import { GEMINI_MODEL } from '../../config.js';
 import {
 	getFirstMessageForStory,
 	getInstructionsForStory,
@@ -29,12 +30,15 @@ export class GeminiApi implements VoiceAgentApi {
 		);
 
 		const wrapper = new GeminiSession();
+		let transcriptionParts: string[] = [];
+		let isTalking = false;
 
 		const params: LiveConnectParameters = {
-			model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+			model: GEMINI_MODEL,
 			config: {
 				responseModalities: [Modality.AUDIO],
 				systemInstruction: instructions,
+				outputAudioTranscription: {},
 				temperature: 0,
 				tools: [
 					{
@@ -50,11 +54,27 @@ export class GeminiApi implements VoiceAgentApi {
 			},
 			callbacks: {
 				onmessage: (message) => {
+					if (!isTalking) {
+						isTalking = true;
+						wrapper.startTurn();
+					}
+
 					const transcription =
 						message.serverContent?.outputTranscription?.text;
 
 					if (transcription) {
-						config.onTranscription(transcription);
+						transcriptionParts.push(transcription);
+					}
+
+					const turnFinished = message.serverContent?.turnComplete;
+
+					if (turnFinished && transcriptionParts.length > 0) {
+						config.onTranscription(transcriptionParts.join(''));
+						transcriptionParts = [];
+					}
+					if (turnFinished) {
+						wrapper.endTurn();
+						isTalking = false;
 					}
 
 					const base64 = message.data;
