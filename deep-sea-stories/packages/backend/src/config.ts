@@ -1,10 +1,10 @@
+import * as fs from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { PeerOptions } from '@fishjam-cloud/js-server-sdk';
 import dotenv from 'dotenv';
 import z from 'zod';
-import * as fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import type { Story } from './types.js';
-import type { PeerOptions } from '@fishjam-cloud/js-server-sdk';
 
 dotenv.config({ quiet: true });
 
@@ -19,6 +19,10 @@ export const configSchema = z.object({
 	GEMINI_API_KEY: z.string(),
 });
 
+// WARNING: gemini-live-2.5-flash-preview will stop working on Dec 9!!
+// https://ai.google.dev/gemini-api/docs/models#gemini-2.5-flash
+// However, changing this to gemini-2.5-flash-native-audio-preview-09-2025
+// somehow breaks the greeting (WTF)
 export const GEMINI_MODEL = 'gemini-live-2.5-flash-preview';
 
 export const stories: Story[] = JSON.parse(
