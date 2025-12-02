@@ -1,9 +1,10 @@
 import { GAME_TIME_LIMIT_SECONDS } from '@deep-sea-stories/common';
-import type {
-	FishjamClient,
-	Peer,
-	PeerId,
-	RoomId,
+import {
+	PeerNotFoundException,
+	type FishjamClient,
+	type Peer,
+	type PeerId,
+	type RoomId,
 } from '@fishjam-cloud/js-server-sdk';
 import type { VoiceAgentApi } from '../agent/api.js';
 import { GeminiApi } from '../agent/gemini/api.js';
@@ -72,7 +73,14 @@ export class GameRoom {
 		if (this.gameSession) {
 			this.gameSession.removePlayer(peerId);
 		}
-		await this.fishjamClient.deletePeer(this.roomId, peerId);
+
+		try {
+			await this.fishjamClient.deletePeer(this.roomId, peerId);
+		} catch (e) {
+			if (!(e instanceof PeerNotFoundException)) {
+				throw e;
+			}
+		}
 
 		console.log('Player %s removed from game room %s', peerId, this.roomId);
 
