@@ -11,6 +11,7 @@ import { AudioStreamingOrchestrator } from '../service/audio-streaming-orchestra
 import type { NotifierService } from '../service/notifier.js';
 import type { Story } from '../types.js';
 import { GameSession } from './session.js';
+import { ElevenLabsApi } from '../agent/elevenlabs/api.js';
 
 type Player = {
 	name: string;
@@ -37,7 +38,7 @@ export class GameRoom {
 		this.story = undefined;
 		this.players = new Map();
 
-		this.voiceAgentApi = new GeminiApi(CONFIG.GEMINI_API_KEY);
+		this.voiceAgentApi = new ElevenLabsApi(CONFIG.ELEVENLABS_API_KEY);
 	}
 
 	getStory(): Story | undefined {
