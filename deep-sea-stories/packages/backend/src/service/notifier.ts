@@ -1,26 +1,24 @@
-import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
-import { CONFIG } from '../config.js';
-import { roomService } from './room.js';
 import { EventEmitter } from 'node:events';
 import type { AgentEvent } from '@deep-sea-stories/common';
+import { FishjamWSNotifier, type RoomId } from '@fishjam-cloud/js-server-sdk';
+import { roomService } from './room.js';
 
-class NotifierService extends EventEmitter {
-	private notifier: FishjamWSNotifier | null = null;
+export class NotifierService extends EventEmitter {
+	private fishjamNotifier: FishjamWSNotifier | null = null;
 	private eventHistories: Map<
 		string,
 		Array<{ id: number; event: AgentEvent }>
 	> = new Map();
-	private nextEventIdPerRoom: Map<string, number> = new Map();
+	private nextEventIdPerRoom: Map<RoomId, number> = new Map();
 	private readonly MAX_HISTORY = 100;
 
-	async initialize() {
-		if (this.notifier !== null) {
-			return;
-		}
-		this.notifier = new FishjamWSNotifier(
+	constructor(fishjamId: string, managementToken: string) {
+		super();
+
+		this.fishjamNotifier = new FishjamWSNotifier(
 			{
-				fishjamId: CONFIG.FISHJAM_ID,
-				managementToken: CONFIG.FISHJAM_MANAGEMENT_TOKEN,
+				fishjamId,
+				managementToken,
 			},
 			(msg) => {
 				console.log(`FishjamWSNotifier got error: ${msg}`);
@@ -35,7 +33,7 @@ class NotifierService extends EventEmitter {
 		this.setupEventHandlers();
 	}
 
-	emitNotification(roomId: string, event: AgentEvent) {
+	emitNotification(roomId: RoomId, event: AgentEvent) {
 		const eventId = this.nextEventIdPerRoom.get(roomId) || 1;
 		this.nextEventIdPerRoom.set(roomId, eventId + 1);
 
@@ -62,81 +60,56 @@ class NotifierService extends EventEmitter {
 	}
 
 	private setupEventHandlers() {
-		if (!this.notifier) return;
+		if (!this.fishjamNotifier) return;
 
-		this.notifier.on('peerConnected', async (msg) => {
-			console.log(`Peer connected: ${msg.peerId} in room ${msg.roomId}`);
+		this.fishjamNotifier.on('peerConnected', async (msg) => {
+			console.log(
+				`Peer connected: ${msg.peerId} (type: ${msg.peerType}) in room ${msg.roomId}`,
+			);
 			this.emit('peerConnected', { roomId: msg.roomId, peerId: msg.peerId });
 
-			console.log(
-				`Attempting to start game for newly connected peer ${msg.peerId}...`,
-			);
-			const gameSession = roomService.getGameSession(msg.roomId);
-			if (!gameSession) {
+			const gameRoom = roomService.getGameRoom(msg.roomId);
+			if (!gameRoom) {
 				console.warn(
 					`No game session found for room ${msg.roomId} when peer ${msg.peerId} connected.`,
 				);
 				return;
 			}
-			const { peerId } = gameSession.getFishjamAgent();
 
-			if (msg.peerId !== peerId) {
-				const peerName = gameSession.getPeerName(msg.peerId) || msg.peerId;
-				const playerJoinedEvent = {
-					type: 'playerJoined' as const,
-					name: peerName,
-					timestamp: Date.now(),
-				};
-				this.emitNotification(msg.roomId, playerJoinedEvent);
-			}
+			const playerName = gameRoom.connectPlayer(msg.peerId);
+			if (!playerName) return;
 
-			if (msg.peerId === peerId) {
-				return;
-			}
+			console.log(
+				`Attempting to start game for newly connected peer ${msg.peerId}...`,
+			);
 
-			gameSession.setConnectedPeer(msg.peerId);
-			if (!roomService.isGameActive(msg.roomId)) return;
-
-			try {
-				await gameSession.startGameForPeer(msg.peerId);
-			} catch (error) {
-				console.error(
-					`Failed to start game for newly connected peer ${msg.peerId}:`,
-					error,
-				);
-			}
+			const playerJoinedEvent = {
+				type: 'playerJoined' as const,
+				name: playerName,
+				timestamp: Date.now(),
+			};
+			this.emitNotification(msg.roomId, playerJoinedEvent);
 		});
 
-		this.notifier.on('peerDisconnected', async (msg) => {
+		this.fishjamNotifier.on('peerDisconnected', async (msg) => {
 			console.log(`Peer disconnected: ${msg.peerId} from room ${msg.roomId}`);
-			this.emit('peerDisconnected', { roomId: msg.roomId, peerId: msg.peerId });
 
-			const gameSession = roomService.getGameSession(msg.roomId);
-			if (!gameSession) {
-				console.warn(
-					`No game session found for room ${msg.roomId} when peer ${msg.peerId} disconnected.`,
-				);
+			const gameRoom = roomService.getGameRoom(msg.roomId);
+
+			if (!gameRoom) {
+				console.warn('No game room with id %s', msg.roomId);
 				return;
 			}
 
-			const { peerId } = gameSession.getFishjamAgent();
+			const playerName = await gameRoom.removePlayer(msg.peerId);
+			if (!playerName) return;
 
-			if (msg.peerId !== peerId) {
-				const peerName = gameSession.getPeerName(msg.peerId) || msg.peerId;
-				const playerLeftEvent = {
-					type: 'playerLeft' as const,
-					name: peerName,
-					timestamp: Date.now(),
-				};
-				this.emitNotification(msg.roomId, playerLeftEvent);
-			}
-
-			gameSession.removeConnectedPeer(msg.peerId);
-			if (roomService.isGameActive(msg.roomId)) {
-				await gameSession.removePeerFromGame(msg.peerId);
-			}
+			const playerLeftEvent = {
+				type: 'playerLeft' as const,
+				name: playerName,
+				timestamp: Date.now(),
+			};
+			this.emitNotification(msg.roomId, playerLeftEvent);
 		});
 	}
 }
-
-export const notifierService = new NotifierService();

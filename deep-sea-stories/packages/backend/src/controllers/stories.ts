@@ -1,28 +1,26 @@
-import { publicProcedure } from '../trpc.js';
+import type { RoomId } from '@fishjam-cloud/js-server-sdk';
 import { stories } from '../config.js';
+import { FailedToStartStoryError } from '../domain/errors.js';
 import {
 	selectStoryInputSchema,
 	startStoryInputSchema,
 	stopGameInputSchema,
 } from '../schemas.js';
-import type { RoomId } from '@fishjam-cloud/js-server-sdk';
 import { roomService } from '../service/room.js';
-import { FailedToStartStoryError } from '../domain/errors.js';
-import { notifierService } from '../service/notifier.js';
+import { publicProcedure } from '../trpc.js';
 
 export const selectStory = publicProcedure
 	.input(selectStoryInputSchema)
-	.mutation(async ({ input }) => {
+	.mutation(async ({ input, ctx }) => {
 		const selectedStory = stories.find((s) => s.id === input.storyId);
 		if (!selectedStory) {
 			throw new Error(`Story with id ${input.storyId} does not exist`);
 		}
 
 		try {
-			const gameSession = roomService.getGameSession(input.roomId as RoomId);
-			gameSession?.setStory(selectedStory);
+			roomService.getGameRoom(input.roomId as RoomId)?.setStory(selectedStory);
 
-			notifierService.emitNotification(input.roomId, {
+			ctx.notifierService.emitNotification(input.roomId as RoomId, {
 				type: 'storySelected' as const,
 				timestamp: Date.now(),
 				storyId: selectedStory.id,
@@ -44,14 +42,14 @@ export const startStory = publicProcedure
 	.input(startStoryInputSchema)
 	.mutation(async ({ input }) => {
 		try {
-			const gameSession = roomService.getGameSession(input.roomId as RoomId);
-			const story = gameSession?.getStory();
+			const gameRoom = roomService.getGameRoom(input.roomId as RoomId);
+			const story = gameRoom?.getStory();
 
 			if (!story) {
 				throw new Error('No story selected. Please select a story first.');
 			}
 
-			await gameSession?.startGame();
+			await gameRoom?.startGame();
 
 			return {
 				success: true,
@@ -67,8 +65,7 @@ export const stopGame = publicProcedure
 	.input(stopGameInputSchema)
 	.mutation(async ({ input }) => {
 		try {
-			const gameSession = roomService.getGameSession(input.roomId as RoomId);
-			await gameSession?.stopGame();
+			await roomService.getGameRoom(input.roomId as RoomId)?.stopGame();
 
 			return {
 				success: true,

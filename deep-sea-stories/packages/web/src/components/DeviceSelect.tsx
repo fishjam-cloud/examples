@@ -26,6 +26,7 @@ export const DeviceSelect: FC<PropsWithChildren<DeviceSelectProps>> = ({
 }) => {
 	const filteredDevices = devices.filter(
 		(device, idx) =>
+			device.deviceId &&
 			devices.findIndex(({ deviceId }) => deviceId === device.deviceId) === idx,
 	);
 

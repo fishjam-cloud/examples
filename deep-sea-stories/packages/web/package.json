@@ -1,5 +1,5 @@
 {
-	"name": "web",
+	"name": "@deep-sea-stories/web",
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
@@ -10,6 +10,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@deep-sea-stories/backend": "workspace:*",
 		"@deep-sea-stories/common": "workspace:*",
 		"@fishjam-cloud/react-client": "^0.22.0",
 		"@radix-ui/react-dialog": "^1.1.15",
@@ -22,7 +23,6 @@
 		"@trpc/client": "^11.6.0",
 		"@trpc/server": "^11.6.0",
 		"@trpc/tanstack-react-query": "^11.6.0",
-		"backend": "workspace:*",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.544.0",

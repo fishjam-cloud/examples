@@ -1,10 +1,8 @@
 import { usePeers } from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
-import { useMemo, useEffect, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useRef } from 'react';
 import GameControlPanel from '@/components/GameControlPanel';
 import PeerGrid from '@/components/PeerGrid';
-import { useTRPCClient } from '@/contexts/trpc';
 
 export type GameViewProps = {
 	roomId: string;
@@ -12,34 +10,16 @@ export type GameViewProps = {
 
 const GameView: FC<GameViewProps> = ({ roomId }) => {
 	const { remotePeers, localPeer } = usePeers<{ name: string }>();
-	const trpcClient = useTRPCClient();
 	const agentAudioRef = useRef<HTMLAudioElement>(null);
 
-	const { data: roomData } = useQuery({
-		queryKey: ['room', roomId],
-		queryFn: () => trpcClient.getRoom.query({ roomId }),
-		staleTime: Infinity,
-	});
-
-	const agentPeerId = useMemo(
-		() => roomData?.peers?.find((peer) => peer.type === 'agent')?.id,
-		[roomData?.peers],
-	);
-
 	const displayedPeers = useMemo(
-		() =>
-			agentPeerId
-				? remotePeers.filter((peer) => String(peer.id) !== String(agentPeerId))
-				: remotePeers,
-		[remotePeers, agentPeerId],
+		() => remotePeers.filter((peer) => peer.metadata),
+		[remotePeers],
 	);
 
 	const agentPeer = useMemo(
-		() =>
-			agentPeerId
-				? remotePeers.find((peer) => String(peer.id) === String(agentPeerId))
-				: undefined,
-		[remotePeers, agentPeerId],
+		() => remotePeers.find((peer) => !peer.metadata),
+		[remotePeers],
 	);
 
 	useEffect(() => {

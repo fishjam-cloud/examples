@@ -1,9 +1,9 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import Footer from '@/components/Footer';
 import TitleBar from '@/components/TitleBar';
-import { useTRPCClient } from '@/contexts/trpc';
-import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useTRPCClient } from '@/contexts/trpc';
 
 export default function HomeView() {
 	const navigate = useNavigate();

@@ -1,13 +1,21 @@
 {
-	"name": "backend",
+	"name": "@deep-sea-stories/backend",
 	"private": true,
 	"main": "./src/main.ts",
+	"version": "0.0.0",
 	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/index.ts"
+		}
+	},
+	"types": "./src/index.ts",
 	"dependencies": {
 		"@deep-sea-stories/common": "workspace:*",
 		"@elevenlabs/elevenlabs-js": "^2.20.0",
 		"@fastify/cors": "^11.1.0",
 		"@fishjam-cloud/js-server-sdk": "^0.22.0",
+		"@google/genai": "^1.30.0",
 		"@trpc/server": "^11.6.0",
 		"@types/nunjucks": "^3.2.6",
 		"@types/ws": "^8.18.1",

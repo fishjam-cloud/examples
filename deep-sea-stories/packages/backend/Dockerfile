@@ -13,7 +13,7 @@ RUN yarn install --frozen-lockfile
 
 RUN yarn workspace @deep-sea-stories/common build
 
-RUN yarn workspace backend build
+RUN yarn workspace @deep-sea-stories/backend build
 
 FROM node:24-alpine AS runner
 

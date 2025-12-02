@@ -1,14 +1,16 @@
-import { publicProcedure } from '../trpc.js';
-import { voiceAgentMuteInputSchema } from '../schemas.js';
 import type { RoomId } from '@fishjam-cloud/js-server-sdk';
+import { voiceAgentMuteInputSchema } from '../schemas.js';
 import { roomService } from '../service/room.js';
+import { publicProcedure } from '../trpc.js';
 
 export const muteVoiceAgent = publicProcedure
 	.input(voiceAgentMuteInputSchema)
 	.mutation(async ({ input }) => {
 		try {
-			const gameSession = roomService.getGameSession(input.roomId as RoomId);
-			gameSession?.setAiAgentMuted(input.muted);
+			roomService
+				.getGameRoom(input.roomId as RoomId)
+				?.getGameSession()
+				?.setAiAgentMuted(input.muted);
 
 			return {
 				success: true,
