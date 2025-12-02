@@ -57,7 +57,7 @@ export class GameSession {
 		await this.audioOrchestrator.start();
 	}
 
-	async stopGame() {
-		await this.audioOrchestrator.shutdown();
+	async stopGame(wait: boolean = false) {
+		await this.audioOrchestrator.shutdown(wait);
 	}
 }

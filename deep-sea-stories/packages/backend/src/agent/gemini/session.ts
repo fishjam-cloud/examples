@@ -47,7 +47,7 @@ export class GeminiSession implements VoiceAgentSession {
 		this.onAgentAudio = onAgentAudio;
 	}
 
-	async waitUntilDone(timeoutMs: number = 30_000) {
+	async waitUntilDone(timeoutMs: number = 120_000) {
 		for (let i = 0; this.talking && i < timeoutMs; i += 100) {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 		}
@@ -100,10 +100,13 @@ export class GeminiSession implements VoiceAgentSession {
 		});
 	}
 
-	async close() {
+	async close(wait: boolean) {
 		this.closing = true;
-		await this.waitUntilDone();
+		if (wait) {
+			await this.waitUntilDone();
+		}
 		this.session?.close();
+		this.closing = false;
 	}
 
 	private onMessage(message: LiveServerMessage) {

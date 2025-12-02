@@ -77,8 +77,8 @@ export class AudioStreamingOrchestrator {
 		await this.voiceAgentSession.open();
 	}
 
-	async shutdown() {
-		await this.voiceAgentSession.close();
+	async shutdown(wait: boolean = false) {
+		await this.voiceAgentSession.close(wait);
 
 		for (const vadStream of this.vadStreams.values()) {
 			vadStream.unpipe();

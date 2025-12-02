@@ -27,7 +27,7 @@ export class ElevenLabsSession implements VoiceAgentSession {
 		await this.session.startSession();
 	}
 
-	async close() {
+	async close(_wait: boolean) {
 		this.session.endSession();
 	}
 

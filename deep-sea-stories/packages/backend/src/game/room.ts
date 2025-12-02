@@ -122,7 +122,7 @@ export class GameRoom {
 
 		const voiceAgentSession = await this.voiceAgentApi.createAgentSession({
 			story: this.story,
-			onEndGame: () => this.stopGame(),
+			onEndGame: () => this.stopGame(true),
 			gameTimeLimitSeconds: GAME_TIME_LIMIT_SECONDS,
 			onTranscription: (transcription) => {
 				this.notifierService.emitNotification(this.roomId, {
@@ -169,16 +169,20 @@ export class GameRoom {
 		});
 	}
 
-	async stopGame() {
+	async stopGame(wait: boolean = false) {
 		console.log('Stopping game room %s', this.roomId);
 
 		if (this.gameSession) {
-			await this.gameSession.stopGame();
-			await this.fishjamClient.deletePeer(
-				this.roomId,
-				this.gameSession.agentId,
-			);
-			this.gameSession = null;
+			await this.gameSession.stopGame(wait);
+			try {
+				await this.fishjamClient.deletePeer(
+					this.roomId,
+					this.gameSession.agentId,
+				);
+				this.gameSession = null;
+			} catch (e) {
+				if (!(e instanceof PeerNotFoundException)) throw e;
+			}
 		}
 
 		this.story = undefined;
