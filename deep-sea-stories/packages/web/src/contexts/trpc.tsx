@@ -8,7 +8,7 @@ import {
 	wsLink,
 } from '@trpc/client';
 import { createTRPCContext } from '@trpc/tanstack-react-query';
-import type { AppRouter } from 'backend';
+import type { AppRouter } from '@deep-sea-stories/backend';
 import { type FC, type PropsWithChildren, useState } from 'react';
 
 export const { TRPCProvider, useTRPC, useTRPCClient } =

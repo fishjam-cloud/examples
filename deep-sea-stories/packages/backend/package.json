@@ -1,8 +1,15 @@
 {
-	"name": "backend",
+	"name": "@deep-sea-stories/backend",
 	"private": true,
 	"main": "./src/main.ts",
+	"version": "0.0.0",
 	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/index.ts"
+		}
+	},
+	"types": "./src/index.ts",
 	"dependencies": {
 		"@deep-sea-stories/common": "workspace:*",
 		"@elevenlabs/elevenlabs-js": "^2.20.0",

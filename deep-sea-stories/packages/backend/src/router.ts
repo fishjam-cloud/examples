@@ -1,6 +1,6 @@
 import { Notifications } from './controllers/notifications.js';
 import { createPeer } from './controllers/peers.js';
-import { createRoom, getRoom } from './controllers/rooms.js';
+import { createRoom } from './controllers/rooms.js';
 import {
 	getStories,
 	selectStory,
@@ -12,7 +12,6 @@ import { router } from './trpc.js';
 
 export const appRouter = router({
 	createRoom,
-	getRoom,
 	createPeer,
 	selectStory,
 	startStory,

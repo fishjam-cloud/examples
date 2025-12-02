@@ -149,9 +149,11 @@ export class GameRoom {
 
 		await this.gameSession.startGame();
 
-		await Promise.all(
-			this.players.keys().map((peerId) => this.gameSession?.addPlayer(peerId)),
+		const promises = Array.from(this.players.keys()).map((peerId) =>
+			this.gameSession?.addPlayer(peerId),
 		);
+
+		await Promise.all(promises);
 
 		this.notifierService.emitNotification(this.roomId, {
 			type: 'gameStarted' as const,
