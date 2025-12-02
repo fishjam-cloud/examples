@@ -112,9 +112,6 @@ export class GameRoom {
 
 		this.gameStarted = true;
 
-		const { agent: fishjamAgent, agentId: fishjamAgentId } =
-			await this.createFishjamAgent();
-
 		const voiceAgentSession = await this.voiceAgentApi.createAgentSession({
 			story: this.story,
 			onEndGame: () => this.stopGame(),
@@ -127,6 +124,9 @@ export class GameRoom {
 				});
 			},
 		});
+
+		const { agent: fishjamAgent, agentId: fishjamAgentId } =
+			await this.createFishjamAgent();
 
 		const audioOrchestrator = new AudioStreamingOrchestrator(
 			voiceAgentSession,
@@ -198,6 +198,7 @@ export class GameRoom {
 			},
 		);
 
+		await new Promise((resolve) => setTimeout(resolve, 500));
 		return { agent, agentId: peer.id };
 	}
 }
