@@ -39,4 +39,4 @@ jobs:
         run: yarn build
 
       - name: Run backend tests
-        run: yarn workspace backend test
+        run: yarn workspace @deep-sea-stories/backend test
