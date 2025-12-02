@@ -58,8 +58,8 @@ export class GeminiSession implements VoiceAgentSession {
 		this.onAgentAudio = onAgentAudio;
 	}
 
-	async waitUntilDone() {
-		while (this.talking) {
+	async waitUntilDone(timeoutMs: number = 30_000) {
+		for (let i = 0; this.talking && i < timeoutMs; i += 100) {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 		}
 	}
