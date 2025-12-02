@@ -1,3 +1,4 @@
+import { GAME_TIME_LIMIT_SECONDS } from '@deep-sea-stories/common';
 import type {
 	FishjamClient,
 	Peer,
@@ -117,7 +118,7 @@ export class GameRoom {
 		const voiceAgentSession = await this.voiceAgentApi.createAgentSession({
 			story: this.story,
 			onEndGame: () => this.stopGame(),
-			gameTimeLimitSeconds: 20 * 60,
+			gameTimeLimitSeconds: GAME_TIME_LIMIT_SECONDS,
 			onTranscription: (transcription) => {
 				this.notifierService.emitNotification(this.roomId, {
 					type: 'transcription',
