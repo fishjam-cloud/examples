@@ -1,9 +1,9 @@
-import { test, describe } from 'node:test';
 import assert from 'node:assert';
+import { describe, test } from 'node:test';
 import {
-	stories,
 	AGENT_INSTRUCTIONS_TEMPLATE,
 	configSchema,
+	stories,
 } from '../src/config.js';
 
 describe('Configuration', () => {
@@ -69,14 +69,24 @@ describe('Configuration', () => {
 			configSchema.parse({
 				FISHJAM_ID: 'test-id',
 				FISHJAM_MANAGEMENT_TOKEN: 'test-token',
+				GEMINI_API_KEY: 'test-gemini-key',
 			});
 		}, 'Should throw when required ELEVENLABS_API_KEY is missing');
+
+		assert.throws(() => {
+			configSchema.parse({
+				FISHJAM_ID: 'test-id',
+				FISHJAM_MANAGEMENT_TOKEN: 'test-token',
+				ELEVENLABS_API_KEY: 'test-api-key',
+			});
+		}, 'Should throw when required GEMINI_API_KEY is missing');
 
 		assert.doesNotThrow(() => {
 			configSchema.parse({
 				FISHJAM_ID: 'test-id',
 				FISHJAM_MANAGEMENT_TOKEN: 'test-token',
 				ELEVENLABS_API_KEY: 'test-api-key',
+				GEMINI_API_KEY: 'test-gemini-key',
 			});
 		}, 'Should not throw with all required fields');
 	});
@@ -86,6 +96,7 @@ describe('Configuration', () => {
 			FISHJAM_ID: 'test-id',
 			FISHJAM_MANAGEMENT_TOKEN: 'test-token',
 			ELEVENLABS_API_KEY: 'test-api-key',
+			GEMINI_API_KEY: 'test-gemini-key',
 		});
 
 		assert.strictEqual(config.PORT, 8000, 'Should default PORT to 8000');
@@ -96,6 +107,7 @@ describe('Configuration', () => {
 			FISHJAM_ID: 'test-id',
 			FISHJAM_MANAGEMENT_TOKEN: 'test-token',
 			ELEVENLABS_API_KEY: 'test-api-key',
+			GEMINI_API_KEY: 'test-gemini-key',
 			PORT: '3000',
 		});
 
