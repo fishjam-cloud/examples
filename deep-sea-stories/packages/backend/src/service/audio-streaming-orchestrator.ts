@@ -29,7 +29,7 @@ export class AudioStreamingOrchestrator {
 
 		this.fishjamTrack = fishjamAgent.createTrack({
 			channels: 1,
-			sampleRate: 16000,
+			sampleRate: 24000,
 			encoding: 'pcm16',
 		});
 

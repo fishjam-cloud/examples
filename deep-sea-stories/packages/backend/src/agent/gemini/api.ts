@@ -1,6 +1,7 @@
 import {
 	Behavior,
 	GoogleGenAI,
+	Modality,
 	type LiveConnectParameters,
 } from '@google/genai';
 import {
@@ -30,8 +31,9 @@ export class GeminiApi implements VoiceAgentApi {
 		const wrapper = new GeminiSession();
 
 		const params: LiveConnectParameters = {
-			model: 'gemini-2.5-flash',
+			model: 'gemini-2.5-flash-native-audio-preview-09-2025',
 			config: {
+				responseModalities: [Modality.AUDIO],
 				systemInstruction: instructions,
 				temperature: 0,
 				tools: [
@@ -79,6 +81,8 @@ export class GeminiApi implements VoiceAgentApi {
 						});
 					}
 				},
+				onerror: (e) => console.error('Gemini Error %o', e),
+				onclose: (e) => console.error('Gemini Close: %o', e),
 			},
 		};
 

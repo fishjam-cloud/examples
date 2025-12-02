@@ -11,7 +11,7 @@ export class GeminiSession implements VoiceAgentSession {
 		this.session.sendClientContent({
 			turns: [
 				{
-					text: firstMessage,
+					text: `introduce yourself`,
 				},
 			],
 		});
