@@ -11,7 +11,6 @@ export class GeminiSession implements VoiceAgentSession {
 	start(session: Session, firstMessage: string) {
 		this.session = session;
 		const prompt = `Please say exactly this to the user: "${firstMessage}"`;
-		console.log(prompt);
 		this.session.sendClientContent({
 			turns: [
 				{

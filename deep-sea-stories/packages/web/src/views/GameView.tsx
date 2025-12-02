@@ -10,8 +10,6 @@ export type GameViewProps = {
 
 const GameView: FC<GameViewProps> = ({ roomId }) => {
 	const { remotePeers, localPeer } = usePeers<{ name: string }>();
-	console.log(localPeer);
-	console.log(remotePeers);
 	const agentAudioRef = useRef<HTMLAudioElement>(null);
 
 	const displayedPeers = useMemo(
