@@ -57,7 +57,7 @@ export class GeminiSession implements VoiceAgentSession {
 				responseModalities: [Modality.AUDIO],
 				systemInstruction: getInstructionsForStory(this.config.story),
 				outputAudioTranscription: {},
-				temperature: 0.01,
+				temperature: 0.1,
 				tools: [
 					{
 						functionDeclarations: [
