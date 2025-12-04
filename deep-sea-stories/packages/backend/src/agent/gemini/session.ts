@@ -57,13 +57,13 @@ export class GeminiSession implements VoiceAgentSession {
 				responseModalities: [Modality.AUDIO],
 				systemInstruction: getInstructionsForStory(this.config.story),
 				outputAudioTranscription: {},
-				temperature: 0,
+				temperature: 0.01,
 				tools: [
 					{
 						functionDeclarations: [
 							{
-								description: 'End the game',
 								name: 'endGame',
+								description: 'end the game',
 							},
 						],
 					},
