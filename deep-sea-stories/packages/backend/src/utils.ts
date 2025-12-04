@@ -11,6 +11,7 @@ export function getInstructionsForStory(story: Story): string {
 	return nunjucks.renderString(AGENT_INSTRUCTIONS_TEMPLATE, {
 		FRONT: story.front,
 		BACK: story.back,
+		TIME_LIMIT: GAME_TIME_LIMIT_MINUTES,
 	});
 }
 
