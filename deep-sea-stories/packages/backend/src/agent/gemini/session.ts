@@ -51,7 +51,6 @@ export class GeminiSession implements VoiceAgentSession {
 	}
 
 	async open() {
-		console.log(getInstructionsForStory(this.config.story));
 		const params: LiveConnectParameters = {
 			model: GEMINI_MODEL,
 			config: {
