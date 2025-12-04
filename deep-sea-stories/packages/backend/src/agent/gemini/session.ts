@@ -1,5 +1,4 @@
 import {
-	Behavior,
 	type GoogleGenAI,
 	type LiveConnectParameters,
 	type LiveServerMessage,
@@ -7,11 +6,7 @@ import {
 	type Session,
 } from '@google/genai';
 import { GEMINI_MODEL } from '../../config.js';
-import {
-	getFirstMessageForStory,
-	getInstructionsForStory,
-	getToolDescriptionForStory,
-} from '../../utils.js';
+import { getInstructionsForStory } from '../../utils.js';
 import type { AgentConfig } from '../api.js';
 import type { VoiceAgentSession } from '../session.js';
 
@@ -20,10 +15,12 @@ export class GeminiSession implements VoiceAgentSession {
 	private onAgentAudio: ((audio: Buffer) => void) | null = null;
 	private session: Session | null = null;
 	private closing = false;
-	private talking = false;
 	private transcriptionParts: string[] = [];
 	private genai: GoogleGenAI;
 	private config: AgentConfig;
+
+	private talkingTimeLeft = 0;
+	private talkingInterval: NodeJS.Timeout | null = null;
 
 	constructor(genai: GoogleGenAI, config: AgentConfig) {
 		this.genai = genai;
@@ -47,10 +44,10 @@ export class GeminiSession implements VoiceAgentSession {
 		this.onAgentAudio = onAgentAudio;
 	}
 
-	async waitUntilDone(timeoutMs: number = 120_000) {
-		for (let i = 0; this.talking && i < timeoutMs; i += 100) {
-			await new Promise((resolve) => setTimeout(resolve, 100));
-		}
+	async waitUntilDone() {
+		await new Promise((resolve) =>
+			setTimeout(resolve, this.talkingTimeLeft + 2000),
+		);
 	}
 
 	async open() {
@@ -65,21 +62,22 @@ export class GeminiSession implements VoiceAgentSession {
 					{
 						functionDeclarations: [
 							{
-								behavior: Behavior.NON_BLOCKING,
-								description: getToolDescriptionForStory(this.config.story),
+								description: 'End the game',
 								name: 'endGame',
 							},
 						],
 					},
 				],
+				proactivity: {
+					proactiveAudio: true,
+				},
 			},
 			callbacks: {
 				onmessage: (message) => this.onMessage(message),
 				onerror: (e) => console.error('Gemini Error %o', e),
 				onclose: (e) => {
-					this.talking = false;
 					if (e.code !== 1000) {
-						console.error('Gemini Close: %o', e);
+						console.error('Gemini Close: %o', e.reason);
 					}
 				},
 			},
@@ -87,32 +85,36 @@ export class GeminiSession implements VoiceAgentSession {
 
 		this.session = await this.genai.live.connect(params);
 
-		const firstMessage = getFirstMessageForStory(this.config.story);
-		const prompt = `Please say exactly this to the user: "${firstMessage}"`;
 		this.session.sendClientContent({
 			turns: [
 				{
-					role: 'user',
-					parts: [{ text: prompt }],
+					text: 'introduce yourself',
 				},
 			],
 			turnComplete: true,
 		});
+
+		this.talkingInterval = setInterval(() => {
+			this.talkingTimeLeft = Math.max(this.talkingTimeLeft - 100, 0);
+		}, 100);
 	}
 
 	async close(wait: boolean) {
 		this.closing = true;
+
 		if (wait) {
 			await this.waitUntilDone();
 		}
+
+		if (this.talkingInterval) clearInterval(this.talkingInterval);
+		this.talkingInterval = null;
+
 		this.session?.close();
 		this.closing = false;
 	}
 
 	private onMessage(message: LiveServerMessage) {
-		if (!this.talking) {
-			this.startTurn();
-		}
+		if (this.closing) return;
 
 		const transcription = message.serverContent?.outputTranscription?.text;
 
@@ -126,22 +128,29 @@ export class GeminiSession implements VoiceAgentSession {
 			this.config.onTranscription(this.transcriptionParts.join(''));
 			this.transcriptionParts = [];
 		}
-		if (turnFinished) {
-			this.endTurn();
-		}
 
 		const base64 = message.data;
-		if (base64 && this.onAgentAudio) {
-			this.onAgentAudio(Buffer.from(base64, 'base64'));
+		if (base64) {
+			this.handleAgentAudio(Buffer.from(base64, 'base64'));
 		}
 
 		if (message.serverContent?.interrupted) {
-			this.onInterrupt?.();
+			this.handleInterrupt();
 		}
 
 		message.toolCall?.functionCalls?.forEach((call) => {
 			switch (call.name) {
 				case 'endGame':
+					console.log('Game ending tool called!');
+					this.session?.sendToolResponse({
+						functionResponses: [
+							{
+								id: call.id,
+								name: call.name,
+								response: { result: 'ok' },
+							},
+						],
+					});
 					this.config.onEndGame();
 					break;
 				default:
@@ -150,13 +159,25 @@ export class GeminiSession implements VoiceAgentSession {
 		});
 	}
 
-	private endTurn() {
-		this.talking = false;
+	private handleInterrupt() {
+		if (!this.onInterrupt) return;
+
+		this.onInterrupt();
+		this.talkingTimeLeft = 0;
 	}
 
-	private startTurn() {
-		if (this.closing) return;
+	private handleAgentAudio(audio: Buffer) {
+		if (!this.onAgentAudio) return;
 
-		this.talking = true;
+		this.onAgentAudio(audio);
+		this.talkingTimeLeft += this.outputAudioLengthMs(audio);
+	}
+
+	private outputAudioLengthMs(audio: Buffer) {
+		const bytes = audio.byteLength;
+		const bytesPerSample = 2; // 16 bits
+		const samplesPerMs = 24; // 24k Hz sample rate
+
+		return bytes / (bytesPerSample * samplesPerMs);
 	}
 }

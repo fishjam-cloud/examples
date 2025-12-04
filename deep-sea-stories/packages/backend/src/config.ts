@@ -16,14 +16,21 @@ export const configSchema = z.object({
 	FISHJAM_ID: z.string(),
 	FISHJAM_MANAGEMENT_TOKEN: z.string(),
 	ELEVENLABS_API_KEY: z.string(),
-	GEMINI_API_KEY: z.string(),
+	GEMINI_API_KEY: z.string().optional(),
+	GOOGLE_GENAI_USE_VERTEXAI: z
+		.string()
+		.transform((val) => val.toLowerCase() === 'true')
+		.default(false),
+	GOOGLE_CLOUD_PROJECT: z.string().optional(),
+	GOOGLE_CLOUD_LOCATION: z.string().optional(),
 });
 
 // WARNING: gemini-live-2.5-flash-preview will stop working on Dec 9!!
 // https://ai.google.dev/gemini-api/docs/models#gemini-2.5-flash
 // However, changing this to gemini-2.5-flash-native-audio-preview-09-2025
 // somehow breaks the greeting (WTF)
-export const GEMINI_MODEL = 'gemini-live-2.5-flash-preview';
+export const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-09-2025';
+// export const GEMINI_MODEL = 'gemini-live-2.5-flash-preview-native-audio';
 
 export const stories: Story[] = JSON.parse(
 	fs.readFileSync(join(__dirname, 'prompts', 'stories.json'), 'utf8'),

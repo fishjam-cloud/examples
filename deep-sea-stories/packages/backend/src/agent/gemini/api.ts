@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, type GoogleGenAIOptions } from '@google/genai';
 import type { AgentConfig, VoiceAgentApi } from '../api.js';
 import type { VoiceAgentSession } from '../session.js';
 import { GeminiSession } from './session.js';
@@ -6,8 +6,8 @@ import { GeminiSession } from './session.js';
 export class GeminiApi implements VoiceAgentApi {
 	private genai: GoogleGenAI;
 
-	constructor(apiKey: string) {
-		this.genai = new GoogleGenAI({ apiKey });
+	constructor(opts: GoogleGenAIOptions) {
+		this.genai = new GoogleGenAI(opts);
 	}
 
 	async createAgentSession(config: AgentConfig): Promise<VoiceAgentSession> {

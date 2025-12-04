@@ -73,14 +73,6 @@ describe('Configuration', () => {
 			});
 		}, 'Should throw when required ELEVENLABS_API_KEY is missing');
 
-		assert.throws(() => {
-			configSchema.parse({
-				FISHJAM_ID: 'test-id',
-				FISHJAM_MANAGEMENT_TOKEN: 'test-token',
-				ELEVENLABS_API_KEY: 'test-api-key',
-			});
-		}, 'Should throw when required GEMINI_API_KEY is missing');
-
 		assert.doesNotThrow(() => {
 			configSchema.parse({
 				FISHJAM_ID: 'test-id',
