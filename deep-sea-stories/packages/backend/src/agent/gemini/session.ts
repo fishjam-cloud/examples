@@ -51,19 +51,20 @@ export class GeminiSession implements VoiceAgentSession {
 	}
 
 	async open() {
+		console.log(getInstructionsForStory(this.config.story));
 		const params: LiveConnectParameters = {
 			model: GEMINI_MODEL,
 			config: {
 				responseModalities: [Modality.AUDIO],
 				systemInstruction: getInstructionsForStory(this.config.story),
 				outputAudioTranscription: {},
-				temperature: 0,
+				temperature: 0.01,
 				tools: [
 					{
 						functionDeclarations: [
 							{
-								description: 'End the game',
 								name: 'endGame',
+								description: 'end the game',
 							},
 						],
 					},
