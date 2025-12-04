@@ -114,8 +114,6 @@ export class GeminiSession implements VoiceAgentSession {
 	}
 
 	private onMessage(message: LiveServerMessage) {
-		if (this.closing) return;
-
 		const transcription = message.serverContent?.outputTranscription?.text;
 
 		if (transcription) {
@@ -167,7 +165,7 @@ export class GeminiSession implements VoiceAgentSession {
 	}
 
 	private handleAgentAudio(audio: Buffer) {
-		if (!this.onAgentAudio) return;
+		if (this.closing || !this.onAgentAudio) return;
 
 		this.onAgentAudio(audio);
 		this.talkingTimeLeft += this.outputAudioLengthMs(audio);
