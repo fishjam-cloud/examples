@@ -1,9 +1,9 @@
 import { GAME_TIME_LIMIT_SECONDS } from '@deep-sea-stories/common';
 import {
-	PeerNotFoundException,
 	type FishjamClient,
 	type Peer,
 	type PeerId,
+	PeerNotFoundException,
 	type RoomId,
 } from '@fishjam-cloud/js-server-sdk';
 import type { VoiceAgentApi } from '../agent/api.js';
@@ -39,7 +39,13 @@ export class GameRoom {
 		this.story = undefined;
 		this.players = new Map();
 
-		this.voiceAgentApi = new GeminiApi(CONFIG.GEMINI_API_KEY);
+		this.voiceAgentApi = new GeminiApi({
+			apiKey: CONFIG.GEMINI_API_KEY,
+			vertexai: CONFIG.GOOGLE_GENAI_USE_VERTEXAI,
+			project: CONFIG.GOOGLE_CLOUD_PROJECT,
+			location: CONFIG.GOOGLE_CLOUD_LOCATION,
+			httpOptions: { apiVersion: 'v1alpha' },
+		});
 	}
 
 	getStory(): Story | undefined {
