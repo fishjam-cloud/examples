@@ -1,5 +1,4 @@
 import {
-	FunctionResponseScheduling,
 	type GoogleGenAI,
 	type LiveConnectParameters,
 	type LiveServerMessage,
@@ -7,11 +6,7 @@ import {
 	type Session,
 } from '@google/genai';
 import { GEMINI_MODEL } from '../../config.js';
-import {
-	getFirstMessageForStory,
-	getInstructionsForStory,
-	getToolDescriptionForStory,
-} from '../../utils.js';
+import { getInstructionsForStory } from '../../utils.js';
 import type { AgentConfig } from '../api.js';
 import type { VoiceAgentSession } from '../session.js';
 
