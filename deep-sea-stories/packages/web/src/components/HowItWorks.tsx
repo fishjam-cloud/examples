@@ -86,7 +86,7 @@ const HowItWorks: FC<ButtonProps> = ({ variant, ...props }) => (
 						</li>
 						<li className="leading-relaxed">
 							<strong>Starting the Game:</strong> When players press "Start
-							Game", the backend initializes an Gemini Live API session with
+							Game", the backend initializes a Gemini Live API session with
 							custom storytelling instructions. The Fishjam Agent establishes a
 							WebSocket connection to stream audio bidirectionally.
 						</li>
