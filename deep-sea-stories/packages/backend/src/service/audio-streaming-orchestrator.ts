@@ -19,6 +19,7 @@ export class AudioStreamingOrchestrator {
 	private isInputMuted: boolean = false;
 	private roomId: RoomId;
 	private notifierService: NotifierService;
+	private vadTimeout: NodeJS.Timeout | null = null;
 
 	constructor(
 		voiceAgentSession: VoiceAgentSession,
@@ -128,36 +129,28 @@ export class AudioStreamingOrchestrator {
 		vadStream.on('data', (vadData: VADData) => {
 			const { speech } = vadData;
 
-			if (speech.start && this.activeSpeaker === null) {
-				this.activeSpeaker = peerId;
+			if (speech.state && this.activeSpeaker === null) {
+				this.startVAD(peerId);
 				console.log(
 					`[Orchestrator] Active speaker set to peer ${peerId} (speech started)`,
 				);
-
-				this.notifierService.emitNotification(this.roomId, {
-					type: 'VAD',
-					peerId: peerId,
-					timestamp: Date.now(),
-				});
 			}
 
-			const shouldSendAudio =
-				this.activeSpeaker === peerId && !this.isInputMuted;
+			const isActiveSpeaker = this.activeSpeaker === peerId;
 
-			if (speech.end && this.activeSpeaker === peerId) {
+			if (!speech.state && this.activeSpeaker === peerId) {
 				console.log(
 					`[Orchestrator] Active speaker ${peerId} is now silent (speech ended after ${speech.duration}ms), releasing floor`,
 				);
-				this.activeSpeaker = null;
-
-				this.notifierService.emitNotification(this.roomId, {
-					type: 'VAD',
-					peerId: null,
-					timestamp: Date.now(),
-				});
+				this.endVAD();
 			}
 
-			if (!shouldSendAudio) {
+			if (isActiveSpeaker && this.vadTimeout) {
+				clearTimeout(this.vadTimeout);
+				this.vadTimeout = null;
+			}
+
+			if (!isActiveSpeaker || this.isInputMuted) {
 				return;
 			}
 
@@ -169,6 +162,13 @@ export class AudioStreamingOrchestrator {
 					error,
 				);
 			}
+
+			if (speech.end) return;
+
+			this.vadTimeout = setTimeout(() => {
+				this.vadTimeout = null;
+				this.endVAD();
+			}, VAD_DEBOUNCE_MS);
 		});
 
 		return vadStream;
@@ -182,6 +182,25 @@ export class AudioStreamingOrchestrator {
 	private setupIncomingAudioPipeline(): void {
 		this.fishjamAgent.on('trackData', ({ peerId, data }) => {
 			this.vadStreams.get(peerId)?.write(data);
+		});
+	}
+
+	private startVAD(peerId: PeerId) {
+		this.activeSpeaker = peerId;
+
+		this.notifierService.emitNotification(this.roomId, {
+			type: 'VAD',
+			peerId: peerId,
+			timestamp: Date.now(),
+		});
+	}
+
+	private endVAD() {
+		this.activeSpeaker = null;
+		this.notifierService.emitNotification(this.roomId, {
+			type: 'VAD',
+			peerId: null,
+			timestamp: Date.now(),
 		});
 	}
 
