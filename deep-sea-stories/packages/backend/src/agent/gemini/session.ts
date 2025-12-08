@@ -14,10 +14,13 @@ export class GeminiSession implements VoiceAgentSession {
 	private onInterrupt: (() => void) | null = null;
 	private onAgentAudio: ((audio: Buffer) => void) | null = null;
 	private session: Session | null = null;
-	private closing = false;
 	private transcriptionParts: string[] = [];
 	private genai: GoogleGenAI;
 	private config: AgentConfig;
+	private previousHandle: string | undefined = undefined;
+	private closing = false;
+	private opening = false;
+	private reconnecting = false;
 
 	private talkingTimeLeft = 0;
 	private talkingInterval: NodeJS.Timeout | null = null;
@@ -50,7 +53,10 @@ export class GeminiSession implements VoiceAgentSession {
 		);
 	}
 
-	async open( resumeHandle?: {} ) {
+	async open() {
+		if (this.opening) return;
+		this.opening = true;
+
 		const params: LiveConnectParameters = {
 			model: GEMINI_MODEL,
 			config: {
@@ -74,14 +80,18 @@ export class GeminiSession implements VoiceAgentSession {
 				proactivity: {
 					proactiveAudio: true,
 				},
-				sessionResumption: resumeHandle
+				sessionResumption: { handle: this.previousHandle },
 			},
 			callbacks: {
 				onmessage: (message) => this.onMessage(message),
 				onerror: (e) => console.error('Gemini Error %o', e),
 				onclose: (e) => {
 					if (e.code !== 1000) {
-						console.error('Gemini Close: %o', e.reason);
+						console.error('Gemini Close: code=%d reason=%s', e.code, e.reason);
+						if (!this.closing && this.previousHandle) {
+							console.log('Attempting auto-reconnect with resumption...');
+							this.reconnect();
+						}
 					}
 				},
 			},
@@ -89,18 +99,23 @@ export class GeminiSession implements VoiceAgentSession {
 
 		this.session = await this.genai.live.connect(params);
 
-		this.session.sendClientContent({
-			turns: [
-				{
-					text: 'introduce yourself',
-				},
-			],
-			turnComplete: true,
-		});
+		if (!this.previousHandle) {
+			this.session.sendClientContent({
+				turns: [
+					{
+						text: 'introduce yourself',
+					},
+				],
+				turnComplete: true,
+			});
+		}
 
+		if (this.talkingInterval) clearInterval(this.talkingInterval);
 		this.talkingInterval = setInterval(() => {
 			this.talkingTimeLeft = Math.max(this.talkingTimeLeft - 100, 0);
 		}, 100);
+
+		this.opening = false;
 	}
 
 	async close(wait: boolean) {
@@ -110,14 +125,49 @@ export class GeminiSession implements VoiceAgentSession {
 			await this.waitUntilDone();
 		}
 
-		if (this.talkingInterval) clearInterval(this.talkingInterval);
-		this.talkingInterval = null;
+		if (this.talkingInterval) {
+			clearInterval(this.talkingInterval);
+			this.talkingInterval = null;
+		}
 
 		this.session?.close();
+		this.session = null;
 		this.closing = false;
 	}
 
-	private onMessage(message: LiveServerMessage) {
+	private async reconnect() {
+		if (this.reconnecting || this.closing) return;
+
+		this.reconnecting = true;
+		try {
+			if (this.session) {
+				this.session.close();
+				this.session = null;
+			}
+
+			await new Promise((resolve) => setTimeout(resolve, 500));
+
+			await this.open();
+
+			this.sendContinuationPrompt();
+
+			console.log('Session reconnected successfully');
+		} catch (err) {
+			console.error('Failed to reconnect:', err);
+		} finally {
+			this.reconnecting = false;
+		}
+	}
+
+	private sendContinuationPrompt() {
+		if (!this.session) return;
+		this.session.sendClientContent({
+			turns: [{ text: 'continue' }],
+			turnComplete: true,
+		});
+	}
+
+	private async onMessage(message: LiveServerMessage) {
 		const transcription = message.serverContent?.outputTranscription?.text;
 
 		if (transcription) {
@@ -141,20 +191,7 @@ export class GeminiSession implements VoiceAgentSession {
 		}
 
 		if (message.sessionResumptionUpdate?.newHandle) {
-			console.log('Gemini session resumption handle updated: %s, starting new session', message.sessionResumptionUpdate.newHandle);
-			const newHandle = message.sessionResumptionUpdate.newHandle;
-
-			try {
-				this.close(true);
-			} catch (e) {
-				console.error('Error closing Gemini session for resumption: %o', e);
-			}
-			try {
-				this.open({handle: newHandle});
-			}
-			catch (e) {
-				console.error('Error opening Gemini session for resumption: %o', e);
-			}
+			this.previousHandle = message.sessionResumptionUpdate.newHandle;
 		}
 
 		message.toolCall?.functionCalls?.forEach((call) => {
