@@ -37,7 +37,11 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 				agentStream={agentPeer?.tracks[0]?.stream}
 			/>
 
-			<PeerGrid localPeer={localPeer} displayedPeers={displayedPeers} />
+			<PeerGrid
+				roomId={roomId}
+				localPeer={localPeer}
+				displayedPeers={displayedPeers}
+			/>
 
 			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
 			<audio ref={agentAudioRef} autoPlay playsInline title={'Agent audio'} />

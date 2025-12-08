@@ -1,10 +1,10 @@
+import { GAME_TIME_LIMIT_MINUTES } from '@deep-sea-stories/common';
 import nunjucks from 'nunjucks';
 import {
-	FIRST_MESSAGE_TEMPLATE,
-	AGENT_INSTRUCTIONS_TEMPLATE,
 	AGENT_CLIENT_TOOL_INSTRUCTIONS,
+	AGENT_INSTRUCTIONS_TEMPLATE,
+	FIRST_MESSAGE_TEMPLATE,
 } from './config.js';
-import { GAME_TIME_LIMIT_MINUTES } from '@deep-sea-stories/common';
 import type { Story } from './types.js';
 
 export function getInstructionsForStory(story: Story): string {

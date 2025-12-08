@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import type { AgentEvent } from '@deep-sea-stories/common';
+import { useEffect, useState } from 'react';
 import { useTRPCClient } from '@/contexts/trpc';
 
 export const useAgentEvents = (roomId?: string) => {

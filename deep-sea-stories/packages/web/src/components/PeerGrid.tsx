@@ -1,22 +1,35 @@
+import type { AgentEvent } from '@deep-sea-stories/common';
 import {
 	useCamera,
 	useMicrophone,
 	type usePeers,
 } from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
+import { useAgentEvents } from '@/hooks/useAgentEvents';
 import { cn } from '@/lib/utils';
 import { LocalPeerOverlay } from './LocalPeerOverlay';
 import { PeerTile } from './PeerTile';
 import { RemotePeerOverlay } from './RemotePeerOverlay';
 
+const getCurrentSpeaker = (events: AgentEvent[]): string | null => {
+	const reversedEvents = [...events].reverse();
+	const lastVAD = reversedEvents.find((event) => event.type === 'VAD');
+
+	return lastVAD ? lastVAD.peerId : null;
+};
+
 type PeerGridProps = {
+	roomId: string;
 	localPeer: ReturnType<typeof usePeers<{ name: string }>>['localPeer'];
 	displayedPeers: ReturnType<typeof usePeers<{ name: string }>>['remotePeers'];
 };
 
-const PeerGrid: FC<PeerGridProps> = ({ localPeer, displayedPeers }) => {
+const PeerGrid: FC<PeerGridProps> = ({ roomId, localPeer, displayedPeers }) => {
 	const { isMicrophoneMuted, toggleMicrophoneMute } = useMicrophone();
 	const { isCameraOn, toggleCamera } = useCamera();
+
+	const events = useAgentEvents(roomId);
+	const currentSpeaker = getCurrentSpeaker(events);
 
 	return (
 		<section
@@ -35,6 +48,7 @@ const PeerGrid: FC<PeerGridProps> = ({ localPeer, displayedPeers }) => {
 				className="relative"
 				stream={localPeer?.cameraTrack?.stream}
 				videoPaused={localPeer?.cameraTrack?.metadata?.paused}
+				isSpeaking={localPeer ? localPeer.id === currentSpeaker : false}
 			>
 				<LocalPeerOverlay
 					isMuted={isMicrophoneMuted}
@@ -51,6 +65,7 @@ const PeerGrid: FC<PeerGridProps> = ({ localPeer, displayedPeers }) => {
 					key={peer.id}
 					stream={peer.cameraTrack?.stream}
 					audioStream={peer.microphoneTrack?.stream}
+					isSpeaking={currentSpeaker === peer.id}
 					videoPaused={peer?.cameraTrack?.metadata?.paused}
 				>
 					<RemotePeerOverlay

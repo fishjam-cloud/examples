@@ -1,11 +1,11 @@
+import type { StoryData } from '@deep-sea-stories/common';
 import { Check } from 'lucide-react';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
 import { useTRPCClient } from '@/contexts/trpc';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { toast } from './ui/sonner';
-import type { StoryData } from '@deep-sea-stories/common';
 
 export type StorySelectionPanelProps = {
 	isOpen: boolean;

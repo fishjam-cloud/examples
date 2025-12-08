@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import gemini from '@/assets/gemini.svg';
 import fishjam from '@/assets/fishjam.svg';
+import gemini from '@/assets/gemini.svg';
 import HowItWorks from './HowItWorks';
 import HowToPlay from './HowToPlay';
 import LinkButton from './LinkButton';

@@ -6,12 +6,12 @@ import {
 } from '@fishjam-cloud/react-client';
 import { Camera, Mic, User } from 'lucide-react';
 import type { FC } from 'react';
-import { toast } from '@/components/ui/sonner';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeviceSelect } from '@/components/DeviceSelect';
 import { PeerTile } from '@/components/PeerTile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/sonner';
 import { useTRPCClient } from '@/contexts/trpc';
 
 interface JoinViewProps {
@@ -92,7 +92,7 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 						value={name}
 						placeholder="Enter your name"
 					/>
-					<PeerTile name={name} stream={cameraStream} />
+					<PeerTile name={name} stream={cameraStream} isSpeaking={false} />
 					<div className="flex gap-4 md:flex-row flex-col">
 						<DeviceSelect
 							placeholder="Select camera"

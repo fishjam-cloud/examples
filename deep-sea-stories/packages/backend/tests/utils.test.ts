@@ -1,7 +1,7 @@
-import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { getInstructionsForStory } from '../src/utils.js';
+import { describe, test } from 'node:test';
 import type { Story } from '../src/types.js';
+import { getInstructionsForStory } from '../src/utils.js';
 
 describe('Stories Service', () => {
 	test('getInstructionsForStory should replace template placeholders', () => {

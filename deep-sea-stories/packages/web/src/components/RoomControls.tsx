@@ -1,15 +1,15 @@
 import { Check } from 'lucide-react';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
+import { useTRPCClient } from '@/contexts/trpc';
+import { useAgentEvents } from '@/hooks/useAgentEvents';
 import CopyButton from './CopyButton';
+import { DeepSeaLogo } from './DeepSeaLogo';
 import HowItWorks from './HowItWorks';
 import HowToPlay from './HowToPlay';
 import StorySelectionPanel from './StorySelectionPanel';
 import { Button } from './ui/button';
 import { toast } from './ui/sonner';
-import { useTRPCClient } from '@/contexts/trpc';
-import { useAgentEvents } from '@/hooks/useAgentEvents';
-import { DeepSeaLogo } from './DeepSeaLogo';
 
 export type RoomControlsProps = {
 	roomId: string;
