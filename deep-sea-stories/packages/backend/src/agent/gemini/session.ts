@@ -50,7 +50,7 @@ export class GeminiSession implements VoiceAgentSession {
 		);
 	}
 
-	async open() {
+	async open( resumeHandle?: {} ) {
 		const params: LiveConnectParameters = {
 			model: GEMINI_MODEL,
 			config: {
@@ -74,6 +74,7 @@ export class GeminiSession implements VoiceAgentSession {
 				proactivity: {
 					proactiveAudio: true,
 				},
+				sessionResumption: resumeHandle
 			},
 			callbacks: {
 				onmessage: (message) => this.onMessage(message),
@@ -137,6 +138,23 @@ export class GeminiSession implements VoiceAgentSession {
 
 		if (message.serverContent?.interrupted) {
 			this.handleInterrupt();
+		}
+
+		if (message.sessionResumptionUpdate?.newHandle) {
+			console.log('Gemini session resumption handle updated: %s, starting new session', message.sessionResumptionUpdate.newHandle);
+			const newHandle = message.sessionResumptionUpdate.newHandle;
+
+			try {
+				this.close(true);
+			} catch (e) {
+				console.error('Error closing Gemini session for resumption: %o', e);
+			}
+			try {
+				this.open({handle: newHandle});
+			}
+			catch (e) {
+				console.error('Error opening Gemini session for resumption: %o', e);
+			}
 		}
 
 		message.toolCall?.functionCalls?.forEach((call) => {
