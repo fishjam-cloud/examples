@@ -1,9 +1,9 @@
-import { useEffect, useState, type FC } from 'react';
-import { Headphones, EarOff } from 'lucide-react';
-import { Button } from './ui/button';
-import { useTRPCClient } from '@/contexts/trpc';
+import { EarOff, Headphones } from 'lucide-react';
+import { type FC, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTRPCClient } from '@/contexts/trpc';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
+import { Button } from './ui/button';
 
 type AgentModeToggleProps = {
 	roomId: string;

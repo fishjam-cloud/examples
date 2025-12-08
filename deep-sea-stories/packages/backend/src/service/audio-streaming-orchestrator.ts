@@ -2,10 +2,12 @@ import type {
 	AgentTrack,
 	FishjamAgent,
 	PeerId,
+	RoomId,
 } from '@fishjam-cloud/js-server-sdk';
 import VAD, { type VADData } from 'node-vad';
 import type { VoiceAgentSession } from '../agent/session.js';
 import { VAD_DEBOUNCE_MS } from '../config.js';
+import type { NotifierService } from './notifier.js';
 
 export class AudioStreamingOrchestrator {
 	readonly voiceAgentSession: VoiceAgentSession;
@@ -15,15 +17,21 @@ export class AudioStreamingOrchestrator {
 	private activeSpeaker: PeerId | null;
 	private outputInterval?: NodeJS.Timeout | null;
 	private isInputMuted: boolean = false;
+	private roomId: RoomId;
+	private notifierService: NotifierService;
 
 	constructor(
 		voiceAgentSession: VoiceAgentSession,
 		fishjamAgent: FishjamAgent,
+		notifierService: NotifierService,
+		roomId: RoomId,
 	) {
 		this.voiceAgentSession = voiceAgentSession;
 		this.fishjamAgent = fishjamAgent;
 		this.vadStreams = new Map();
 		this.activeSpeaker = null;
+		this.roomId = roomId;
+		this.notifierService = notifierService;
 
 		this.fishjamTrack = fishjamAgent.createTrack({
 			channels: 1,
@@ -53,6 +61,12 @@ export class AudioStreamingOrchestrator {
 				`[Orchestrator] Active speaker ${peerId} left, releasing floor`,
 			);
 			this.activeSpeaker = null;
+
+			this.notifierService.emitNotification(this.roomId, {
+				type: 'VAD',
+				peerId: null,
+				timestamp: Date.now(),
+			});
 		}
 
 		if (this.vadStreams.size === 0) {
@@ -95,6 +109,12 @@ export class AudioStreamingOrchestrator {
 			this.fishjamAgent.deleteTrack(this.fishjamTrack.id);
 		}
 
+		this.notifierService.emitNotification(this.roomId, {
+			type: 'VAD',
+			peerId: null,
+			timestamp: Date.now(),
+		});
+
 		console.log('[Orchestrator] Cleaned up all resources');
 	}
 
@@ -113,6 +133,12 @@ export class AudioStreamingOrchestrator {
 				console.log(
 					`[Orchestrator] Active speaker set to peer ${peerId} (speech started)`,
 				);
+
+				this.notifierService.emitNotification(this.roomId, {
+					type: 'VAD',
+					peerId: peerId,
+					timestamp: Date.now(),
+				});
 			}
 
 			const shouldSendAudio =
@@ -123,6 +149,12 @@ export class AudioStreamingOrchestrator {
 					`[Orchestrator] Active speaker ${peerId} is now silent (speech ended after ${speech.duration}ms), releasing floor`,
 				);
 				this.activeSpeaker = null;
+
+				this.notifierService.emitNotification(this.roomId, {
+					type: 'VAD',
+					peerId: null,
+					timestamp: Date.now(),
+				});
 			}
 
 			if (!shouldSendAudio) {

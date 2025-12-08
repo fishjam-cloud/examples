@@ -1,4 +1,4 @@
-import { httpToWsUrl } from '@/lib/utils';
+import type { AppRouter } from '@deep-sea-stories/backend';
 import type { QueryClient } from '@tanstack/react-query';
 import {
 	createTRPCClient,
@@ -8,8 +8,8 @@ import {
 	wsLink,
 } from '@trpc/client';
 import { createTRPCContext } from '@trpc/tanstack-react-query';
-import type { AppRouter } from '@deep-sea-stories/backend';
 import { type FC, type PropsWithChildren, useState } from 'react';
+import { httpToWsUrl } from '@/lib/utils';
 
 export const { TRPCProvider, useTRPC, useTRPCClient } =
 	createTRPCContext<AppRouter>();

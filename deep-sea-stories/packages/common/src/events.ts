@@ -38,6 +38,11 @@ export interface AiAgentMutedStatusChangedEvent extends BaseEvent {
 	muted: boolean;
 }
 
+export interface VADEvent extends BaseEvent {
+	type: 'VAD';
+	peerId: string | null;
+}
+
 export type AgentEvent =
 	| PlayerJoinedEvent
 	| PlayerLeftEvent
@@ -45,4 +50,5 @@ export type AgentEvent =
 	| GameEndedEvent
 	| StorySelectedEvent
 	| TranscriptionEvent
-	| AiAgentMutedStatusChangedEvent;
+	| AiAgentMutedStatusChangedEvent
+	| VADEvent;

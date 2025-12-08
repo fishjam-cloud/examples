@@ -145,6 +145,8 @@ export class GameRoom {
 		const audioOrchestrator = new AudioStreamingOrchestrator(
 			voiceAgentSession,
 			fishjamAgent,
+			this.notifierService,
+			this.roomId,
 		);
 
 		this.gameSession = new GameSession(

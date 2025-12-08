@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
 import type { FC, HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
 
 type DeepSeaLogoProps = HTMLAttributes<HTMLHeadingElement>;
 

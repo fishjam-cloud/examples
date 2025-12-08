@@ -1,6 +1,6 @@
-import { Clock } from 'lucide-react';
-import { useEffect, useState, type FC } from 'react';
 import { GAME_TIME_LIMIT_SECONDS } from '@deep-sea-stories/common';
+import { Clock } from 'lucide-react';
+import { type FC, useEffect, useState } from 'react';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
 
 type GameTimerProps = {

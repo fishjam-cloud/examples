@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FC } from 'react';
+import { type FC, useEffect, useRef, useState } from 'react';
 
 export type AudioVisualizerProps = {
 	stream: MediaStream | null | undefined;

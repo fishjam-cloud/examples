@@ -1,18 +1,18 @@
+import type { AgentEvent } from '@deep-sea-stories/common';
 import {
-	LogIn,
-	LogOut,
-	BookText,
 	BookCheck,
-	OctagonMinus,
-	type LucideIcon,
-	MessageSquare,
+	BookText,
 	EarOff,
 	Headphones,
+	LogIn,
+	LogOut,
+	type LucideIcon,
+	MessageSquare,
+	OctagonMinus,
 } from 'lucide-react';
-import { useEffect, useRef, type FC, type PropsWithChildren } from 'react';
-import type { AgentEvent } from '@deep-sea-stories/common';
-import { ScrollArea } from './ui/scroll-area';
+import { type FC, type PropsWithChildren, useEffect, useRef } from 'react';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
+import { ScrollArea } from './ui/scroll-area';
 
 type EventNotifierProps = {
 	roomId: string;
@@ -38,7 +38,7 @@ const PanelEvent: FC<PropsWithChildren<PanelEventProps>> = ({
 );
 
 const eventConfigMap: Record<
-	AgentEvent['type'],
+	Exclude<AgentEvent['type'], 'VAD'>,
 	{
 		icon: LucideIcon | ((event: AgentEvent) => LucideIcon);
 		renderBody: (event: AgentEvent) => React.ReactElement;
@@ -141,21 +141,25 @@ const EventNotifier: FC<EventNotifierProps> = ({ roomId }) => {
 			className="flex-1 lg:w-2/3 border rounded-3xl bg-card min-h-0 lg:m-2 xl:m-2"
 		>
 			<div className="p-3 md:p-6">
-				{events.map((event, index) => {
-					const config = eventConfigMap[event.type];
-					const icon = (
-						typeof config.icon === 'function' ? config.icon(event) : config.icon
-					) as LucideIcon;
-					return (
-						<PanelEvent
-							key={`${event.timestamp}-${index}`}
-							icon={icon}
-							timestamp={event.timestamp}
-						>
-							{config.renderBody(event)}
-						</PanelEvent>
-					);
-				})}
+				{events
+					.filter((event) => event.type !== 'VAD')
+					.map((event, index) => {
+						const config = eventConfigMap[event.type];
+						const icon = (
+							typeof config.icon === 'function'
+								? config.icon(event)
+								: config.icon
+						) as LucideIcon;
+						return (
+							<PanelEvent
+								key={`${event.timestamp}-${index}`}
+								icon={icon}
+								timestamp={event.timestamp}
+							>
+								{config.renderBody(event)}
+							</PanelEvent>
+						);
+					})}
 			</div>
 		</ScrollArea>
 	);

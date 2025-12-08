@@ -11,6 +11,7 @@ export type PeerTileProps = {
 	stream?: MediaStream | null;
 	audioStream?: MediaStream | null;
 	name: string;
+	isSpeaking: boolean;
 	videoPaused?: boolean | null;
 } & HTMLAttributes<HTMLDivElement>;
 
@@ -19,6 +20,7 @@ export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 	audioStream,
 	name,
 	className,
+	isSpeaking,
 	videoPaused,
 	children,
 	...props
@@ -38,7 +40,12 @@ export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 
 	return (
 		<div className={cn('h-full w-full max-w-xl', className)} {...props}>
-			<div className="h-full w-full flex border items-center justify-center rounded-xl overflow-hidden">
+			<div
+				className={cn(
+					'h-full w-full flex border items-center justify-center rounded-xl overflow-hidden',
+					isSpeaking ? 'border-green-400 border-4' : '',
+				)}
+			>
 				{stream && !videoPaused ? (
 					<video
 						className="h-full rounded-xl max-w-full object-cover"

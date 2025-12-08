@@ -1,7 +1,7 @@
 import type { FC } from 'react';
+import AgentModeToggle from './AgentModeToggle';
 import AudioVisualizer from './AudioVisualizer';
 import GameTimer from './GameTimer';
-import AgentModeToggle from './AgentModeToggle';
 
 type RiddleMasterPanelProps = {
 	roomId: string;
