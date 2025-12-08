@@ -43,7 +43,7 @@ export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 			<div
 				className={cn(
 					'h-full w-full flex border items-center justify-center rounded-xl overflow-hidden',
-					isSpeaking ? 'border-green-400 border-4' : 'border-gray-200 border',
+					isSpeaking ? 'border-green-400 border-4' : '',
 				)}
 			>
 				{stream && !videoPaused ? (

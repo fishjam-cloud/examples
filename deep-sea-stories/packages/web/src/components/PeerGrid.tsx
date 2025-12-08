@@ -11,11 +11,10 @@ import { LocalPeerOverlay } from './LocalPeerOverlay';
 import { PeerTile } from './PeerTile';
 import { RemotePeerOverlay } from './RemotePeerOverlay';
 
-const getCurrentSpeaker = (events: AgentEvent[]): string | null => {
-	const reversedEvents = [...events].reverse();
-	const lastVAD = reversedEvents.find((event) => event.type === 'VAD');
+const getCurrentSpeaker = (events: AgentEvent[]): string | undefined | null => {
+	const lastVAD = events.findLast((event) => event.type === 'VAD');
 
-	return lastVAD ? lastVAD.peerId : null;
+	return lastVAD?.peerId;
 };
 
 type PeerGridProps = {
