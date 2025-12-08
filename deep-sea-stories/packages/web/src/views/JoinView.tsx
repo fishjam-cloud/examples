@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/sonner';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeviceSelect } from '@/components/DeviceSelect';
 import { PeerTile } from '@/components/PeerTile';
+import HeadphonesNotice from '@/components/HeadphonesNotice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTRPCClient } from '@/contexts/trpc';
@@ -112,6 +113,7 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 							<Mic size={24} className="flex-none" />
 						</DeviceSelect>
 					</div>
+					<HeadphonesNotice />
 				</div>
 			</section>
 
