@@ -1,7 +1,13 @@
-import type { usePeers } from '@fishjam-cloud/react-client';
+import {
+	useCamera,
+	useMicrophone,
+	type usePeers,
+} from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
-import { PeerTile } from './PeerTile';
 import { cn } from '@/lib/utils';
+import { LocalPeerOverlay } from './LocalPeerOverlay';
+import { PeerTile } from './PeerTile';
+import { RemotePeerOverlay } from './RemotePeerOverlay';
 
 type PeerGridProps = {
 	localPeer: ReturnType<typeof usePeers<{ name: string }>>['localPeer'];
@@ -9,6 +15,9 @@ type PeerGridProps = {
 };
 
 const PeerGrid: FC<PeerGridProps> = ({ localPeer, displayedPeers }) => {
+	const { isMicrophoneMuted, toggleMicrophoneMute } = useMicrophone();
+	const { isCameraOn, toggleCamera } = useCamera();
+
 	return (
 		<section
 			className={cn(
@@ -21,14 +30,36 @@ const PeerGrid: FC<PeerGridProps> = ({ localPeer, displayedPeers }) => {
 				},
 			)}
 		>
-			<PeerTile name="You" stream={localPeer?.cameraTrack?.stream} />
+			<PeerTile
+				name="You"
+				className="relative"
+				stream={localPeer?.cameraTrack?.stream}
+				videoPaused={localPeer?.cameraTrack?.metadata?.paused}
+			>
+				<LocalPeerOverlay
+					isMuted={isMicrophoneMuted}
+					toggleMute={toggleMicrophoneMute}
+					isCameraOn={isCameraOn}
+					toggleCamera={toggleCamera}
+				/>
+			</PeerTile>
+
 			{displayedPeers.map((peer) => (
 				<PeerTile
+					className="relative"
 					name={peer.metadata?.peer?.name ?? peer.id}
 					key={peer.id}
-					stream={peer.customVideoTracks[0]?.stream ?? peer.cameraTrack?.stream}
+					stream={peer.cameraTrack?.stream}
 					audioStream={peer.microphoneTrack?.stream}
-				/>
+					videoPaused={peer?.cameraTrack?.metadata?.paused}
+				>
+					<RemotePeerOverlay
+						isMuted={
+							!peer.microphoneTrack?.stream ||
+							!!peer.microphoneTrack.metadata?.paused
+						}
+					/>
+				</PeerTile>
 			))}
 		</section>
 	);
