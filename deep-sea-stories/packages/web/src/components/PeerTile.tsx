@@ -1,26 +1,35 @@
-import { type FC, type HTMLAttributes, useEffect, useRef } from 'react';
+import {
+	type FC,
+	type HTMLAttributes,
+	type PropsWithChildren,
+	useEffect,
+	useRef,
+} from 'react';
 import { cn } from '@/lib/utils';
 
 export type PeerTileProps = {
 	stream?: MediaStream | null;
 	audioStream?: MediaStream | null;
 	name: string;
+	videoPaused?: boolean | null;
 } & HTMLAttributes<HTMLDivElement>;
 
-export const PeerTile: FC<PeerTileProps> = ({
+export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 	stream,
 	audioStream,
 	name,
 	className,
+	videoPaused,
+	children,
 	...props
 }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const audioRef = useRef<HTMLAudioElement>(null);
 
 	useEffect(() => {
-		if (!videoRef.current) return;
+		if (!videoRef.current || videoPaused) return;
 		videoRef.current.srcObject = stream ?? null;
-	}, [stream]);
+	}, [stream, videoPaused]);
 
 	useEffect(() => {
 		if (!audioRef.current) return;
@@ -28,29 +37,31 @@ export const PeerTile: FC<PeerTileProps> = ({
 	}, [audioStream]);
 
 	return (
-		<div
-			className={cn(
-				'h-full w-full flex border items-center max-w-xl justify-center rounded-xl overflow-hidden',
-				className,
-			)}
-			{...props}
-		>
-			{stream ? (
-				<video
-					className="h-full rounded-xl max-w-full object-cover"
+		<div className={cn('h-full w-full max-w-xl', className)} {...props}>
+			<div className="h-full w-full flex border items-center justify-center rounded-xl overflow-hidden">
+				{stream && !videoPaused ? (
+					<video
+						className="h-full rounded-xl max-w-full object-cover"
+						autoPlay
+						muted
+						disablePictureInPicture
+						playsInline
+						ref={videoRef}
+					/>
+				) : (
+					<div className="text-sm md:text-xl font-display text-center p-2">
+						{name || 'No Video Available'}
+					</div>
+				)}
+				{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
+				<audio
+					ref={audioRef}
 					autoPlay
-					muted
-					disablePictureInPicture
 					playsInline
-					ref={videoRef}
-				></video>
-			) : (
-				<div className="text-sm md:text-xl font-display text-center p-2">
-					{name || 'No Video Available'}
-				</div>
-			)}
-			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
-			<audio ref={audioRef} autoPlay playsInline title={`Audio from ${name}`} />
+					title={`Audio from ${name}`}
+				/>
+			</div>
+			{children}
 		</div>
 	);
 };
