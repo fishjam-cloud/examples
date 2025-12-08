@@ -8,7 +8,9 @@ const HeadphonesNotice: FC = () => (
 		</div>
 		<div className="leading-snug text-left">
 			<div className="font-semibold text-primary">Headphones recommended</div>
-			<div className="text-xs sm:text-sm text-muted-foreground">Keeps audio clear and echo-free.</div>
+			<div className="text-xs sm:text-sm text-muted-foreground">
+				Keeps audio clear and echo-free.
+			</div>
 		</div>
 	</div>
 );

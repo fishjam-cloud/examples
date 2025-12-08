@@ -46,7 +46,7 @@ export const PeerTile: FC<PeerTileProps> = ({
 				></video>
 			) : (
 				<div className="text-sm md:text-xl font-display text-center p-2">
-					{name || "No Video Available"}
+					{name || 'No Video Available'}
 				</div>
 			)}
 			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
