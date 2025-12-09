@@ -151,7 +151,7 @@ export class GeminiSession implements VoiceAgentSession {
 	}
 
 	private async reconnect() {
-		if (this.reconnecting || this.closing) return;
+		if (this.opening || this.reconnecting || this.closing) return;
 
 		this.reconnecting = true;
 		try {
@@ -182,7 +182,7 @@ export class GeminiSession implements VoiceAgentSession {
 		});
 	}
 
-	private async onMessage(message: LiveServerMessage) {
+	private onMessage(message: LiveServerMessage) {
 		const transcription = message.serverContent?.outputTranscription?.text;
 
 		if (transcription) {
