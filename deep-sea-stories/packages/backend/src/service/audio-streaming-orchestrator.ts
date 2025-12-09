@@ -110,11 +110,11 @@ export class AudioStreamingOrchestrator {
 			this.fishjamAgent.deleteTrack(this.fishjamTrack.id);
 		}
 
-		this.notifierService.emitNotification(this.roomId, {
-			type: 'VAD',
-			peerId: null,
-			timestamp: Date.now(),
-		});
+		this.endVAD();
+		if (this.vadTimeout) {
+			clearTimeout(this.vadTimeout);
+			this.vadTimeout = null;
+		}
 
 		console.log('[Orchestrator] Cleaned up all resources');
 	}
