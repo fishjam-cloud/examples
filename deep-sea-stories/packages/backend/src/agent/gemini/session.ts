@@ -49,12 +49,14 @@ export class GeminiSession implements VoiceAgentSession {
 
 	async announceTimeExpired() {
 		if (!this.session) return;
-		
+
 		console.log('Sending time expired message to agent...');
 		this.session.sendClientContent({
-			turns: [{
-				text: 'IMPORTANT: The game time has expired. You must now: 1) Tell the players that time is up, 2) Evaluate how close they were to solving the riddle, 3) IMMEDIATELY call the endGame function to close the game session. Do not wait for player response - call endGame right after your message.'
-			}],
+			turns: [
+				{
+					text: 'IMPORTANT: The game time has expired. You must now: 1) Tell the players that time is up, 2) Evaluate how close they were to solving the riddle, 3) IMMEDIATELY call the endGame function to close the game session. Do not wait for player response - call endGame right after your message.',
+				},
+			],
 			turnComplete: true,
 		});
 	}
@@ -84,7 +86,8 @@ export class GeminiSession implements VoiceAgentSession {
 						functionDeclarations: [
 							{
 								name: 'endGame',
-								description: 'Call this function to end the game session. You MUST call this when: 1) The players have correctly solved the riddle, 2) The game time has expired, 3) You are saying goodbye or ending the conversation. Always call this function after delivering your final message to players.',
+								description:
+									'Call this function to end the game session. You MUST call this when: 1) The players have correctly solved the riddle, 2) The game time has expired, 3) You are saying goodbye or ending the conversation. Always call this function after delivering your final message to players.',
 							},
 						],
 					},
