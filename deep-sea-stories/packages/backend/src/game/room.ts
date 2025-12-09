@@ -176,10 +176,11 @@ export class GameRoom {
 		});
 		this.gameTimeoutId = setTimeout(async () => {
 			console.log(
-				`Game time limit reached for room ${this.roomId}, stopping game...`,
+				`⏰ Game time limit reached for room ${this.roomId}`,
 			);
-			await this.stopGame(true);
-		}, GAME_TIME_LIMIT_SECONDS * 1000);
+			await this.gameSession?.announceTimeExpired();
+			}, GAME_TIME_LIMIT_SECONDS * 1000,
+		);
 	}
 
 	async stopGame(wait: boolean = false) {

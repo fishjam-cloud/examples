@@ -47,6 +47,18 @@ export class GeminiSession implements VoiceAgentSession {
 		this.onAgentAudio = onAgentAudio;
 	}
 
+	async announceTimeExpired() {
+		if (!this.session) return;
+		
+		console.log('Sending time expired message to agent...');
+		this.session.sendClientContent({
+			turns: [{
+				text: 'The game time has expired. Please tell the players that time is up, evaluate how close they were to solving the riddle, and then end the game by calling the endGame tool.'
+			}],
+			turnComplete: true,
+		});
+	}
+
 	async waitUntilDone() {
 		await new Promise((resolve) =>
 			setTimeout(resolve, this.talkingTimeLeft + 2000),
