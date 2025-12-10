@@ -1,3 +1,5 @@
 export const GAME_TIME_LIMIT_MINUTES = 30;
 
 export const GAME_TIME_LIMIT_SECONDS = GAME_TIME_LIMIT_MINUTES * 60;
+
+export const ROOM_PLAYERS_LIMIT = 4;
