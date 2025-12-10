@@ -1,6 +1,5 @@
 import type { RoomId } from '@fishjam-cloud/js-server-sdk';
 import { stories } from '../config.js';
-import { FailedToStartStoryError } from '../domain/errors.js';
 import {
 	selectStoryInputSchema,
 	startStoryInputSchema,
@@ -57,7 +56,7 @@ export const startStory = publicProcedure
 			};
 		} catch (error) {
 			console.error(`Failed to start story: %o`, error);
-			throw new FailedToStartStoryError(0, (error as Error).message);
+			throw new Error((error as Error).message);
 		}
 	});
 
