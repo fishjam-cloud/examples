@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
 import GameControlPanel from '@/components/GameControlPanel';
 import PeerGrid from '@/components/PeerGrid';
+import { PlayerCountIndicator } from '@/components/PlayerCountIndicator';
 
 export type GameViewProps = {
 	roomId: string;
@@ -29,6 +30,8 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 	}, [agentPeer?.tracks[0]?.stream]);
 
 	const userName = localPeer?.metadata?.peer?.name ?? 'Unknown';
+	const playerCount = (localPeer ? 1 : 0) + displayedPeers.length;
+
 	return (
 		<div className="h-full w-full flex flex-col">
 			<GameControlPanel
@@ -37,11 +40,16 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 				agentStream={agentPeer?.tracks[0]?.stream}
 			/>
 
-			<PeerGrid
-				roomId={roomId}
-				localPeer={localPeer}
-				displayedPeers={displayedPeers}
-			/>
+			<div className="relative flex-1 flex flex-col">
+				<div className="absolute right-2 top-2 md:right-6 md:top-6 z-10">
+					<PlayerCountIndicator count={playerCount} />
+				</div>
+				<PeerGrid
+					roomId={roomId}
+					localPeer={localPeer}
+					displayedPeers={displayedPeers}
+				/>
+			</div>
 
 			{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}
 			<audio ref={agentAudioRef} autoPlay playsInline title={'Agent audio'} />
