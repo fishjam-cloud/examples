@@ -66,3 +66,14 @@ export class FailedToStartStoryError extends DomainError {
 		this.name = 'FailedToStartStoryError';
 	}
 }
+
+export class GameRoomFullError extends DomainError {
+	constructor() {
+		super(
+			'GAME_ROOM_FULL',
+			'Room is full. Please wait for a spot or create a new room.',
+			400,
+		);
+		this.name = 'GameRoomFullError';
+	}
+}

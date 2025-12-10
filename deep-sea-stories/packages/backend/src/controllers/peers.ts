@@ -1,4 +1,6 @@
 import type { RoomId } from '@fishjam-cloud/js-server-sdk';
+import { TRPCError } from '@trpc/server';
+import { GameRoomFullError } from '../domain/errors.js';
 import { GameRoom } from '../game/room.js';
 import { createPeerInputSchema } from '../schemas.js';
 import { roomService } from '../service/room.js';
@@ -18,10 +20,19 @@ export const createPeer = publicProcedure
 			roomService.setGameRoom(room.id, gameRoom);
 		}
 
-		const { peer, peerToken } = await gameRoom.addPlayer(input.name);
-
-		return {
-			peer,
-			token: peerToken,
-		};
+		try {
+			const { peer, peerToken } = await gameRoom.addPlayer(input.name);
+			return {
+				peer,
+				token: peerToken,
+			};
+		} catch (error) {
+			if (error instanceof GameRoomFullError) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: error.message,
+				});
+			}
+			throw error;
+		}
 	});
