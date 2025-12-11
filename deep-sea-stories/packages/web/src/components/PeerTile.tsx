@@ -6,6 +6,7 @@ import {
 	useRef,
 } from 'react';
 import { cn } from '@/lib/utils';
+import { VideoOff } from 'lucide-react';
 
 export type PeerTileProps = {
 	stream?: MediaStream | null;
@@ -57,7 +58,7 @@ export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 					/>
 				) : (
 					<div className="text-sm md:text-xl font-display text-center p-2">
-						{name}
+						{name || <VideoOff size={96} className="text-muted-foreground" />}
 					</div>
 				)}
 				{/* biome-ignore lint/a11y/useMediaCaption: Peer audio feed from WebRTC doesn't have captions */}

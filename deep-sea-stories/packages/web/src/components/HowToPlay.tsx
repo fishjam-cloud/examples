@@ -87,6 +87,7 @@ const HowToPlay: FC<ButtonProps> = ({ variant, ...props }) => (
 				<section>
 					<h3 className="font-semibold text-xl mb-3">Tips</h3>
 					<ul className="list-disc pl-6 space-y-2">
+						<li>Headphones recommended for the best audio experience</li>
 						<li>
 							Watch out for wordplay and double meanings used in the scenarios
 							presented by the AI Storyteller
