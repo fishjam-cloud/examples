@@ -1,4 +1,7 @@
-import { GAME_TIME_LIMIT_SECONDS } from '@deep-sea-stories/common';
+import {
+	GAME_TIME_LIMIT_SECONDS,
+	ROOM_PLAYERS_LIMIT,
+} from '@deep-sea-stories/common';
 import {
 	type FishjamClient,
 	type Peer,
@@ -13,6 +16,7 @@ import { AudioStreamingOrchestrator } from '../service/audio-streaming-orchestra
 import type { NotifierService } from '../service/notifier.js';
 import type { Story } from '../types.js';
 import { GameSession } from './session.js';
+import { GameRoomFullError } from '../domain/errors.js';
 
 type Player = {
 	name: string;
@@ -61,6 +65,9 @@ export class GameRoom {
 	}
 
 	async addPlayer(name: string): Promise<{ peer: Peer; peerToken: string }> {
+		if (this.players.size >= ROOM_PLAYERS_LIMIT) {
+			throw new GameRoomFullError();
+		}
 		const { peer, peerToken } = await this.fishjamClient.createPeer(
 			this.roomId,
 		);

@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
 import { useTRPCClient } from '@/contexts/trpc';
+import { TRPCClientError } from '@trpc/client';
 
 interface JoinViewProps {
 	roomId: string;
@@ -65,7 +66,13 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 				peerMetadata: { name },
 			});
 		} catch (error) {
-			console.error('Failed to join room:', error);
+			if (
+				error instanceof TRPCClientError &&
+				error.data?.code === 'BAD_REQUEST'
+			) {
+				toast(error.message, User);
+			}
+			console.error(error);
 		}
 	}, [trpcClient, roomId, joinRoom, name]);
 
