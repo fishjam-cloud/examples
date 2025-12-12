@@ -41,7 +41,7 @@ const PeerGrid: FC<PeerGridProps> = ({ roomId, localPeer, displayedPeers }) => {
 						displayedPeers.length === 1,
 					'grid-cols-2 grid-rows-2 md:grid-cols-3 md:grid-rows-1 xl:grid-cols-3 place-items-center':
 						displayedPeers.length === 2,
-					'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 place-items-center':
+					'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-rows-auto place-items-center':
 						displayedPeers.length >= 3,
 				},
 			)}
