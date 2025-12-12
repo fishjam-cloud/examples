@@ -21,6 +21,7 @@ export class GeminiSession implements VoiceAgentSession {
 	private closing = false;
 	private opening = false;
 	private reconnecting = false;
+	private ending = false;
 
 	private talkingTimeLeft = 0;
 	private talkingInterval: NodeJS.Timeout | null = null;
@@ -31,6 +32,7 @@ export class GeminiSession implements VoiceAgentSession {
 	}
 
 	sendAudio(audio: Buffer) {
+		if (this.ending) return;
 		this.session?.sendRealtimeInput({
 			audio: {
 				data: audio.toString('base64'),
@@ -49,6 +51,7 @@ export class GeminiSession implements VoiceAgentSession {
 
 	async announceTimeExpired() {
 		if (!this.session) return;
+		this.ending = true;
 
 		console.log('Sending time expired message to agent...');
 		this.session.sendClientContent({

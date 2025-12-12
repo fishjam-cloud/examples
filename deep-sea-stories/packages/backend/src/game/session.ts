@@ -58,7 +58,6 @@ export class GameSession {
 	}
 
 	async announceTimeExpired() {
-		this.setAiAgentMuted(true);
 		await this.audioOrchestrator.voiceAgentSession.announceTimeExpired();
 	}
 
