@@ -14,10 +14,14 @@ export class GeminiSession implements VoiceAgentSession {
 	private onInterrupt: (() => void) | null = null;
 	private onAgentAudio: ((audio: Buffer) => void) | null = null;
 	private session: Session | null = null;
-	private closing = false;
 	private transcriptionParts: string[] = [];
 	private genai: GoogleGenAI;
 	private config: AgentConfig;
+	private previousHandle: string | undefined = undefined;
+	private closing = false;
+	private opening = false;
+	private reconnecting = false;
+	private ending = false;
 
 	private talkingTimeLeft = 0;
 	private talkingInterval: NodeJS.Timeout | null = null;
@@ -28,6 +32,7 @@ export class GeminiSession implements VoiceAgentSession {
 	}
 
 	sendAudio(audio: Buffer) {
+		if (this.ending) return;
 		this.session?.sendRealtimeInput({
 			audio: {
 				data: audio.toString('base64'),
@@ -44,6 +49,21 @@ export class GeminiSession implements VoiceAgentSession {
 		this.onAgentAudio = onAgentAudio;
 	}
 
+	async announceTimeExpired() {
+		if (!this.session) return;
+		this.ending = true;
+
+		console.log('Sending time expired message to agent...');
+		this.session.sendClientContent({
+			turns: [
+				{
+					text: 'IMPORTANT: The game time has expired. You must now: 1) Tell the players that time is up, 2) Evaluate how close they were to solving the riddle, 3) IMMEDIATELY call the endGame function to close the game session. Do not wait for player response - call endGame right after your message.',
+				},
+			],
+			turnComplete: true,
+		});
+	}
+
 	async waitUntilDone() {
 		await new Promise((resolve) =>
 			setTimeout(resolve, this.talkingTimeLeft + 2000),
@@ -51,6 +71,9 @@ export class GeminiSession implements VoiceAgentSession {
 	}
 
 	async open() {
+		if (this.opening) return;
+		this.opening = true;
+
 		const params: LiveConnectParameters = {
 			model: GEMINI_MODEL,
 			config: {
@@ -66,7 +89,8 @@ export class GeminiSession implements VoiceAgentSession {
 						functionDeclarations: [
 							{
 								name: 'endGame',
-								description: 'end the game',
+								description:
+									'Call this function to end the game session. You MUST call this when: 1) The players have correctly solved the riddle, 2) The game time has expired, 3) You are saying goodbye or ending the conversation. Always call this function after delivering your final message to players.',
 							},
 						],
 					},
@@ -74,13 +98,18 @@ export class GeminiSession implements VoiceAgentSession {
 				proactivity: {
 					proactiveAudio: true,
 				},
+				sessionResumption: { handle: this.previousHandle },
 			},
 			callbacks: {
 				onmessage: (message) => this.onMessage(message),
 				onerror: (e) => console.error('Gemini Error %o', e),
 				onclose: (e) => {
 					if (e.code !== 1000) {
-						console.error('Gemini Close: %o', e.reason);
+						console.error('Gemini Close: code=%d reason=%s', e.code, e.reason);
+						if (!this.closing && this.previousHandle) {
+							console.log('Attempting auto-reconnect with resumption...');
+							this.reconnect();
+						}
 					}
 				},
 			},
@@ -88,18 +117,23 @@ export class GeminiSession implements VoiceAgentSession {
 
 		this.session = await this.genai.live.connect(params);
 
-		this.session.sendClientContent({
-			turns: [
-				{
-					text: 'introduce yourself',
-				},
-			],
-			turnComplete: true,
-		});
+		if (!this.previousHandle) {
+			this.session.sendClientContent({
+				turns: [
+					{
+						text: 'introduce yourself',
+					},
+				],
+				turnComplete: true,
+			});
+		}
 
+		if (this.talkingInterval) clearInterval(this.talkingInterval);
 		this.talkingInterval = setInterval(() => {
 			this.talkingTimeLeft = Math.max(this.talkingTimeLeft - 100, 0);
 		}, 100);
+
+		this.opening = false;
 	}
 
 	async close(wait: boolean) {
@@ -109,11 +143,46 @@ export class GeminiSession implements VoiceAgentSession {
 			await this.waitUntilDone();
 		}
 
-		if (this.talkingInterval) clearInterval(this.talkingInterval);
-		this.talkingInterval = null;
+		if (this.talkingInterval) {
+			clearInterval(this.talkingInterval);
+			this.talkingInterval = null;
+		}
 
 		this.session?.close();
+		this.session = null;
 		this.closing = false;
+	}
+
+	private async reconnect() {
+		if (this.opening || this.reconnecting || this.closing) return;
+
+		this.reconnecting = true;
+		try {
+			if (this.session) {
+				this.session.close();
+				this.session = null;
+			}
+
+			await new Promise((resolve) => setTimeout(resolve, 500));
+
+			await this.open();
+
+			this.sendContinuationPrompt();
+
+			console.log('Session reconnected successfully');
+		} catch (err) {
+			console.error('Failed to reconnect:', err);
+		} finally {
+			this.reconnecting = false;
+		}
+	}
+
+	private sendContinuationPrompt() {
+		if (!this.session) return;
+		this.session.sendClientContent({
+			turns: [{ text: 'continue' }],
+			turnComplete: true,
+		});
 	}
 
 	private onMessage(message: LiveServerMessage) {
@@ -137,6 +206,10 @@ export class GeminiSession implements VoiceAgentSession {
 
 		if (message.serverContent?.interrupted) {
 			this.handleInterrupt();
+		}
+
+		if (message.sessionResumptionUpdate?.newHandle) {
+			this.previousHandle = message.sessionResumptionUpdate.newHandle;
 		}
 
 		message.toolCall?.functionCalls?.forEach((call) => {

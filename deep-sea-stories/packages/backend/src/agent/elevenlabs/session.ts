@@ -23,6 +23,10 @@ export class ElevenLabsSession implements VoiceAgentSession {
 		this.audioInterface.setAgentAudioCallback(onAgentAudio);
 	}
 
+	async announceTimeExpired() {
+		console.log('ElevenLabs session time expired (handled by platform)');
+	}
+
 	async open() {
 		await this.session.startSession();
 	}
