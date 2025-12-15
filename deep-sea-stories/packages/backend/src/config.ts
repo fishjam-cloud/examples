@@ -25,12 +25,7 @@ export const configSchema = z.object({
 	GOOGLE_CLOUD_LOCATION: z.string().optional(),
 });
 
-// WARNING: gemini-live-2.5-flash-preview will stop working on Dec 9!!
-// https://ai.google.dev/gemini-api/docs/models#gemini-2.5-flash
-// However, changing this to gemini-2.5-flash-native-audio-preview-09-2025
-// somehow breaks the greeting (WTF)
-export const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-09-2025';
-// export const GEMINI_MODEL = 'gemini-live-2.5-flash-preview-native-audio';
+export const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
 
 export const stories: Story[] = JSON.parse(
 	fs.readFileSync(join(__dirname, 'prompts', 'stories.json'), 'utf8'),
