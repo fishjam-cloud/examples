@@ -31,6 +31,7 @@ export class GameRoom {
 	private gameStarted: boolean = false;
 	private gameSession: GameSession | null = null;
 	private voiceAgentApi: VoiceAgentApi;
+	private gameTimeoutId: NodeJS.Timeout | null = null;
 
 	constructor(
 		fishjamClient: FishjamClient,
@@ -182,10 +183,22 @@ export class GameRoom {
 			type: 'gameStarted' as const,
 			timestamp: Date.now(),
 		});
+		this.gameTimeoutId = setTimeout(async () => {
+			console.log(`⏰ Game time limit reached for room ${this.roomId}`);
+			try {
+				await this.gameSession?.announceTimeExpired();
+			} catch (e) {
+				console.error('Error announcing time expired:', e);
+			}
+		}, GAME_TIME_LIMIT_SECONDS * 1000);
 	}
 
 	async stopGame(wait: boolean = false) {
 		console.log('Stopping game room %s', this.roomId);
+		if (this.gameTimeoutId) {
+			clearTimeout(this.gameTimeoutId);
+			this.gameTimeoutId = null;
+		}
 
 		if (this.gameSession) {
 			await this.gameSession.stopGame(wait);

@@ -57,6 +57,10 @@ export class GameSession {
 		await this.audioOrchestrator.start();
 	}
 
+	async announceTimeExpired() {
+		await this.audioOrchestrator.voiceAgentSession.announceTimeExpired();
+	}
+
 	async stopGame(wait: boolean = false) {
 		await this.audioOrchestrator.shutdown(wait);
 	}
