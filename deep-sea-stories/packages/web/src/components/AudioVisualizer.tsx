@@ -151,7 +151,7 @@ const AudioVisualizer: FC<AudioVisualizerProps> = ({
 	}, []);
 
 	return (
-		<div ref={containerRef} className="w-full h-full">
+		<div ref={containerRef} className="w-full h-full max-h-[150cqw] bottom-0 absolute">
 			{dimensions.width > 0 && dimensions.height > 0 && (
 				<canvas
 					ref={canvasRef}
