@@ -33,7 +33,7 @@ const PeerGrid: FC<PeerGridProps> = ({ roomId, localPeer, displayedPeers }) => {
 	return (
 		<section
 			className={cn(
-				'flex-1 md:flex-1 items-center w-full justify-items-center grid gap-2 md:gap-4 p-2 md:py-10 md:px-6 overflow-hidden',
+				'flex-1 items-center w-full justify-items-center grid gap-2 md:gap-4 p-2 md:py-10 md:px-6 overflow-hidden',
 				{
 					'grid-cols-1 grid-rows-1 xl:grid-cols-1 md:grid-rows-1':
 						displayedPeers.length === 0,
@@ -41,7 +41,7 @@ const PeerGrid: FC<PeerGridProps> = ({ roomId, localPeer, displayedPeers }) => {
 						displayedPeers.length === 1,
 					'grid-cols-2 grid-rows-2 md:grid-cols-3 md:grid-rows-1 xl:grid-cols-3 place-items-center':
 						displayedPeers.length === 2,
-					'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-rows-auto place-items-center':
+					'grid-cols-2 grid-rows-auto place-items-center':
 						displayedPeers.length >= 3,
 				},
 			)}
