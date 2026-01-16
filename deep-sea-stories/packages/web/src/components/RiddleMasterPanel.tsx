@@ -15,7 +15,7 @@ const RiddleMasterPanel: FC<RiddleMasterPanelProps> = ({
 	return (
 		<div className="hidden lg:flex flex-col lg:w-1/3 bg-card min-h-0 lg:m-2 gap-2">
 			<GameTimer roomId={roomId} />
-			<div className="flex-1 min-h-0 relative @container">
+			<div className="flex-1 min-h-0">
 				<AudioVisualizer stream={agentStream} barColor="#10b982" />
 			</div>
 			<AgentModeToggle roomId={roomId} />
