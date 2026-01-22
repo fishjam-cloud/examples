@@ -3,12 +3,21 @@ name: Deploy deep-sea-stories
 on:
   push:
     branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "main"
+        type: string
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch || github.ref }}
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -17,7 +26,8 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/examples/deep-sea-stories
-            git switch main
+            git fetch --all
+            git switch ${{ inputs.branch || 'main' }}
             git pull
 
             umask 077
