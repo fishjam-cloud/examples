@@ -9,7 +9,6 @@ import { GEMINI_MODEL } from "../../config.js";
 import { getInstructionsForStory } from "../../utils.js";
 import type { AgentConfig } from "../api.js";
 import type { VoiceAgentSession } from "../session.js";
-import { fastify } from "../../main.js";
 
 export class GeminiSession implements VoiceAgentSession {
   private onInterrupt: (() => void) | null = null;
@@ -187,7 +186,7 @@ export class GeminiSession implements VoiceAgentSession {
   }
 
   private onMessage(message: LiveServerMessage) {
-    fastify.log.info(
+    console.log(
       `Got messsage from Gemini: ${message.serverContent?.outputTranscription?.text}`,
     );
     const transcription = message.serverContent?.outputTranscription?.text;
