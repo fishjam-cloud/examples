@@ -1,5 +1,5 @@
 import type { StoryData } from '@deep-sea-stories/common';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 import { useTRPCClient } from '@/contexts/trpc';
@@ -38,7 +38,7 @@ const StorySelectionPanel: FC<StorySelectionPanelProps> = ({
 				setStories(fetchedStories);
 			} catch (error) {
 				console.error('Failed to fetch stories:', error);
-				toast('Failed to load stories', Check);
+				toast('Failed to load stories', X);
 			} finally {
 				setIsLoadingStories(false);
 			}
@@ -63,7 +63,7 @@ const StorySelectionPanel: FC<StorySelectionPanelProps> = ({
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : 'Failed to select story';
-			toast(`Error: ${errorMessage}`, Check);
+			toast(errorMessage, X);
 		} finally {
 			setIsStarting(false);
 		}

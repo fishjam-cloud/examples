@@ -4,6 +4,8 @@ import Footer from '@/components/Footer';
 import TitleBar from '@/components/TitleBar';
 import { Button } from '@/components/ui/button';
 import { useTRPCClient } from '@/contexts/trpc';
+import { toast } from '@/components/ui/sonner';
+import { CircleX } from 'lucide-react';
 
 export default function HomeView() {
 	const navigate = useNavigate();
@@ -16,7 +18,8 @@ export default function HomeView() {
 			const room = await trpcClient.createRoom.mutate();
 			navigate(`/${room.id}`);
 		} catch (error) {
-			console.error('Failed to create room:', error);
+			toast('Failed to create room', CircleX);
+			console.error(error);
 		} finally {
 			setIsLoading(false);
 		}

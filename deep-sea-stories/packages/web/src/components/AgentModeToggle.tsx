@@ -1,9 +1,9 @@
-import { EarOff, Headphones } from 'lucide-react';
+import { Check, CircleX, EarOff, Headphones } from 'lucide-react';
 import { type FC, useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import { useTRPCClient } from '@/contexts/trpc';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
 import { Button } from './ui/button';
+import { toast } from './ui/sonner';
 
 type AgentModeToggleProps = {
 	roomId: string;
@@ -40,10 +40,11 @@ const AgentModeToggle: FC<AgentModeToggleProps> = ({ roomId }) => {
 				muted: !isAiMuted,
 			});
 
-			toast.success(!isAiMuted ? 'Agent deafened' : 'Agent listening');
+			toast(!isAiMuted ? 'Agent deafened' : 'Agent listening', Check);
 		} catch (error) {
-			console.error('Failed to toggle AI mode:', error);
-			toast.error('Failed to toggle mode');
+			console.error(error);
+			const verb = isAiMuted ? 'undeafen' : 'deafen';
+			toast(`Failed to ${verb} agent`, CircleX);
 		} finally {
 			setIsMutating(false);
 		}
