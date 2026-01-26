@@ -4,7 +4,7 @@ import {
 	useInitializeDevices,
 	useMicrophone,
 } from '@fishjam-cloud/react-client';
-import { Camera, Mic, User } from 'lucide-react';
+import { Camera, CircleX, Mic, User } from 'lucide-react';
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeviceSelect } from '@/components/DeviceSelect';
@@ -66,13 +66,16 @@ const JoinView: FC<JoinViewProps> = ({ roomId }) => {
 				peerMetadata: { name },
 			});
 		} catch (error) {
-			if (
-				error instanceof TRPCClientError &&
-				error.data?.code === 'BAD_REQUEST'
-			) {
-				toast(error.message, User);
+			if (!(error instanceof TRPCClientError)) {
+				console.error(error);
+				return;
 			}
-			console.error(error);
+
+			if (error.data?.code === 'BAD_REQUEST') {
+				toast(error.message, User);
+			} else {
+				toast(error.message, CircleX);
+			}
 		}
 	}, [trpcClient, roomId, joinRoom, name]);
 
