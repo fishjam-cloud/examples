@@ -8,6 +8,7 @@ import VAD, { type VADData } from 'node-vad';
 import type { VoiceAgentSession } from '../agent/session.js';
 import { VAD_DEBOUNCE_MS } from '../config.js';
 import type { NotifierService } from './notifier.js';
+import { BitrateEstimator } from '../bitrateEstimator.js';
 
 export class AudioStreamingOrchestrator {
 	readonly voiceAgentSession: VoiceAgentSession;
@@ -20,6 +21,7 @@ export class AudioStreamingOrchestrator {
 	private roomId: RoomId;
 	private notifierService: NotifierService;
 	private vadTimeout: NodeJS.Timeout | null = null;
+	private bitrateEstimator: BitrateEstimator;
 
 	constructor(
 		voiceAgentSession: VoiceAgentSession,
@@ -33,6 +35,7 @@ export class AudioStreamingOrchestrator {
 		this.activeSpeaker = null;
 		this.roomId = roomId;
 		this.notifierService = notifierService;
+		this.bitrateEstimator = new BitrateEstimator('From Gemini', 3);
 
 		this.fishjamTrack = fishjamAgent.createTrack({
 			channels: 1,
@@ -115,6 +118,8 @@ export class AudioStreamingOrchestrator {
 			clearTimeout(this.vadTimeout);
 			this.vadTimeout = null;
 		}
+
+		this.bitrateEstimator.stop();
 
 		console.log('[Orchestrator] Cleaned up all resources');
 	}
@@ -212,6 +217,7 @@ export class AudioStreamingOrchestrator {
 		});
 
 		this.voiceAgentSession.registerAgentAudioCallback((audio) => {
+			this.bitrateEstimator.handleBuffer(audio);
 			this.fishjamAgent.sendData(this.fishjamTrack.id, audio);
 		});
 	}
