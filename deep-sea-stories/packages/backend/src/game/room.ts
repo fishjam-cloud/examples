@@ -207,11 +207,11 @@ export class GameRoom {
 					this.roomId,
 					this.gameSession.agentId,
 				);
-				this.gameSession = null;
 			}
 		} catch (e) {
 			if (!(e instanceof PeerNotFoundException)) throw e;
 		} finally {
+			this.gameSession = null;
 			this.story = undefined;
 
 			this.notifierService.emitNotification(this.roomId, {
