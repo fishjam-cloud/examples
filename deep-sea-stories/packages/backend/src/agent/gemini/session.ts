@@ -60,7 +60,7 @@ export class GeminiSession implements VoiceAgentSession {
 		this.session.sendClientContent({
 			turns: [
 				{
-					text: 'IMPORTANT: The game time has expired. You must now: 1) Tell the players that time is up, 2) Evaluate how close they were to solving the riddle, 3) Call the `endGame` function tool.',
+					text: 'IMPORTANT: The game time has expired. You must now: 1) Tell the players that time is up, 2) Evaluate how close they were to solving the riddle, 3) IMMEDIATELY call the endGame function to close the game session. Do not wait for player response - call endGame right after your message.',
 				},
 			],
 			turnComplete: true,
