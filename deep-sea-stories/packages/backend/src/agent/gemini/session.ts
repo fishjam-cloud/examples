@@ -10,9 +10,12 @@ import { getInstructionsForStory } from '../../utils.js';
 import type { AgentConfig } from '../api.js';
 import type { VoiceAgentSession } from '../session.js';
 
+const AGENT_EXPIRATION_MAX_SECONDS = 15;
+
 export class GeminiSession implements VoiceAgentSession {
 	private onInterrupt: (() => void) | null = null;
 	private onAgentAudio: ((audio: Buffer) => void) | null = null;
+	private onTurnEnd: (() => void) | null = null;
 	private session: Session | null = null;
 	private transcriptionParts: string[] = [];
 	private genai: GoogleGenAI;
@@ -57,10 +60,19 @@ export class GeminiSession implements VoiceAgentSession {
 		this.session.sendClientContent({
 			turns: [
 				{
-					text: 'IMPORTANT: The game time has expired. You must now: 1) Tell the players that time is up, 2) Evaluate how close they were to solving the riddle.',
+					text: 'IMPORTANT: The game time has expired. You must now: 1) Tell the players that time is up, 2) Evaluate how close they were to solving the riddle, 3) Call the `endGame` function tool.',
 				},
 			],
 			turnComplete: true,
+		});
+
+		return new Promise<void>((resolve) => {
+			const timeout = setTimeout(resolve, AGENT_EXPIRATION_MAX_SECONDS * 1000);
+			this.onTurnEnd = () => {
+				this.onTurnEnd = null;
+				clearTimeout(timeout);
+				resolve();
+			};
 		});
 	}
 
@@ -199,6 +211,8 @@ export class GeminiSession implements VoiceAgentSession {
 			this.config.onTranscription(this.transcriptionParts.join(''));
 			this.transcriptionParts = [];
 		}
+
+		if (turnFinished) this.onTurnEnd?.();
 
 		const base64 = message.data;
 		if (base64) {

@@ -195,6 +195,11 @@ export class GameRoom {
 	}
 
 	async stopGame(wait: boolean = false) {
+		if (!this.gameSession) return;
+
+		const gameSession = this.gameSession;
+		this.gameSession = null;
+
 		console.log('Stopping game room %s', this.roomId);
 		if (this.gameTimeoutId) {
 			clearTimeout(this.gameTimeoutId);
@@ -202,25 +207,20 @@ export class GameRoom {
 		}
 
 		try {
-			if (this.gameSession) {
-				await this.gameSession.stopGame(wait);
-				await this.fishjamClient.deletePeer(
-					this.roomId,
-					this.gameSession.agentId,
-				);
-			}
-		} catch (e) {
-			if (!(e instanceof PeerNotFoundException)) throw e;
-		} finally {
-			this.gameSession = null;
-			this.story = undefined;
+			await gameSession.stopGame(wait);
 
 			this.notifierService.emitNotification(this.roomId, {
 				type: 'gameEnded' as const,
 				timestamp: Date.now(),
 			});
 
+			await this.fishjamClient.deletePeer(this.roomId, gameSession.agentId);
+		} catch (e) {
+			if (!(e instanceof PeerNotFoundException)) throw e;
+		} finally {
+			this.story = undefined;
 			this.gameStarted = false;
+
 			console.log(`Stopped game for room ${this.roomId}`);
 		}
 	}
