@@ -187,7 +187,7 @@ export class GameRoom {
 			console.log(`⏰ Game time limit reached for room ${this.roomId}`);
 			try {
 				await this.gameSession?.announceTimeExpired();
-				await this.stopGame(true)
+				await this.stopGame(true);
 			} catch (e) {
 				console.error('Error announcing time expired:', e);
 			}
