@@ -258,27 +258,28 @@ export class GameRoom {
 
 	private async reconcilePlayersCount(webrtcPlayers: Peer[]) {
 		try {
-			if (webrtcPlayers.length !== this.players.size) {
-				console.warn(
-					`Discrepancy in player count for room ${this.roomId}: Fishjam reports ${webrtcPlayers.length}, local state has ${this.players.size}. This most probably means some peerDisconnected events were missed.`,
-				);
-				const webrtcPeerIds = new Set(webrtcPlayers.map((p) => p.id));
-				for (const localPeerId of this.players.keys()) {
-					if (!webrtcPeerIds.has(localPeerId)) {
-						console.log(
-							`Reconciling: removing peer ${localPeerId} from local state of room ${this.roomId}`,
-						);
-						this.players.delete(localPeerId);
-						this.gameSession?.removePlayer(localPeerId);
-					}
+			if (webrtcPlayers.length === this.players.size) {
+				return;
+			}
+			console.warn(
+				`Discrepancy in player count for room ${this.roomId}: Fishjam reports ${webrtcPlayers.length}, local state has ${this.players.size}. This most probably means some peerDisconnected events were missed.`,
+			);
+			const webrtcPeerIds = new Set(webrtcPlayers.map((p) => p.id));
+			for (const localPeerId of this.players.keys()) {
+				if (!webrtcPeerIds.has(localPeerId)) {
+					console.log(
+						`Reconciling: removing peer ${localPeerId} from local state of room ${this.roomId}`,
+					);
+					this.players.delete(localPeerId);
+					this.gameSession?.removePlayer(localPeerId);
 				}
-				for (const fishjamPeer of webrtcPlayers) {
-					if (!this.players.has(fishjamPeer.id)) {
-						await this.fishjamClient.deletePeer(this.roomId, fishjamPeer.id);
-						console.log(
-							`Reconciling: removing unknown peer ${fishjamPeer.id} from Fishjam room ${this.roomId}`,
-						);
-					}
+			}
+			for (const fishjamPeer of webrtcPlayers) {
+				if (!this.players.has(fishjamPeer.id)) {
+					await this.fishjamClient.deletePeer(this.roomId, fishjamPeer.id);
+					console.log(
+						`Reconciling: removing unknown peer ${fishjamPeer.id} from Fishjam room ${this.roomId}`,
+					);
 				}
 			}
 		} catch (e) {
