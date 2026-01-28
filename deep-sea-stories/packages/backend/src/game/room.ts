@@ -66,7 +66,8 @@ export class GameRoom {
 	}
 
 	async addPlayer(name: string): Promise<{ peer: Peer; peerToken: string }> {
-		if (this.players.size >= ROOM_PLAYERS_LIMIT) {
+		const roomPlayersCount = await this.getPlayersCount();
+		if (roomPlayersCount >= ROOM_PLAYERS_LIMIT) {
 			throw new GameRoomFullError();
 		}
 		const { peer, peerToken } = await this.fishjamClient.createPeer(
@@ -241,5 +242,36 @@ export class GameRoom {
 
 		await new Promise((resolve) => setTimeout(resolve, 500));
 		return { agent, agentId: peer.id };
+	}
+
+	private async getPlayersCount(): Promise<number> {
+		try {
+			const room = await this.fishjamClient.getRoom(this.roomId);
+			const webrtcPlayers = room.peers.filter((peer) => peer.type === 'webrtc');
+			const playersCount = webrtcPlayers.length;
+			this.reconcilePlayersCount(webrtcPlayers);
+			return playersCount;
+		} catch (e) {
+			console.error(`Error fetching room info for room ${this.roomId}:`, e);
+			return this.players.size;
+		}
+	}
+
+	private reconcilePlayersCount(webrtcPlayers: Peer[]) {
+		if (webrtcPlayers.length !== this.players.size) {
+			console.warn(
+				`Discrepancy in player count for room ${this.roomId}: Fishjam reports ${webrtcPlayers.length}, local state has ${this.players.size}. This most probably means some peerDisconnected events were missed.`,
+			);
+			const webrtcPeerIds = new Set(webrtcPlayers.map((p) => p.id));
+			for (const localPeerId of this.players.keys()) {
+				if (!webrtcPeerIds.has(localPeerId)) {
+					console.log(
+						`Reconciling: removing peer ${localPeerId} from local state of room ${this.roomId}`,
+					);
+					this.players.delete(localPeerId);
+					this.gameSession?.removePlayer(localPeerId);
+				}
+			}
+		}
 	}
 }
