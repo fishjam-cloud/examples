@@ -16,6 +16,8 @@ export type PeerTileProps = {
 	videoPaused?: boolean | null;
 } & HTMLAttributes<HTMLDivElement>;
 
+const isStreamerMode = window.location.hash === '#streaming';
+
 export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 	stream,
 	audioStream,
@@ -35,7 +37,7 @@ export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 	}, [stream, videoPaused]);
 
 	useEffect(() => {
-		if (!audioRef.current) return;
+		if (!audioRef.current || isStreamerMode) return;
 		audioRef.current.srcObject = audioStream ?? null;
 	}, [audioStream]);
 
