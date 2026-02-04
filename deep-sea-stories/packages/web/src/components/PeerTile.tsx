@@ -16,7 +16,7 @@ export type PeerTileProps = {
 	videoPaused?: boolean | null;
 } & HTMLAttributes<HTMLDivElement>;
 
-const isStreamerMode = new URL(window.location.href).hash === "#streaming";
+const isStreamerMode = new URL(window.location.href).hash === '#streaming';
 
 export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 	stream,
