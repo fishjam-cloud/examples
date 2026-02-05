@@ -1,6 +1,6 @@
 import { usePeers } from '@fishjam-cloud/react-client';
 import type { FC } from 'react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import GameControlPanel from '@/components/GameControlPanel';
 import PeerGrid from '@/components/PeerGrid';
 import { PlayerCountIndicator } from '@/components/PlayerCountIndicator';
@@ -12,6 +12,7 @@ export type GameViewProps = {
 const GameView: FC<GameViewProps> = ({ roomId }) => {
 	const { remotePeers, localPeer } = usePeers<{ name: string }>();
 	const agentAudioRef = useRef<HTMLAudioElement>(null);
+	const [volume, setVolume] = useState(1);
 
 	const displayedPeers = useMemo(
 		() => remotePeers.filter((peer) => peer.metadata),
@@ -29,6 +30,12 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 		agentAudioRef.current.srcObject = audioStream ?? null;
 	}, [agentPeer?.tracks[0]?.stream]);
 
+	useEffect(() => {
+		if (agentAudioRef.current) {
+			agentAudioRef.current.volume = volume;
+		}
+	}, [volume]);
+
 	const userName = localPeer?.metadata?.peer?.name ?? 'Unknown';
 	const playerCount = (localPeer ? 1 : 0) + displayedPeers.length;
 
@@ -38,6 +45,8 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 				roomId={roomId}
 				userName={userName}
 				agentStream={agentPeer?.tracks[0]?.stream}
+				volume={volume}
+				onVolumeChange={setVolume}
 			/>
 
 			<div className="relative flex-1 flex flex-col">
