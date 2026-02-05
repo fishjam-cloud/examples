@@ -23,7 +23,11 @@ const RiddleMasterPanel: FC<RiddleMasterPanelProps> = ({
 			<div className="flex-1 min-h-0">
 				<AudioVisualizer stream={agentStream} barColor="#10b982" />
 			</div>
-			<VolumeSlider volume={volume} onVolumeChange={onVolumeChange} label="Agent volume" />
+			<VolumeSlider
+				volume={volume}
+				onVolumeChange={onVolumeChange}
+				label="Agent volume"
+			/>
 			<AgentModeToggle roomId={roomId} />
 		</div>
 	);

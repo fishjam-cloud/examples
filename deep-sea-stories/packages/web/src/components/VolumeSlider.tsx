@@ -6,7 +6,11 @@ type VolumeSliderProps = {
 	label?: string;
 };
 
-const VolumeSlider: FC<VolumeSliderProps> = ({ volume, onVolumeChange, label }) => {
+const VolumeSlider: FC<VolumeSliderProps> = ({
+	volume,
+	onVolumeChange,
+	label,
+}) => {
 	return (
 		<div className="flex flex-col gap-1 px-2">
 			{label && <span className="text-xs text-muted-foreground">{label}</span>}
