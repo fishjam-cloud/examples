@@ -1,6 +1,8 @@
 import type { AgentEvent } from "@deep-sea-stories/common";
 import { useEffect, useState } from "react";
 import { useTRPCClient } from "@/contexts/trpc";
+import { toast } from "@/components/ui/sonner";
+import { X } from "lucide-react";
 
 export const useAgentEvents = (roomId?: string) => {
   const [events, setEvents] = useState<AgentEvent[]>([]);
@@ -38,7 +40,8 @@ export const useAgentEvents = (roomId?: string) => {
             },
           },
         );
-      });
+      })
+      .catch(() => toast("Failed to fetch events", X));
 
     return () => {
       active = false;
