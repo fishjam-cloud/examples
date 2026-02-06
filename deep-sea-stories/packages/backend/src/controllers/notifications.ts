@@ -9,9 +9,7 @@ export const getEvents = publicProcedure
 	.query(({ ctx, input }) => {
 		const history = ctx.notifierService.getEventHistory(input.roomId);
 		const lastEventId =
-			history.length > 0
-				? history[history.length - 1].id.toString()
-				: null;
+			history.length > 0 ? history[history.length - 1].id.toString() : null;
 		return {
 			events: history.map(({ event }) => event),
 			lastEventId,
