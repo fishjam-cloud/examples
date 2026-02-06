@@ -2,6 +2,7 @@ import type { AgentEvent } from '@deep-sea-stories/common';
 import {
 	BookCheck,
 	BookText,
+	BookUp,
 	EarOff,
 	Headphones,
 	LogIn,
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 import { type FC, type PropsWithChildren, useEffect, useRef } from 'react';
 import { useAgentEvents } from '@/hooks/useAgentEvents';
+import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 
 type EventNotifierProps = {
@@ -127,6 +129,17 @@ const eventConfigMap: Record<
 const EventNotifier: FC<EventNotifierProps> = ({ roomId }) => {
 	const events = useAgentEvents(roomId);
 	const viewportRef = useRef<HTMLDivElement>(null);
+	const firstTranscriptionRef = useRef<HTMLDivElement>(null);
+
+	const filteredEvents = events.filter((event) => event.type !== 'VAD');
+	const firstTranscriptionIndex = filteredEvents.findIndex(
+		(event) => event.type === 'transcription',
+	);
+	const hasTranscription = firstTranscriptionIndex !== -1;
+
+	const scrollToStory = () => {
+		firstTranscriptionRef.current?.scrollIntoView({ behavior: 'smooth' });
+	};
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Need to scroll when events array changes
 	useEffect(() => {
@@ -140,26 +153,37 @@ const EventNotifier: FC<EventNotifierProps> = ({ roomId }) => {
 			viewportRef={viewportRef}
 			className="flex-1 lg:w-2/3 border rounded-3xl bg-card min-h-0 lg:m-2 xl:m-2"
 		>
+			{hasTranscription && (
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={scrollToStory}
+					className="absolute top-2 right-4 z-10 gap-1"
+				>
+					<BookUp size={16} />
+					<span className="hidden md:inline">Go to story</span>
+				</Button>
+			)}
 			<div className="p-3 md:p-6">
-				{events
-					.filter((event) => event.type !== 'VAD')
-					.map((event, index) => {
-						const config = eventConfigMap[event.type];
-						const icon = (
-							typeof config.icon === 'function'
-								? config.icon(event)
-								: config.icon
-						) as LucideIcon;
-						return (
-							<PanelEvent
-								key={`${event.timestamp}-${index}`}
-								icon={icon}
-								timestamp={event.timestamp}
-							>
+				{filteredEvents.map((event, index) => {
+					const config = eventConfigMap[event.type];
+					const icon = (
+						typeof config.icon === 'function'
+							? config.icon(event)
+							: config.icon
+					) as LucideIcon;
+					const isFirstTranscription = index === firstTranscriptionIndex;
+					return (
+						<div
+							key={`${event.timestamp}-${index}`}
+							ref={isFirstTranscription ? firstTranscriptionRef : undefined}
+						>
+							<PanelEvent icon={icon} timestamp={event.timestamp}>
 								{config.renderBody(event)}
 							</PanelEvent>
-						);
-					})}
+						</div>
+					);
+				})}
 			</div>
 		</ScrollArea>
 	);
