@@ -1,4 +1,4 @@
-import { Notifications } from './controllers/notifications.js';
+import { Notifications, getEvents } from './controllers/notifications.js';
 import { createPeer } from './controllers/peers.js';
 import { createRoom } from './controllers/rooms.js';
 import {
@@ -18,6 +18,7 @@ export const appRouter = router({
 	stopGame,
 	getStories,
 	Notifications,
+	getEvents,
 	muteVoiceAgent,
 });
 

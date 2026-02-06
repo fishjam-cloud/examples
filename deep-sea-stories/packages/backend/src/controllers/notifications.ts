@@ -4,6 +4,18 @@ import { tracked } from '@trpc/server';
 import { z } from 'zod';
 import { publicProcedure } from '../trpc.js';
 
+export const getEvents = publicProcedure
+	.input(z.object({ roomId: z.string() }))
+	.query(({ ctx, input }) => {
+		const history = ctx.notifierService.getEventHistory(input.roomId);
+		const lastEventId =
+			history.length > 0 ? history[history.length - 1].id.toString() : null;
+		return {
+			events: history.map(({ event }) => event),
+			lastEventId,
+		};
+	});
+
 export const Notifications = publicProcedure
 	.input(
 		z.object({
