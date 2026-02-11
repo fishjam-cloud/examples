@@ -6,6 +6,7 @@ export interface AgentConfig {
 	onEndGame: () => Promise<void>;
 	gameTimeLimitSeconds: number;
 	onTranscription: (transcription: string) => void;
+	onReadyForPlayerInput?: () => void;
 }
 
 export interface VoiceAgentApi {

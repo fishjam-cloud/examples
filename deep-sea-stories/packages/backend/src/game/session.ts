@@ -3,6 +3,8 @@ import type { AudioStreamingOrchestrator } from '../service/audio-streaming-orch
 import type { NotifierService } from '../service/notifier.js';
 import type { Story } from '../types.js';
 
+type MuteSource = 'manual' | 'system';
+
 export class GameSession {
 	readonly story: Story;
 	readonly roomId: RoomId;
@@ -11,6 +13,8 @@ export class GameSession {
 	private readonly audioOrchestrator: AudioStreamingOrchestrator;
 	private readonly notifierService: NotifierService;
 	private isAiAgentMuted: boolean = false;
+	private manualMute: boolean = false;
+	private systemMute: boolean = false;
 
 	constructor(
 		roomId: RoomId,
@@ -34,7 +38,26 @@ export class GameSession {
 		this.audioOrchestrator.removePeer(peerId);
 	}
 
-	setAiAgentMuted(muted: boolean) {
+	setAiAgentMuted(muted: boolean, options?: { source?: MuteSource }) {
+		const source = options?.source ?? 'manual';
+
+		if (source === 'manual') {
+			this.manualMute = muted;
+			this.systemMute = false;
+		} else {
+			this.systemMute = muted;
+		}
+
+		this.updateMuteState();
+	}
+
+	private updateMuteState() {
+		const nextState = this.manualMute || this.systemMute;
+		this.applyMuteState(nextState);
+	}
+
+	private applyMuteState(muted: boolean) {
+		if (this.isAiAgentMuted === muted) return;
 		this.isAiAgentMuted = muted;
 		this.audioOrchestrator.setMuted(muted);
 
