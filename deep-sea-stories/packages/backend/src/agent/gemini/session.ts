@@ -88,7 +88,8 @@ export class GeminiSession implements VoiceAgentSession {
 		this.opening = true;
 		this.ending = false;
 
-		const shouldRequestIntro = !this.previousHandle && !this.awaitingInitialGreeting;
+		const shouldRequestIntro =
+			!this.previousHandle && !this.awaitingInitialGreeting;
 
 		const params: LiveConnectParameters = {
 			model: GEMINI_MODEL,
