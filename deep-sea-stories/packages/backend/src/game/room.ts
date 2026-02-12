@@ -146,6 +146,9 @@ export class GameRoom {
 					timestamp: Date.now(),
 				});
 			},
+			onReadyForPlayerInput: () => {
+				this.gameSession?.setAiAgentMuted(false);
+			},
 		});
 
 		const { agent: fishjamAgent, agentId: fishjamAgentId } =
@@ -165,6 +168,8 @@ export class GameRoom {
 			audioOrchestrator,
 			this.notifierService,
 		);
+
+		this.gameSession.setAiAgentMuted(true);
 
 		console.log(
 			`Starting game for ${this.players.size} players in room ${this.roomId}`,

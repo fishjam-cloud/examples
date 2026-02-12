@@ -25,6 +25,7 @@ export class GeminiSession implements VoiceAgentSession {
 	private opening = false;
 	private reconnecting = false;
 	private ending = false;
+	private awaitingInitialGreeting = false;
 
 	private talkingTimeLeft = 0;
 	private talkingInterval: NodeJS.Timeout | null = null;
@@ -87,6 +88,9 @@ export class GeminiSession implements VoiceAgentSession {
 		this.opening = true;
 		this.ending = false;
 
+		const shouldRequestIntro =
+			!this.previousHandle && !this.awaitingInitialGreeting;
+
 		const params: LiveConnectParameters = {
 			model: GEMINI_MODEL,
 			config: {
@@ -130,7 +134,8 @@ export class GeminiSession implements VoiceAgentSession {
 
 		this.session = await this.genai.live.connect(params);
 
-		if (!this.previousHandle) {
+		if (shouldRequestIntro) {
+			this.awaitingInitialGreeting = true;
 			this.session.sendClientContent({
 				turns: [
 					{
@@ -139,6 +144,8 @@ export class GeminiSession implements VoiceAgentSession {
 				],
 				turnComplete: true,
 			});
+		} else if (!this.awaitingInitialGreeting) {
+			this.config.onReadyForPlayerInput?.();
 		}
 
 		if (this.talkingInterval) clearInterval(this.talkingInterval);
@@ -212,7 +219,13 @@ export class GeminiSession implements VoiceAgentSession {
 			this.transcriptionParts = [];
 		}
 
-		if (turnFinished) this.onTurnEnd?.();
+		if (turnFinished) {
+			if (this.awaitingInitialGreeting) {
+				this.awaitingInitialGreeting = false;
+				this.config.onReadyForPlayerInput?.();
+			}
+			this.onTurnEnd?.();
+		}
 
 		const base64 = message.data;
 		if (base64) {

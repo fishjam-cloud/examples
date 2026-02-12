@@ -35,6 +35,7 @@ export class GameSession {
 	}
 
 	setAiAgentMuted(muted: boolean) {
+		if (this.isAiAgentMuted === muted) return;
 		this.isAiAgentMuted = muted;
 		this.audioOrchestrator.setMuted(muted);
 

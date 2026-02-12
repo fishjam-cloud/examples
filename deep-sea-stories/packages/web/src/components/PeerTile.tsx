@@ -42,7 +42,7 @@ export const PeerTile: FC<PropsWithChildren<PeerTileProps>> = ({
 	}, [audioStream]);
 
 	return (
-		<div className={cn('h-full w-full max-w-xl', className)} {...props}>
+		<div className={cn('h-full w-full max-w-3xl', className)} {...props}>
 			<div
 				className={cn(
 					'h-full w-full flex border items-center justify-center rounded-xl overflow-hidden',
