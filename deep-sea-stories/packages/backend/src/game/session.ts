@@ -38,25 +38,7 @@ export class GameSession {
 		this.audioOrchestrator.removePeer(peerId);
 	}
 
-	setAiAgentMuted(muted: boolean, options?: { source?: MuteSource }) {
-		const source = options?.source ?? 'manual';
-
-		if (source === 'manual') {
-			this.manualMute = muted;
-			this.systemMute = false;
-		} else {
-			this.systemMute = muted;
-		}
-
-		this.updateMuteState();
-	}
-
-	private updateMuteState() {
-		const nextState = this.manualMute || this.systemMute;
-		this.applyMuteState(nextState);
-	}
-
-	private applyMuteState(muted: boolean) {
+	setAiAgentMuted(muted: boolean) {
 		if (this.isAiAgentMuted === muted) return;
 		this.isAiAgentMuted = muted;
 		this.audioOrchestrator.setMuted(muted);

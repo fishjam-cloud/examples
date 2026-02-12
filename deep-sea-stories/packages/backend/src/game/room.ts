@@ -147,9 +147,7 @@ export class GameRoom {
 				});
 			},
 			onReadyForPlayerInput: () => {
-				this.gameSession?.setAiAgentMuted(false, {
-					source: 'system',
-				});
+				this.gameSession?.setAiAgentMuted(false);
 			},
 		});
 
@@ -171,7 +169,7 @@ export class GameRoom {
 			this.notifierService,
 		);
 
-		this.gameSession.setAiAgentMuted(true, { source: 'system' });
+		this.gameSession.setAiAgentMuted(true);
 
 		console.log(
 			`Starting game for ${this.players.size} players in room ${this.roomId}`,
