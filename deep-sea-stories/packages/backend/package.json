@@ -12,7 +12,6 @@
 	"types": "./src/index.ts",
 	"dependencies": {
 		"@deep-sea-stories/common": "workspace:*",
-		"@elevenlabs/elevenlabs-js": "^2.20.0",
 		"@fastify/cors": "^11.1.0",
 		"@fishjam-cloud/js-server-sdk": "^0.22.0",
 		"@google/genai": "^1.30.0",

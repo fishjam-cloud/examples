@@ -65,19 +65,10 @@ describe('Configuration', () => {
 			});
 		}, 'Should throw when required FISHJAM_MANAGEMENT_TOKEN is missing');
 
-		assert.throws(() => {
-			configSchema.parse({
-				FISHJAM_ID: 'test-id',
-				FISHJAM_MANAGEMENT_TOKEN: 'test-token',
-				GEMINI_API_KEY: 'test-gemini-key',
-			});
-		}, 'Should throw when required ELEVENLABS_API_KEY is missing');
-
 		assert.doesNotThrow(() => {
 			configSchema.parse({
 				FISHJAM_ID: 'test-id',
 				FISHJAM_MANAGEMENT_TOKEN: 'test-token',
-				ELEVENLABS_API_KEY: 'test-api-key',
 				GEMINI_API_KEY: 'test-gemini-key',
 			});
 		}, 'Should not throw with all required fields');
@@ -87,7 +78,6 @@ describe('Configuration', () => {
 		const config = configSchema.parse({
 			FISHJAM_ID: 'test-id',
 			FISHJAM_MANAGEMENT_TOKEN: 'test-token',
-			ELEVENLABS_API_KEY: 'test-api-key',
 			GEMINI_API_KEY: 'test-gemini-key',
 		});
 
@@ -98,7 +88,6 @@ describe('Configuration', () => {
 		const config = configSchema.parse({
 			FISHJAM_ID: 'test-id',
 			FISHJAM_MANAGEMENT_TOKEN: 'test-token',
-			ELEVENLABS_API_KEY: 'test-api-key',
 			GEMINI_API_KEY: 'test-gemini-key',
 			PORT: '3000',
 		});
