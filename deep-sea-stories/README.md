@@ -2,6 +2,10 @@
 
 Deep Sea Stories is a real-time, audio-driven game where players solve mysteries with the help of an AI riddle master.
 
+https://github.com/user-attachments/assets/a88f872e-f707-4014-8855-0a55375ce998
+
+Check out our [blog post](https://fishjam.swmansion.com/blog/voice-ai-how-we-built-a-multi-speaker-ai-agent-using-gemini) to learn more!
+
 ## Running Locally
 
 Before running locally,  make sure to copy `.env.example` to `.env` and set the following values:
