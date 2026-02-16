@@ -62,7 +62,7 @@ If you can't use [docker compose](#docker-compose-recommended) to run the projec
 
 ## Repo Structure
 
-- `packages/backend`: Fishjam Agent which talks with Goople Gemini Live API.
+- `packages/backend`: Fishjam Agent which talks with Google Gemini Live API.
 - `packages/web`: Web client, which connects to the backend and Fishjam in the browser.
 - `packages/common`: Shared TypeScript types and utilities.
 - `docker-compose.yml` + `nginx.conf`: Container setup with a reverse proxy.
