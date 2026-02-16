@@ -23,7 +23,7 @@ The easiest way to run the app is with [Docker Compose](https://docs.docker.com/
 docker compose up --build
 ```
 
-You can then access the UI at <http://localhost>
+You can then access the UI at <http://localhost:5000>
 
 ### Running Manually
 
