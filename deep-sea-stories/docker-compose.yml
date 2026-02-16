@@ -10,7 +10,6 @@ services:
       - PORT=8000
       - FISHJAM_ID=${FISHJAM_ID}
       - FISHJAM_MANAGEMENT_TOKEN=${FISHJAM_MANAGEMENT_TOKEN}
-      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     restart: unless-stopped
 
@@ -21,8 +20,6 @@ services:
       args:
         - VITE_FISHJAM_ID=${FISHJAM_ID}
         - VITE_BACKEND_URL=${BACKEND_URL:-/api/v1}
-    environment:
-      - VITE_BACKEND_URL=/api/v1
     restart: unless-stopped
     depends_on:
       - backend
