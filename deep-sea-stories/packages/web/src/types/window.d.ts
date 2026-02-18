@@ -1,9 +1,9 @@
-import type { Gtag } from "gtag.js";
+import type { Gtag } from 'gtag.js';
 
 declare global {
-  interface Window {
-    gtag: Gtag.Gtag;
-  }
+	interface Window {
+		gtag: Gtag.Gtag;
+	}
 }
 
 export {};
