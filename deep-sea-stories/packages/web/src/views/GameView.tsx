@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import GameControlPanel from "@/components/GameControlPanel";
 import PeerGrid from "@/components/PeerGrid";
 import { PlayerCountIndicator } from "@/components/PlayerCountIndicator";
-import PromoWidget from "@/components/PromoWidget";
 
 export type GameViewProps = {
   roomId: string;
