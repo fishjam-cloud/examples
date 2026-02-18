@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 
-const PROMO_CODE = "DEEPSEA26";
+const PROMO_CODE = "DeepSea25";
 const PROMO_URL = "https://fishjam.swmansion.com/?utm_source=deep-sea-stories";
 const DISMISS_STORAGE_KEY = "promo-widget-dismissed";
 const PROMO_HIDE_AFTER = new Date("2026-03-19T00:00:00Z");
