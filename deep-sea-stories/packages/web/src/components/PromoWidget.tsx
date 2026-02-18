@@ -15,11 +15,27 @@ const readDismissedFromStorage = () => {
   return window.localStorage.getItem(DISMISS_STORAGE_KEY) === "true";
 };
 
+const isExpired = Date.now() >= PROMO_HIDE_AFTER.getTime();
+
+const sendGAEvent = (event: string) => {
+  if (typeof window === "undefined") return;
+  if (typeof window.gtag !== "function") {
+    console.warn("gtag not defined");
+    return;
+  }
+
+  try {
+    window.gtag("event", event, {});
+  } catch (e) {
+    console.error(`Failed to send ${event} event`, e);
+  }
+};
+
 const PromoWidget = () => {
   const [promoVisible, setPromoVisible] = useState(false);
   const [dismissed, setDismissed] = useState(readDismissedFromStorage);
   const [copied, setCopied] = useState(false);
-  const [isExpired] = useState(() => Date.now() >= PROMO_HIDE_AFTER.getTime());
+
   const copyResetRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -60,14 +76,14 @@ const PromoWidget = () => {
   };
 
   const handleGetPromo = () => {
-    window.gtag("event", PROMO_CODE_DISPLAYED_EVENT, {});
+    sendGAEvent(PROMO_CODE_DISPLAYED_EVENT);
     setPromoVisible(true);
   };
 
   const handleCopy = async () => {
     try {
       if (navigator.clipboard?.writeText) {
-        window.gtag("event", PROMO_CODE_COPIED_EVENT, {});
+        sendGAEvent(PROMO_CODE_COPIED_EVENT);
         await navigator.clipboard.writeText(PROMO_CODE);
         triggerCopiedFeedback();
         return;
@@ -80,7 +96,7 @@ const PromoWidget = () => {
   };
 
   const handleDismiss = () => {
-    window.gtag("event", PROMO_DISMISSED_EVENT);
+    sendGAEvent(PROMO_DISMISSED_EVENT);
     setDismissed(true);
   };
 
@@ -108,6 +124,7 @@ const PromoWidget = () => {
             <a
               className="font-display text-2xl text-primary underline"
               target="_blank"
+              rel="noopener"
               href={PROMO_URL}
             >
               Fishjam
@@ -157,7 +174,7 @@ const PromoWidget = () => {
           <a
             href={PROMO_URL}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener"
             className="mt-1 text-center text-[0.75rem] font-semibold tracking-[0.1em] text-primary/70 underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
             Redeem at fishjam.swmansion.com
