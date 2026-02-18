@@ -6,6 +6,10 @@ const PROMO_URL = "https://fishjam.swmansion.com/?utm_source=deep-sea-stories";
 const DISMISS_STORAGE_KEY = "promo-widget-dismissed";
 const PROMO_HIDE_AFTER = new Date("2026-03-19T00:00:00Z");
 
+const PROMO_DISMISSED_EVENT = "promo_dismissed";
+const PROMO_CODE_DISPLAYED_EVENT = "promo_code_displayed";
+const PROMO_CODE_COPIED_EVENT = "promo_code_copied";
+
 const readDismissedFromStorage = () => {
   if (typeof window === "undefined") return false;
   return window.localStorage.getItem(DISMISS_STORAGE_KEY) === "true";
@@ -55,9 +59,15 @@ const PromoWidget = () => {
     triggerCopiedFeedback();
   };
 
+  const handleGetPromo = () => {
+    window.gtag("event", PROMO_CODE_DISPLAYED_EVENT, {});
+    setPromoVisible(true);
+  };
+
   const handleCopy = async () => {
     try {
       if (navigator.clipboard?.writeText) {
+        window.gtag("event", PROMO_CODE_COPIED_EVENT, {});
         await navigator.clipboard.writeText(PROMO_CODE);
         triggerCopiedFeedback();
         return;
@@ -70,6 +80,7 @@ const PromoWidget = () => {
   };
 
   const handleDismiss = () => {
+    window.gtag("event", PROMO_DISMISSED_EVENT);
     setDismissed(true);
   };
 
@@ -137,7 +148,7 @@ const PromoWidget = () => {
           ) : (
             <Button
               type="button"
-              onClick={() => setPromoVisible(true)}
+              onClick={handleGetPromo}
               className="h-11 w-full text-sm font-display"
             >
               Get a promo code
