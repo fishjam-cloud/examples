@@ -11,14 +11,12 @@ const PROMO_CODE_DISPLAYED_EVENT = 'promo_code_displayed';
 const PROMO_CODE_COPIED_EVENT = 'promo_code_copied';
 
 const readDismissedFromStorage = () => {
-	if (typeof window === 'undefined') return false;
 	return window.localStorage.getItem(DISMISS_STORAGE_KEY) === 'true';
 };
 
 const isExpired = Date.now() >= PROMO_HIDE_AFTER.getTime();
 
 const sendGAEvent = (event: string) => {
-	if (typeof window === 'undefined') return;
 	if (typeof window.gtag !== 'function') {
 		console.warn('gtag not defined');
 		return;
@@ -47,7 +45,6 @@ const PromoWidget = () => {
 	}, []);
 
 	useEffect(() => {
-		if (typeof window === 'undefined') return;
 		if (dismissed) {
 			window.localStorage.setItem(DISMISS_STORAGE_KEY, 'true');
 		}
@@ -62,7 +59,6 @@ const PromoWidget = () => {
 	};
 
 	const fallbackCopy = () => {
-		if (typeof document === 'undefined') return;
 		const textarea = document.createElement('textarea');
 		textarea.value = PROMO_CODE;
 		textarea.style.position = 'fixed';
@@ -73,6 +69,7 @@ const PromoWidget = () => {
 		document.execCommand('copy');
 		document.body.removeChild(textarea);
 		triggerCopiedFeedback();
+		sendGAEvent(PROMO_CODE_COPIED_EVENT);
 	};
 
 	const handleGetPromo = () => {
@@ -83,8 +80,8 @@ const PromoWidget = () => {
 	const handleCopy = async () => {
 		try {
 			if (navigator.clipboard?.writeText) {
-				sendGAEvent(PROMO_CODE_COPIED_EVENT);
 				await navigator.clipboard.writeText(PROMO_CODE);
+				sendGAEvent(PROMO_CODE_COPIED_EVENT);
 				triggerCopiedFeedback();
 				return;
 			}

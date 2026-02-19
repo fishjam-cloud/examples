@@ -31,7 +31,7 @@ createRoot(document.getElementById('root')!).render(
 								<Route path=":roomId" element={<RoomView />} />
 							</Routes>
 						</BrowserRouter>
-						<div className="absolute bottom-2 right-2 md:top-6 md:left-6 md:bottom-auto md:right-auto z-10">
+						<div className="absolute bottom-2 right-2 md:bottom-40 md:left-6 md:right-auto z-10">
 							<PromoWidget />
 						</div>
 					</Layout>
