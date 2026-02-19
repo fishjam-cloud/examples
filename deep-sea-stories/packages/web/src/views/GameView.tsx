@@ -53,6 +53,7 @@ const GameView: FC<GameViewProps> = ({ roomId }) => {
 				<div className="absolute right-2 top-2 md:right-6 md:top-6 z-10">
 					<PlayerCountIndicator count={playerCount} />
 				</div>
+
 				<PeerGrid
 					roomId={roomId}
 					localPeer={localPeer}
