@@ -1,0 +1,20 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      FISHJAM_ID: ${FISHJAM_ID}
+      FISHJAM_MANAGEMENT_TOKEN: ${FISHJAM_MANAGEMENT_TOKEN}
+      PORT: 8080
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
