@@ -9,10 +9,14 @@ import (
 	"conference-to-stream/foundry"
 	"conference-to-stream/handler"
 
+	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
 
 func main() {
+	// Load .env from parent directory (conference-to-stream/.env) when running locally
+	_ = godotenv.Load("../.env")
+
 	fishjamID := os.Getenv("FISHJAM_ID")
 	if fishjamID == "" {
 		log.Fatal("FISHJAM_ID is required")

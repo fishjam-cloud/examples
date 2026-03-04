@@ -15,7 +15,7 @@ export function JoinForm({ onJoined }: Props) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // initializeDevices({ enableVideo: true, enableAudio: true });
+    initializeDevices({ enableVideo: true, enableAudio: true });
   }, [initializeDevices]);
 
   async function handleSubmit(e: React.FormEvent) {
