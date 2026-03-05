@@ -1,0 +1,36 @@
+{
+  "name": "gemini-demo-backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/main.ts"
+    }
+  },
+  "types": "./src/main.ts",
+  "dependencies": {
+    "@fastify/cors": "^11.1.0",
+    "@fishjam-cloud/js-server-sdk": "^0.25.4",
+    "@google/genai": "^1.44.0",
+    "@trpc/server": "^11.6.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.1",
+    "pino-pretty": "^13.1.1",
+    "ws": "^8.18.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@tsconfig/node24": "^24.0.1",
+    "@types/node": "^24.5.2",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.2"
+  },
+  "scripts": {
+    "start": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "packageManager": "yarn@4.12.0"
+}
