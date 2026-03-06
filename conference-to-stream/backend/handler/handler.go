@@ -15,12 +15,16 @@ import (
 const whepOutputID = "whep_output"
 
 type RoomState struct {
-	RoomID        string
-	CompositionID string
-	CompositionURL string // base URL of the composition server (api_url)
-	InputIDs      map[string]string // input_id → peer_id
-	WhepURL       string
-	mu            sync.Mutex
+	RoomID             string
+	RoomName           string
+	CompositionID      string
+	CompositionURL     string            // base URL of the composition server (api_url)
+	InputIDs           map[string]string // input_id → peer_id
+	PeerIDs            map[string]struct{}
+	PeerNames          map[string]string // peer_id → display name
+	WhepURL            string
+	CompositionDeleted bool
+	mu                 sync.Mutex
 }
 
 type Handler struct {
@@ -29,8 +33,9 @@ type Handler struct {
 	compositionAPIURL string
 	managementToken   string
 
-	mu    sync.Mutex
-	rooms map[string]*RoomState // room_name → state
+	mu        sync.Mutex
+	rooms     map[string]*RoomState // room_name → state
+	roomsByID map[string]*RoomState // fishjam room_id → state
 }
 
 func New(fishjamClient *fishjam.Client, compositionClient *composition.Client, compositionAPIURL string) *Handler {
@@ -40,6 +45,7 @@ func New(fishjamClient *fishjam.Client, compositionClient *composition.Client, c
 		compositionAPIURL: compositionAPIURL,
 		managementToken:   fishjamClient.ManagementToken(),
 		rooms:             make(map[string]*RoomState),
+		roomsByID:         make(map[string]*RoomState),
 	}
 }
 
@@ -128,14 +134,18 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 
 	state := &RoomState{
 		RoomID:         roomID,
+		RoomName:       req.RoomName,
 		CompositionID:  compositionID,
 		CompositionURL: apiURL,
 		InputIDs:       make(map[string]string),
+		PeerIDs:        make(map[string]struct{}),
+		PeerNames:      make(map[string]string),
 		WhepURL:        whepURL,
 	}
 
 	h.mu.Lock()
 	h.rooms[req.RoomName] = state
+	h.roomsByID[roomID] = state
 	h.mu.Unlock()
 
 	// Start WS notifier for this room
@@ -146,12 +156,16 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			state.mu.Lock()
+			if state.CompositionDeleted {
+				state.mu.Unlock()
+				return
+			}
 			state.InputIDs[event.InputID] = event.PeerID
-			inputIDs := collectKeys(state.InputIDs)
+			inputs := collectInputEntries(state.InputIDs, state.PeerNames)
 			state.mu.Unlock()
 
-			log.Printf("track forwarding: room=%s peer=%s input=%s (total=%d)", event.RoomID, event.PeerID, event.InputID, len(inputIDs))
-			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whepOutputID, inputIDs); err != nil {
+			log.Printf("track forwarding: room=%s peer=%s input=%s (total=%d)", event.RoomID, event.PeerID, event.InputID, len(inputs))
+			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whepOutputID, inputs); err != nil {
 				log.Printf("update output: %v", err)
 			}
 		},
@@ -160,14 +174,65 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			state.mu.Lock()
+			if state.CompositionDeleted {
+				state.mu.Unlock()
+				return
+			}
 			delete(state.InputIDs, event.InputID)
-			inputIDs := collectKeys(state.InputIDs)
+			inputs := collectInputEntries(state.InputIDs, state.PeerNames)
 			state.mu.Unlock()
 
-			log.Printf("track forwarding removed: room=%s peer=%s input=%s (total=%d)", event.RoomID, event.PeerID, event.InputID, len(inputIDs))
-			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whepOutputID, inputIDs); err != nil {
+			log.Printf("track forwarding removed: room=%s peer=%s input=%s (total=%d)", event.RoomID, event.PeerID, event.InputID, len(inputs))
+			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whepOutputID, inputs); err != nil {
 				log.Printf("update output: %v", err)
 			}
+		},
+		OnPeerConnected: func(event fishjam.PeerEvent) {
+			if event.RoomID != roomID {
+				return
+			}
+			state.mu.Lock()
+			state.PeerIDs[event.PeerID] = struct{}{}
+			peersCount := len(state.PeerIDs)
+			state.mu.Unlock()
+			log.Printf("peer connected: room=%s peer=%s (active=%d)", event.RoomID, event.PeerID, peersCount)
+		},
+		OnPeerDisconnected: func(event fishjam.PeerEvent) {
+			if event.RoomID != roomID {
+				return
+			}
+			state.mu.Lock()
+			delete(state.PeerIDs, event.PeerID)
+			delete(state.PeerNames, event.PeerID)
+
+			shouldDelete := !state.CompositionDeleted && len(state.PeerIDs) == 0
+			compositionID := state.CompositionID
+			compositionURL := state.CompositionURL
+			roomName := state.RoomName
+			roomID := state.RoomID
+			state.mu.Unlock()
+
+			if !shouldDelete {
+				return
+			}
+
+			if err := h.compositionClient.DeleteComposition(compositionURL, compositionID); err != nil {
+				log.Printf("delete composition: room=%s composition=%s err=%v", roomID, compositionID, err)
+				return
+			}
+
+			state.mu.Lock()
+			state.CompositionDeleted = true
+			state.mu.Unlock()
+
+			h.mu.Lock()
+			delete(h.roomsByID, roomID)
+			if roomName != "" {
+				delete(h.rooms, roomName)
+			}
+			h.mu.Unlock()
+
+			log.Printf("deleted composition after last peer left: room=%s composition=%s", roomID, compositionID)
 		},
 	})
 	if err != nil {
@@ -197,12 +262,21 @@ func (h *Handler) CreatePeer(w http.ResponseWriter, r *http.Request) {
 		metadata["name"] = req.PeerName
 	}
 
-	peerToken, peerWebsocketURL, err := h.fishjamClient.CreatePeer(roomID, metadata)
+	peerID, peerToken, peerWebsocketURL, err := h.fishjamClient.CreatePeer(roomID, metadata)
 	if err != nil {
 		log.Printf("create peer: %v", err)
 		http.Error(w, "failed to create peer", http.StatusInternalServerError)
 		return
 	}
+
+	// Store peer name for composition overlays
+	h.mu.Lock()
+	if state, ok := h.roomsByID[roomID]; ok {
+		state.mu.Lock()
+		state.PeerNames[peerID] = req.PeerName
+		state.mu.Unlock()
+	}
+	h.mu.Unlock()
 
 	writeJSON(w, createPeerResponse{
 		PeerToken:        peerToken,
@@ -227,12 +301,13 @@ func roomIDFromPath(path string) string {
 	return ""
 }
 
-func collectKeys(m map[string]string) []string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
+func collectInputEntries(inputIDs, peerNames map[string]string) []composition.InputEntry {
+	entries := make([]composition.InputEntry, 0, len(inputIDs))
+	for inputID, peerID := range inputIDs {
+		name := peerNames[peerID]
+		entries = append(entries, composition.InputEntry{InputID: inputID, PeerName: name})
 	}
-	return keys
+	return entries
 }
 
 // Route registers routes on the given mux

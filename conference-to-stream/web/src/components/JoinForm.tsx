@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import { createPeer, createRoom } from "../api";
 
 type Props = {
-  onJoined: (whepUrl: string) => void;
+  initialRoomName?: string;
+  onJoined: (result: { whepUrl: string; roomName: string; peerName: string }) => void;
 };
 
-export function JoinForm({ onJoined }: Props) {
+export function JoinForm({ initialRoomName, onJoined }: Props) {
   const { joinRoom } = useConnection();
   const { initializeDevices } = useInitializeDevices();
-  const [roomName, setRoomName] = useState("");
+  const [roomName, setRoomName] = useState(initialRoomName ?? "");
   const [peerName, setPeerName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ export function JoinForm({ onJoined }: Props) {
       const { roomId, whepUrl } = await createRoom(roomName.trim());
       const { peerToken } = await createPeer(roomId, peerName.trim());
       await joinRoom({ peerToken, peerMetadata: { name: peerName.trim() } });
-      onJoined(whepUrl);
+      onJoined({ whepUrl, roomName: roomName.trim(), peerName: peerName.trim() });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -54,7 +55,7 @@ export function JoinForm({ onJoined }: Props) {
             placeholder="my-room"
             value={roomName}
             onChange={(e) => setRoomName(e.target.value)}
-            autoFocus
+            autoFocus={!initialRoomName}
           />
         </label>
 
@@ -66,6 +67,7 @@ export function JoinForm({ onJoined }: Props) {
             placeholder="Alice"
             value={peerName}
             onChange={(e) => setPeerName(e.target.value)}
+            autoFocus={!!initialRoomName}
           />
         </label>
 

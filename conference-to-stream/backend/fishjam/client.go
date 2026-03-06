@@ -65,10 +65,10 @@ func (c *Client) CreateRoom() (*api.Room, error) {
 	return &resp.JSON201.Data.Room, nil
 }
 
-func (c *Client) CreatePeer(roomID string, metadata map[string]string) (peerToken string, peerWebsocketURL string, err error) {
+func (c *Client) CreatePeer(roomID string, metadata map[string]string) (peerID, peerToken, peerWebsocketURL string, err error) {
 	cl, err := c.newAPI()
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 	meta := make(api.WebRTCMetadata, len(metadata))
 	for k, v := range metadata {
@@ -76,23 +76,23 @@ func (c *Client) CreatePeer(roomID string, metadata map[string]string) (peerToke
 	}
 	var opts api.PeerOptions
 	if err := opts.FromPeerOptionsWebRTC(api.PeerOptionsWebRTC{Metadata: &meta}); err != nil {
-		return "", "", fmt.Errorf("build peer options: %w", err)
+		return "", "", "", fmt.Errorf("build peer options: %w", err)
 	}
 	resp, err := cl.AddPeerWithResponse(context.Background(), roomID, api.PeerConfig{
 		Type:    api.Webrtc,
 		Options: opts,
 	})
 	if err != nil {
-		return "", "", fmt.Errorf("create peer: %w", err)
+		return "", "", "", fmt.Errorf("create peer: %w", err)
 	}
 	if resp.JSON201 == nil {
-		return "", "", fmt.Errorf("create peer: unexpected status %d", resp.StatusCode())
+		return "", "", "", fmt.Errorf("create peer: unexpected status %d", resp.StatusCode())
 	}
 	wsURL := ""
 	if resp.JSON201.Data.PeerWebsocketUrl != nil {
 		wsURL = *resp.JSON201.Data.PeerWebsocketUrl
 	}
-	return resp.JSON201.Data.Token, wsURL, nil
+	return resp.JSON201.Data.Peer.Id, resp.JSON201.Data.Token, wsURL, nil
 }
 
 func (c *Client) CreateTrackForwarding(roomID, compositionURL string) error {

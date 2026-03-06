@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -69,81 +70,6 @@ func (e AudioMixingStrategy) Valid() bool {
 	case SumClip:
 		return true
 	case SumScale:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for Component0Type.
-const (
-	Component0TypeInputStream Component0Type = "input_stream"
-)
-
-// Valid indicates whether the value is a known member of the Component0Type enum.
-func (e Component0Type) Valid() bool {
-	switch e {
-	case Component0TypeInputStream:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for Component1Type.
-const (
-	Component1TypeView Component1Type = "view"
-)
-
-// Valid indicates whether the value is a known member of the Component1Type enum.
-func (e Component1Type) Valid() bool {
-	switch e {
-	case Component1TypeView:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for Component2Type.
-const (
-	Component2TypeText Component2Type = "text"
-)
-
-// Valid indicates whether the value is a known member of the Component2Type enum.
-func (e Component2Type) Valid() bool {
-	switch e {
-	case Component2TypeText:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for Component3Type.
-const (
-	Component3TypeTiles Component3Type = "tiles"
-)
-
-// Valid indicates whether the value is a known member of the Component3Type enum.
-func (e Component3Type) Valid() bool {
-	switch e {
-	case Component3TypeTiles:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for Component4Type.
-const (
-	Component4TypeRescaler Component4Type = "rescaler"
-)
-
-// Valid indicates whether the value is a known member of the Component4Type enum.
-func (e Component4Type) Valid() bool {
-	switch e {
-	case Component4TypeRescaler:
 		return true
 	default:
 		return false
@@ -513,186 +439,6 @@ func (e PixelFormat) Valid() bool {
 	case Yuv422p:
 		return true
 	case Yuv444p:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterInput0Type.
-const (
-	RegisterInput0TypeRtpStream RegisterInput0Type = "rtp_stream"
-)
-
-// Valid indicates whether the value is a known member of the RegisterInput0Type enum.
-func (e RegisterInput0Type) Valid() bool {
-	switch e {
-	case RegisterInput0TypeRtpStream:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterInput1Type.
-const (
-	RtmpServer RegisterInput1Type = "rtmp_server"
-)
-
-// Valid indicates whether the value is a known member of the RegisterInput1Type enum.
-func (e RegisterInput1Type) Valid() bool {
-	switch e {
-	case RtmpServer:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterInput2Type.
-const (
-	RegisterInput2TypeMp4 RegisterInput2Type = "mp4"
-)
-
-// Valid indicates whether the value is a known member of the RegisterInput2Type enum.
-func (e RegisterInput2Type) Valid() bool {
-	switch e {
-	case RegisterInput2TypeMp4:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterInput3Type.
-const (
-	WhipServer RegisterInput3Type = "whip_server"
-)
-
-// Valid indicates whether the value is a known member of the RegisterInput3Type enum.
-func (e RegisterInput3Type) Valid() bool {
-	switch e {
-	case WhipServer:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterInput4Type.
-const (
-	WhepClient RegisterInput4Type = "whep_client"
-)
-
-// Valid indicates whether the value is a known member of the RegisterInput4Type enum.
-func (e RegisterInput4Type) Valid() bool {
-	switch e {
-	case WhepClient:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterInput5Type.
-const (
-	RegisterInput5TypeHls RegisterInput5Type = "hls"
-)
-
-// Valid indicates whether the value is a known member of the RegisterInput5Type enum.
-func (e RegisterInput5Type) Valid() bool {
-	switch e {
-	case RegisterInput5TypeHls:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterOutput0Type.
-const (
-	RegisterOutput0TypeRtpStream RegisterOutput0Type = "rtp_stream"
-)
-
-// Valid indicates whether the value is a known member of the RegisterOutput0Type enum.
-func (e RegisterOutput0Type) Valid() bool {
-	switch e {
-	case RegisterOutput0TypeRtpStream:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterOutput1Type.
-const (
-	RtmpClient RegisterOutput1Type = "rtmp_client"
-)
-
-// Valid indicates whether the value is a known member of the RegisterOutput1Type enum.
-func (e RegisterOutput1Type) Valid() bool {
-	switch e {
-	case RtmpClient:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterOutput2Type.
-const (
-	RegisterOutput2TypeMp4 RegisterOutput2Type = "mp4"
-)
-
-// Valid indicates whether the value is a known member of the RegisterOutput2Type enum.
-func (e RegisterOutput2Type) Valid() bool {
-	switch e {
-	case RegisterOutput2TypeMp4:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterOutput3Type.
-const (
-	WhipClient RegisterOutput3Type = "whip_client"
-)
-
-// Valid indicates whether the value is a known member of the RegisterOutput3Type enum.
-func (e RegisterOutput3Type) Valid() bool {
-	switch e {
-	case WhipClient:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterOutput4Type.
-const (
-	WhepServer RegisterOutput4Type = "whep_server"
-)
-
-// Valid indicates whether the value is a known member of the RegisterOutput4Type enum.
-func (e RegisterOutput4Type) Valid() bool {
-	switch e {
-	case WhepServer:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for RegisterOutput5Type.
-const (
-	RegisterOutput5TypeHls RegisterOutput5Type = "hls"
-)
-
-// Valid indicates whether the value is a known member of the RegisterOutput5Type enum.
-func (e RegisterOutput5Type) Valid() bool {
-	switch e {
-	case RegisterOutput5TypeHls:
 		return true
 	default:
 		return false
@@ -1430,243 +1176,6 @@ type Component struct {
 	union json.RawMessage
 }
 
-// Component0 defines model for .
-type Component0 struct {
-	Id      *ComponentId   `json:"id,omitempty"`
-	InputId InputId        `json:"input_id"`
-	Type    Component0Type `json:"type"`
-}
-
-// Component0Type defines model for Component.0.Type.
-type Component0Type string
-
-// Component1 defines model for .
-type Component1 struct {
-	BackgroundColor *RGBAColor `json:"background_color,omitempty"`
-	BorderColor     *RGBAColor `json:"border_color,omitempty"`
-
-	// BorderRadius (**default=`0.0`**) Radius of a rounded corner.
-	BorderRadius *float32 `json:"border_radius,omitempty"`
-
-	// BorderWidth (**default=`0.0`**) Border width.
-	BorderWidth *float32 `json:"border_width,omitempty"`
-
-	// Bottom Distance in pixels between the bottom edge of this component and the bottom edge of its
-	// parent (including a border). If this field is defined, this element will be absolutely
-	// positioned, instead of being laid out by its parent.
-	Bottom *float32 `json:"bottom,omitempty"`
-
-	// BoxShadow List of box shadows.
-	BoxShadow *[]BoxShadow `json:"box_shadow,omitempty"`
-
-	// Children List of component's children.
-	Children  *[]Component   `json:"children,omitempty"`
-	Direction *ViewDirection `json:"direction,omitempty"`
-
-	// Height Height of a component in pixels (without a border). Exact behavior might be different
-	// based on the parent component:
-	// - If the parent component is a layout, check sections "Absolute positioning" and "Static
-	//   positioning" of that component.
-	// - If the parent component is not a layout, then this field is required.
-	Height *float32     `json:"height,omitempty"`
-	Id     *ComponentId `json:"id,omitempty"`
-
-	// Left Distance in pixels between this component's left edge and its parent's left edge (including a border).
-	// If this field is defined, this element will be absolutely positioned, instead of being
-	// laid out by its parent.
-	Left     *float32  `json:"left,omitempty"`
-	Overflow *Overflow `json:"overflow,omitempty"`
-
-	// Padding (**default=`0.0`**) Padding for all sides of the component.
-	Padding *float32 `json:"padding,omitempty"`
-
-	// PaddingBottom (**default=`0.0`**) Padding on bottom side in pixels.
-	PaddingBottom *float32 `json:"padding_bottom,omitempty"`
-
-	// PaddingHorizontal (**default=`0.0`**) Padding for the left and right of the component.
-	PaddingHorizontal *float32 `json:"padding_horizontal,omitempty"`
-
-	// PaddingLeft (**default=`0.0`**) Padding on left side in pixels.
-	PaddingLeft *float32 `json:"padding_left,omitempty"`
-
-	// PaddingRight (**default=`0.0`**) Padding on right side in pixels.
-	PaddingRight *float32 `json:"padding_right,omitempty"`
-
-	// PaddingTop (**default=`0.0`**) Padding on top side in pixels.
-	PaddingTop *float32 `json:"padding_top,omitempty"`
-
-	// PaddingVertical (**default=`0.0`**) Padding for the top and bottom of the component.
-	PaddingVertical *float32 `json:"padding_vertical,omitempty"`
-
-	// Right Distance in pixels between this component's right edge and its parent's right edge.
-	// If this field is defined, this element will be absolutely positioned, instead of being
-	// laid out by its parent.
-	Right *float32 `json:"right,omitempty"`
-
-	// Rotation Rotation of a component in degrees. If this field is defined, this element will be
-	// absolutely positioned, instead of being laid out by its parent.
-	Rotation *float32 `json:"rotation,omitempty"`
-
-	// Top Distance in pixels between this component's top edge and its parent's top edge (including a border).
-	// If this field is defined, then the component will ignore a layout defined by its parent.
-	Top        *float32       `json:"top,omitempty"`
-	Transition *Transition    `json:"transition,omitempty"`
-	Type       Component1Type `json:"type"`
-
-	// Width Width of a component in pixels (without a border). Exact behavior might be different
-	// based on the parent component:
-	// - If the parent component is a layout, check sections "Absolute positioning" and "Static
-	//   positioning" of that component.
-	// - If the parent component is not a layout, then this field is required.
-	Width *float32 `json:"width,omitempty"`
-}
-
-// Component1Type defines model for Component.1.Type.
-type Component1Type string
-
-// Component2 defines model for .
-type Component2 struct {
-	Align           *HorizontalAlign `json:"align,omitempty"`
-	BackgroundColor *RGBAColor       `json:"background_color,omitempty"`
-	Color           *RGBAColor       `json:"color,omitempty"`
-
-	// FontFamily (**default=`"Verdana"`**) Font family. Provide [family-name](https://www.w3.org/TR/2018/REC-css-fonts-3-20180920/#family-name-value)
-	// for a specific font. "generic-family" values like e.g. "sans-serif" will not work.
-	FontFamily *string `json:"font_family,omitempty"`
-
-	// FontSize Font size in pixels.
-	FontSize float32 `json:"font_size"`
-
-	// Height Height of a texture that text will be rendered on. If not provided, the resulting texture
-	// will be sized based on the defined text but limited to `max_height` value.
-	// It's an error to provide `height` if `width` is not defined.
-	Height *float32     `json:"height,omitempty"`
-	Id     *ComponentId `json:"id,omitempty"`
-
-	// LineHeight Distance between lines in pixels. Defaults to the value of the `font_size` property.
-	LineHeight *float32 `json:"line_height,omitempty"`
-
-	// MaxHeight (**default=`4320`**) Maximal `height`. Limits the height of the texture that the text will be rendered on.
-	// Value is ignored if height is defined.
-	MaxHeight *float32 `json:"max_height,omitempty"`
-
-	// MaxWidth (**default=`7682`**) Maximal `width`. Limits the width of the texture that the text will be rendered on.
-	// Value is ignored if `width` is defined.
-	MaxWidth *float32   `json:"max_width,omitempty"`
-	Style    *TextStyle `json:"style,omitempty"`
-
-	// Text Text that will be rendered.
-	Text   string         `json:"text"`
-	Type   Component2Type `json:"type"`
-	Weight *TextWeight    `json:"weight,omitempty"`
-
-	// Width Width of a texture that text will be rendered on. If not provided, the resulting texture
-	// will be sized based on the defined text but limited to `max_width` value.
-	Width *float32      `json:"width,omitempty"`
-	Wrap  *TextWrapMode `json:"wrap,omitempty"`
-}
-
-// Component2Type defines model for Component.2.Type.
-type Component2Type string
-
-// Component3 defines model for .
-type Component3 struct {
-	BackgroundColor *RGBAColor `json:"background_color,omitempty"`
-
-	// Children List of component's children.
-	Children *[]Component `json:"children,omitempty"`
-
-	// Height Height of a component in pixels. Exact behavior might be different based on the parent
-	// component:
-	// - If the parent component is a layout, check sections "Absolute positioning" and "Static
-	//   positioning" of that component.
-	// - If the parent component is not a layout, then this field is required.
-	Height          *float32         `json:"height,omitempty"`
-	HorizontalAlign *HorizontalAlign `json:"horizontal_align,omitempty"`
-	Id              *ComponentId     `json:"id,omitempty"`
-
-	// Margin (**default=`0`**) Margin of each tile in pixels.
-	Margin *float32 `json:"margin,omitempty"`
-
-	// Padding (**default=`0`**) Padding on each tile in pixels.
-	Padding         *float32       `json:"padding,omitempty"`
-	TileAspectRatio *AspectRatio   `json:"tile_aspect_ratio,omitempty"`
-	Transition      *Transition    `json:"transition,omitempty"`
-	Type            Component3Type `json:"type"`
-	VerticalAlign   *VerticalAlign `json:"vertical_align,omitempty"`
-
-	// Width Width of a component in pixels. Exact behavior might be different based on the parent
-	// component:
-	// - If the parent component is a layout, check sections "Absolute positioning" and "Static
-	//   positioning" of that component.
-	// - If the parent component is not a layout, then this field is required.
-	Width *float32 `json:"width,omitempty"`
-}
-
-// Component3Type defines model for Component.3.Type.
-type Component3Type string
-
-// Component4 defines model for .
-type Component4 struct {
-	BorderColor *RGBAColor `json:"border_color,omitempty"`
-
-	// BorderRadius (**default=`0.0`**) Radius of a rounded corner.
-	BorderRadius *float32 `json:"border_radius,omitempty"`
-
-	// BorderWidth (**default=`0.0`**) Border width.
-	BorderWidth *float32 `json:"border_width,omitempty"`
-
-	// Bottom Distance in pixels between the bottom edge of this component and the bottom edge of its
-	// parent (including a border). If this field is defined, this element will be absolutely
-	// positioned, instead of being laid out by its parent.
-	Bottom *float32 `json:"bottom,omitempty"`
-
-	// BoxShadow List of box shadows.
-	BoxShadow *[]BoxShadow `json:"box_shadow,omitempty"`
-	Child     Component    `json:"child"`
-
-	// Height Height of a component in pixels (without a border). Exact behavior might be different
-	// based on the parent component:
-	// - If the parent component is a layout, check sections "Absolute positioning" and "Static
-	//   positioning" of that component.
-	// - If the parent component is not a layout, then this field is required.
-	Height          *float32         `json:"height,omitempty"`
-	HorizontalAlign *HorizontalAlign `json:"horizontal_align,omitempty"`
-	Id              *ComponentId     `json:"id,omitempty"`
-
-	// Left Distance in pixels between this component's left edge and its parent's left edge (including a border).
-	// If this field is defined, this element will be absolutely positioned, instead of being
-	// laid out by its parent.
-	Left *float32     `json:"left,omitempty"`
-	Mode *RescaleMode `json:"mode,omitempty"`
-
-	// Right Distance in pixels between this component's right edge and its parent's right edge.
-	// If this field is defined, this element will be absolutely positioned, instead of being
-	// laid out by its parent.
-	Right *float32 `json:"right,omitempty"`
-
-	// Rotation Rotation of a component in degrees. If this field is defined, this element will be
-	// absolutely positioned, instead of being laid out by its parent.
-	Rotation *float32 `json:"rotation,omitempty"`
-
-	// Top Distance in pixels between this component's top edge and its parent's top edge (including a border).
-	// If this field is defined, then the component will ignore a layout defined by its parent.
-	Top           *float32       `json:"top,omitempty"`
-	Transition    *Transition    `json:"transition,omitempty"`
-	Type          Component4Type `json:"type"`
-	VerticalAlign *VerticalAlign `json:"vertical_align,omitempty"`
-
-	// Width Width of a component in pixels (without a border). Exact behavior might be different
-	// based on the parent component:
-	// - If the parent component is a layout, check sections "Absolute positioning" and "Static
-	//   positioning" of that component.
-	// - If the parent component is not a layout, then this field is required.
-	Width *float32 `json:"width,omitempty"`
-}
-
-// Component4Type defines model for Component.4.Type.
-type Component4Type string
-
 // ComponentId defines model for ComponentId.
 type ComponentId = string
 
@@ -2146,233 +1655,10 @@ type RegisterInput struct {
 	union json.RawMessage
 }
 
-// RegisterInput0 defines model for .
-type RegisterInput0 struct {
-	Audio *InputRtpAudioOptions `json:"audio,omitempty"`
-
-	// OffsetMs Offset in milliseconds relative to the pipeline start (start request). If the offset is
-	// not defined then the stream will be synchronized based on the delivery time of the initial
-	// frames.
-	OffsetMs *float64        `json:"offset_ms,omitempty"`
-	Port     PortOrPortRange `json:"port"`
-
-	// Required (**default=`false`**) If input is required and the stream is not delivered
-	// on time, then Smelter will delay producing output frames.
-	Required          *bool                 `json:"required,omitempty"`
-	TransportProtocol *TransportProtocol    `json:"transport_protocol,omitempty"`
-	Type              RegisterInput0Type    `json:"type"`
-	Video             *InputRtpVideoOptions `json:"video,omitempty"`
-}
-
-// RegisterInput0Type defines model for RegisterInput.0.Type.
-type RegisterInput0Type string
-
-// RegisterInput1 defines model for .
-type RegisterInput1 struct {
-	// App The RTMP application name.
-	// This is the first path segment of the RTMP stream URL that Smelter listens on for incoming streams.
-	// Format: `rtmp://<ip_address>:<port>/<app>/<stream_key`
-	App string `json:"app"`
-
-	// OffsetMs Offset in milliseconds relative to the pipeline start (start request). If the offset is
-	// not defined then the stream will be synchronized based on the delivery time of the initial
-	// frames.
-	OffsetMs *float64 `json:"offset_ms,omitempty"`
-
-	// Required (**default=`false`**) If input is required and the stream is not delivered
-	// on time, then Smelter will delay producing output frames.
-	Required *bool `json:"required,omitempty"`
-
-	// StreamKey The RTMP stream key.
-	// This is the second path segment of the RTMP stream URL that Smelter listens on for incoming streams.
-	// Format: `rtmp://<ip_address>:<port>/<app>/<stream_key`
-	StreamKey string             `json:"stream_key"`
-	Type      RegisterInput1Type `json:"type"`
-}
-
-// RegisterInput1Type defines model for RegisterInput.1.Type.
-type RegisterInput1Type string
-
-// RegisterInput2 defines model for .
-type RegisterInput2 struct {
-	// Loop (**default=`false`**) If input should be played in the loop. <span class="badge badge--primary">Added in v0.4.0</span>
-	Loop *bool `json:"loop,omitempty"`
-
-	// OffsetMs Offset in milliseconds relative to the pipeline start (start request). If offset is
-	// not defined then stream is synchronized based on the first frames delivery time.
-	OffsetMs *float64 `json:"offset_ms,omitempty"`
-
-	// Required (**default=`false`**) If input is required and frames are not processed
-	// on time, then Smelter will delay producing output frames.
-	Required *bool              `json:"required,omitempty"`
-	Type     RegisterInput2Type `json:"type"`
-
-	// Url URL of the MP4 file.
-	Url *string `json:"url,omitempty"`
-}
-
-// RegisterInput2Type defines model for RegisterInput.2.Type.
-type RegisterInput2Type string
-
-// RegisterInput3 defines model for .
-type RegisterInput3 struct {
-	// BearerToken Token used for authentication in WHIP protocol. If not provided, the random value
-	// will be generated and returned in the response.
-	BearerToken *string `json:"bearer_token,omitempty"`
-
-	// EndpointOverride Internal use only.
-	// Overrides whip endpoint id which is used when referencing the input via whip server.
-	// If not provided, it defaults to input id.
-	EndpointOverride *string `json:"endpoint_override,omitempty"`
-
-	// OffsetMs Offset in milliseconds relative to the pipeline start (start request). If the offset is
-	// not defined then the stream will be synchronized based on the delivery time of the initial
-	// frames.
-	OffsetMs *float64 `json:"offset_ms,omitempty"`
-
-	// Required (**default=`false`**) If input is required and the stream is not delivered
-	// on time, then Smelter will delay producing output frames.
-	Required *bool                  `json:"required,omitempty"`
-	Type     RegisterInput3Type     `json:"type"`
-	Video    *InputWhipVideoOptions `json:"video,omitempty"`
-}
-
-// RegisterInput3Type defines model for RegisterInput.3.Type.
-type RegisterInput3Type string
-
-// RegisterInput4 defines model for .
-type RegisterInput4 struct {
-	// BearerToken Optional Bearer token for auth
-	BearerToken *string `json:"bearer_token,omitempty"`
-
-	// EndpointUrl WHEP server endpoint URL
-	EndpointUrl string `json:"endpoint_url"`
-
-	// OffsetMs Offset in milliseconds relative to the pipeline start (start request).
-	OffsetMs *float64 `json:"offset_ms,omitempty"`
-
-	// Required (**default=`false`**) If input is required and the stream is not delivered
-	// on time, then Smelter will delay producing output frames.
-	Required *bool                  `json:"required,omitempty"`
-	Type     RegisterInput4Type     `json:"type"`
-	Video    *InputWhepVideoOptions `json:"video,omitempty"`
-}
-
-// RegisterInput4Type defines model for RegisterInput.4.Type.
-type RegisterInput4Type string
-
-// RegisterInput5 defines model for .
-type RegisterInput5 struct {
-	// OffsetMs Offset in milliseconds relative to the pipeline start (start request). If the offset is
-	// not defined then the stream will be synchronized based on the delivery time of the initial
-	// frames.
-	OffsetMs *float64 `json:"offset_ms,omitempty"`
-
-	// Required (**default=`false`**) If input is required and the stream is not delivered
-	// on time, then Smelter will delay producing output frames.
-	Required *bool              `json:"required,omitempty"`
-	Type     RegisterInput5Type `json:"type"`
-
-	// Url URL to HLS playlist
-	Url string `json:"url"`
-}
-
-// RegisterInput5Type defines model for RegisterInput.5.Type.
-type RegisterInput5Type string
-
 // RegisterOutput defines model for RegisterOutput.
 type RegisterOutput struct {
 	union json.RawMessage
 }
-
-// RegisterOutput0 defines model for .
-type RegisterOutput0 struct {
-	Audio *OutputRtpAudioOptions `json:"audio,omitempty"`
-
-	// Ip IP address to which RTP packets should be sent. This field is only valid if `transport_protocol` field is set to `udp`.
-	Ip                *string                `json:"ip,omitempty"`
-	Port              PortOrPortRange        `json:"port"`
-	TransportProtocol *TransportProtocol     `json:"transport_protocol,omitempty"`
-	Type              RegisterOutput0Type    `json:"type"`
-	Video             *OutputRtpVideoOptions `json:"video,omitempty"`
-}
-
-// RegisterOutput0Type defines model for RegisterOutput.0.Type.
-type RegisterOutput0Type string
-
-// RegisterOutput1 defines model for .
-type RegisterOutput1 struct {
-	Audio *OutputRtmpClientAudioOptions `json:"audio,omitempty"`
-	Type  RegisterOutput1Type           `json:"type"`
-
-	// Url RTMP endpoint url.
-	Url   string                        `json:"url"`
-	Video *OutputRtmpClientVideoOptions `json:"video,omitempty"`
-}
-
-// RegisterOutput1Type defines model for RegisterOutput.1.Type.
-type RegisterOutput1Type string
-
-// RegisterOutput2 defines model for .
-type RegisterOutput2 struct {
-	Audio *OutputMp4AudioOptions `json:"audio,omitempty"`
-
-	// FfmpegOptions Raw FFmpeg muxer options. See [docs](https://ffmpeg.org/ffmpeg-formats.html) for more.
-	FfmpegOptions *map[string]string `json:"ffmpeg_options,omitempty"`
-
-	// Path Path to output MP4 file.
-	Path  string                 `json:"path"`
-	Type  RegisterOutput2Type    `json:"type"`
-	Video *OutputMp4VideoOptions `json:"video,omitempty"`
-}
-
-// RegisterOutput2Type defines model for RegisterOutput.2.Type.
-type RegisterOutput2Type string
-
-// RegisterOutput3 defines model for .
-type RegisterOutput3 struct {
-	Audio       *OutputWhipAudioOptions `json:"audio,omitempty"`
-	BearerToken *string                 `json:"bearer_token,omitempty"`
-
-	// EndpointUrl WHIP server endpoint
-	EndpointUrl string                  `json:"endpoint_url"`
-	Type        RegisterOutput3Type     `json:"type"`
-	Video       *OutputWhipVideoOptions `json:"video,omitempty"`
-}
-
-// RegisterOutput3Type defines model for RegisterOutput.3.Type.
-type RegisterOutput3Type string
-
-// RegisterOutput4 defines model for .
-type RegisterOutput4 struct {
-	Audio *OutputWhepAudioOptions `json:"audio,omitempty"`
-
-	// BearerToken Token used for authentication in WHEP protocol.
-	// If not provided, the bearer token is not required to establish the session.
-	BearerToken *string                 `json:"bearer_token,omitempty"`
-	Type        RegisterOutput4Type     `json:"type"`
-	Video       *OutputWhepVideoOptions `json:"video,omitempty"`
-}
-
-// RegisterOutput4Type defines model for RegisterOutput.4.Type.
-type RegisterOutput4Type string
-
-// RegisterOutput5 defines model for .
-type RegisterOutput5 struct {
-	Audio *OutputHlsAudioOptions `json:"audio,omitempty"`
-
-	// MaxPlaylistSize Number of segments kept in the playlist. When the limit is reached the oldest segment is removed.
-	// If not specified, no segments will removed.
-	MaxPlaylistSize *int `json:"max_playlist_size,omitempty"`
-
-	// Path Path to output HLS playlist.
-	Path  string                 `json:"path"`
-	Type  RegisterOutput5Type    `json:"type"`
-	Video *OutputHlsVideoOptions `json:"video,omitempty"`
-}
-
-// RegisterOutput5Type defines model for RegisterOutput.5.Type.
-type RegisterOutput5Type string
 
 // RescaleMode defines model for RescaleMode.
 type RescaleMode string
@@ -3292,134 +2578,208 @@ type UnregisterOutputJSONRequestBody = UnregisterOutput
 // UpdateOutputJSONRequestBody defines body for UpdateOutput for application/json ContentType.
 type UpdateOutputJSONRequestBody = UpdateOutputRequest
 
-// AsComponent0 returns the union data inside the Component as a Component0
-func (t Component) AsComponent0() (Component0, error) {
-	var body Component0
+// AsInputStream returns the union data inside the Component as a InputStream
+func (t Component) AsInputStream() (InputStream, error) {
+	var body InputStream
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromComponent0 overwrites any union data inside the Component as the provided Component0
-func (t *Component) FromComponent0(v Component0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeComponent0 performs a merge with any union data inside the Component, using the provided Component0
-func (t *Component) MergeComponent0(v Component0) error {
+// FromInputStream overwrites any union data inside the Component as the provided InputStream
+func (t *Component) FromInputStream(v InputStream) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"input_stream"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsComponent1 returns the union data inside the Component as a Component1
-func (t Component) AsComponent1() (Component1, error) {
-	var body Component1
+// MergeInputStream performs a merge with any union data inside the Component, using the provided InputStream
+func (t *Component) MergeInputStream(v InputStream) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"input_stream"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsView returns the union data inside the Component as a View
+func (t Component) AsView() (View, error) {
+	var body View
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromComponent1 overwrites any union data inside the Component as the provided Component1
-func (t *Component) FromComponent1(v Component1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeComponent1 performs a merge with any union data inside the Component, using the provided Component1
-func (t *Component) MergeComponent1(v Component1) error {
+// FromView overwrites any union data inside the Component as the provided View
+func (t *Component) FromView(v View) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"view"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsComponent2 returns the union data inside the Component as a Component2
-func (t Component) AsComponent2() (Component2, error) {
-	var body Component2
+// MergeView performs a merge with any union data inside the Component, using the provided View
+func (t *Component) MergeView(v View) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"view"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsText returns the union data inside the Component as a Text
+func (t Component) AsText() (Text, error) {
+	var body Text
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromComponent2 overwrites any union data inside the Component as the provided Component2
-func (t *Component) FromComponent2(v Component2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeComponent2 performs a merge with any union data inside the Component, using the provided Component2
-func (t *Component) MergeComponent2(v Component2) error {
+// FromText overwrites any union data inside the Component as the provided Text
+func (t *Component) FromText(v Text) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"text"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsComponent3 returns the union data inside the Component as a Component3
-func (t Component) AsComponent3() (Component3, error) {
-	var body Component3
+// MergeText performs a merge with any union data inside the Component, using the provided Text
+func (t *Component) MergeText(v Text) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"text"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsTiles returns the union data inside the Component as a Tiles
+func (t Component) AsTiles() (Tiles, error) {
+	var body Tiles
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromComponent3 overwrites any union data inside the Component as the provided Component3
-func (t *Component) FromComponent3(v Component3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeComponent3 performs a merge with any union data inside the Component, using the provided Component3
-func (t *Component) MergeComponent3(v Component3) error {
+// FromTiles overwrites any union data inside the Component as the provided Tiles
+func (t *Component) FromTiles(v Tiles) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"tiles"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsComponent4 returns the union data inside the Component as a Component4
-func (t Component) AsComponent4() (Component4, error) {
-	var body Component4
+// MergeTiles performs a merge with any union data inside the Component, using the provided Tiles
+func (t *Component) MergeTiles(v Tiles) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"tiles"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsRescaler returns the union data inside the Component as a Rescaler
+func (t Component) AsRescaler() (Rescaler, error) {
+	var body Rescaler
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromComponent4 overwrites any union data inside the Component as the provided Component4
-func (t *Component) FromComponent4(v Component4) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeComponent4 performs a merge with any union data inside the Component, using the provided Component4
-func (t *Component) MergeComponent4(v Component4) error {
+// FromRescaler overwrites any union data inside the Component as the provided Rescaler
+func (t *Component) FromRescaler(v Rescaler) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"rescaler"}`))
 	t.union = merged
 	return err
+
+}
+
+// MergeRescaler performs a merge with any union data inside the Component, using the provided Rescaler
+func (t *Component) MergeRescaler(v Rescaler) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"rescaler"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+func (t Component) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t Component) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "input_stream":
+		return t.AsInputStream()
+	case "rescaler":
+		return t.AsRescaler()
+	case "text":
+		return t.AsText()
+	case "tiles":
+		return t.AsTiles()
+	case "view":
+		return t.AsView()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
 }
 
 func (t Component) MarshalJSON() ([]byte, error) {
@@ -3980,160 +3340,245 @@ func (t *PortOrPortRange) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsRegisterInput0 returns the union data inside the RegisterInput as a RegisterInput0
-func (t RegisterInput) AsRegisterInput0() (RegisterInput0, error) {
-	var body RegisterInput0
+// AsRtpInput returns the union data inside the RegisterInput as a RtpInput
+func (t RegisterInput) AsRtpInput() (RtpInput, error) {
+	var body RtpInput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterInput0 overwrites any union data inside the RegisterInput as the provided RegisterInput0
-func (t *RegisterInput) FromRegisterInput0(v RegisterInput0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterInput0 performs a merge with any union data inside the RegisterInput, using the provided RegisterInput0
-func (t *RegisterInput) MergeRegisterInput0(v RegisterInput0) error {
+// FromRtpInput overwrites any union data inside the RegisterInput as the provided RtpInput
+func (t *RegisterInput) FromRtpInput(v RtpInput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"rtp_stream"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterInput1 returns the union data inside the RegisterInput as a RegisterInput1
-func (t RegisterInput) AsRegisterInput1() (RegisterInput1, error) {
-	var body RegisterInput1
+// MergeRtpInput performs a merge with any union data inside the RegisterInput, using the provided RtpInput
+func (t *RegisterInput) MergeRtpInput(v RtpInput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"rtp_stream"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsRtmpInput returns the union data inside the RegisterInput as a RtmpInput
+func (t RegisterInput) AsRtmpInput() (RtmpInput, error) {
+	var body RtmpInput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterInput1 overwrites any union data inside the RegisterInput as the provided RegisterInput1
-func (t *RegisterInput) FromRegisterInput1(v RegisterInput1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterInput1 performs a merge with any union data inside the RegisterInput, using the provided RegisterInput1
-func (t *RegisterInput) MergeRegisterInput1(v RegisterInput1) error {
+// FromRtmpInput overwrites any union data inside the RegisterInput as the provided RtmpInput
+func (t *RegisterInput) FromRtmpInput(v RtmpInput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"rtmp_server"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterInput2 returns the union data inside the RegisterInput as a RegisterInput2
-func (t RegisterInput) AsRegisterInput2() (RegisterInput2, error) {
-	var body RegisterInput2
+// MergeRtmpInput performs a merge with any union data inside the RegisterInput, using the provided RtmpInput
+func (t *RegisterInput) MergeRtmpInput(v RtmpInput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"rtmp_server"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsMp4Input returns the union data inside the RegisterInput as a Mp4Input
+func (t RegisterInput) AsMp4Input() (Mp4Input, error) {
+	var body Mp4Input
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterInput2 overwrites any union data inside the RegisterInput as the provided RegisterInput2
-func (t *RegisterInput) FromRegisterInput2(v RegisterInput2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterInput2 performs a merge with any union data inside the RegisterInput, using the provided RegisterInput2
-func (t *RegisterInput) MergeRegisterInput2(v RegisterInput2) error {
+// FromMp4Input overwrites any union data inside the RegisterInput as the provided Mp4Input
+func (t *RegisterInput) FromMp4Input(v Mp4Input) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"mp4"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterInput3 returns the union data inside the RegisterInput as a RegisterInput3
-func (t RegisterInput) AsRegisterInput3() (RegisterInput3, error) {
-	var body RegisterInput3
+// MergeMp4Input performs a merge with any union data inside the RegisterInput, using the provided Mp4Input
+func (t *RegisterInput) MergeMp4Input(v Mp4Input) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"mp4"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsWhipInput returns the union data inside the RegisterInput as a WhipInput
+func (t RegisterInput) AsWhipInput() (WhipInput, error) {
+	var body WhipInput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterInput3 overwrites any union data inside the RegisterInput as the provided RegisterInput3
-func (t *RegisterInput) FromRegisterInput3(v RegisterInput3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterInput3 performs a merge with any union data inside the RegisterInput, using the provided RegisterInput3
-func (t *RegisterInput) MergeRegisterInput3(v RegisterInput3) error {
+// FromWhipInput overwrites any union data inside the RegisterInput as the provided WhipInput
+func (t *RegisterInput) FromWhipInput(v WhipInput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"whip_server"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterInput4 returns the union data inside the RegisterInput as a RegisterInput4
-func (t RegisterInput) AsRegisterInput4() (RegisterInput4, error) {
-	var body RegisterInput4
+// MergeWhipInput performs a merge with any union data inside the RegisterInput, using the provided WhipInput
+func (t *RegisterInput) MergeWhipInput(v WhipInput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"whip_server"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsWhepInput returns the union data inside the RegisterInput as a WhepInput
+func (t RegisterInput) AsWhepInput() (WhepInput, error) {
+	var body WhepInput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterInput4 overwrites any union data inside the RegisterInput as the provided RegisterInput4
-func (t *RegisterInput) FromRegisterInput4(v RegisterInput4) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterInput4 performs a merge with any union data inside the RegisterInput, using the provided RegisterInput4
-func (t *RegisterInput) MergeRegisterInput4(v RegisterInput4) error {
+// FromWhepInput overwrites any union data inside the RegisterInput as the provided WhepInput
+func (t *RegisterInput) FromWhepInput(v WhepInput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"whep_client"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterInput5 returns the union data inside the RegisterInput as a RegisterInput5
-func (t RegisterInput) AsRegisterInput5() (RegisterInput5, error) {
-	var body RegisterInput5
+// MergeWhepInput performs a merge with any union data inside the RegisterInput, using the provided WhepInput
+func (t *RegisterInput) MergeWhepInput(v WhepInput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"whep_client"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsHlsInput returns the union data inside the RegisterInput as a HlsInput
+func (t RegisterInput) AsHlsInput() (HlsInput, error) {
+	var body HlsInput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterInput5 overwrites any union data inside the RegisterInput as the provided RegisterInput5
-func (t *RegisterInput) FromRegisterInput5(v RegisterInput5) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterInput5 performs a merge with any union data inside the RegisterInput, using the provided RegisterInput5
-func (t *RegisterInput) MergeRegisterInput5(v RegisterInput5) error {
+// FromHlsInput overwrites any union data inside the RegisterInput as the provided HlsInput
+func (t *RegisterInput) FromHlsInput(v HlsInput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"hls"}`))
 	t.union = merged
 	return err
+
+}
+
+// MergeHlsInput performs a merge with any union data inside the RegisterInput, using the provided HlsInput
+func (t *RegisterInput) MergeHlsInput(v HlsInput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"hls"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+func (t RegisterInput) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t RegisterInput) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "hls":
+		return t.AsHlsInput()
+	case "mp4":
+		return t.AsMp4Input()
+	case "rtmp_server":
+		return t.AsRtmpInput()
+	case "rtp_stream":
+		return t.AsRtpInput()
+	case "whep_client":
+		return t.AsWhepInput()
+	case "whip_server":
+		return t.AsWhipInput()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
 }
 
 func (t RegisterInput) MarshalJSON() ([]byte, error) {
@@ -4146,160 +3591,245 @@ func (t *RegisterInput) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsRegisterOutput0 returns the union data inside the RegisterOutput as a RegisterOutput0
-func (t RegisterOutput) AsRegisterOutput0() (RegisterOutput0, error) {
-	var body RegisterOutput0
+// AsRtpOutput returns the union data inside the RegisterOutput as a RtpOutput
+func (t RegisterOutput) AsRtpOutput() (RtpOutput, error) {
+	var body RtpOutput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterOutput0 overwrites any union data inside the RegisterOutput as the provided RegisterOutput0
-func (t *RegisterOutput) FromRegisterOutput0(v RegisterOutput0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterOutput0 performs a merge with any union data inside the RegisterOutput, using the provided RegisterOutput0
-func (t *RegisterOutput) MergeRegisterOutput0(v RegisterOutput0) error {
+// FromRtpOutput overwrites any union data inside the RegisterOutput as the provided RtpOutput
+func (t *RegisterOutput) FromRtpOutput(v RtpOutput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"rtp_stream"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterOutput1 returns the union data inside the RegisterOutput as a RegisterOutput1
-func (t RegisterOutput) AsRegisterOutput1() (RegisterOutput1, error) {
-	var body RegisterOutput1
+// MergeRtpOutput performs a merge with any union data inside the RegisterOutput, using the provided RtpOutput
+func (t *RegisterOutput) MergeRtpOutput(v RtpOutput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"rtp_stream"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsRtmpOutput returns the union data inside the RegisterOutput as a RtmpOutput
+func (t RegisterOutput) AsRtmpOutput() (RtmpOutput, error) {
+	var body RtmpOutput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterOutput1 overwrites any union data inside the RegisterOutput as the provided RegisterOutput1
-func (t *RegisterOutput) FromRegisterOutput1(v RegisterOutput1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterOutput1 performs a merge with any union data inside the RegisterOutput, using the provided RegisterOutput1
-func (t *RegisterOutput) MergeRegisterOutput1(v RegisterOutput1) error {
+// FromRtmpOutput overwrites any union data inside the RegisterOutput as the provided RtmpOutput
+func (t *RegisterOutput) FromRtmpOutput(v RtmpOutput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"rtmp_client"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterOutput2 returns the union data inside the RegisterOutput as a RegisterOutput2
-func (t RegisterOutput) AsRegisterOutput2() (RegisterOutput2, error) {
-	var body RegisterOutput2
+// MergeRtmpOutput performs a merge with any union data inside the RegisterOutput, using the provided RtmpOutput
+func (t *RegisterOutput) MergeRtmpOutput(v RtmpOutput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"rtmp_client"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsMp4Output returns the union data inside the RegisterOutput as a Mp4Output
+func (t RegisterOutput) AsMp4Output() (Mp4Output, error) {
+	var body Mp4Output
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterOutput2 overwrites any union data inside the RegisterOutput as the provided RegisterOutput2
-func (t *RegisterOutput) FromRegisterOutput2(v RegisterOutput2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterOutput2 performs a merge with any union data inside the RegisterOutput, using the provided RegisterOutput2
-func (t *RegisterOutput) MergeRegisterOutput2(v RegisterOutput2) error {
+// FromMp4Output overwrites any union data inside the RegisterOutput as the provided Mp4Output
+func (t *RegisterOutput) FromMp4Output(v Mp4Output) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"mp4"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterOutput3 returns the union data inside the RegisterOutput as a RegisterOutput3
-func (t RegisterOutput) AsRegisterOutput3() (RegisterOutput3, error) {
-	var body RegisterOutput3
+// MergeMp4Output performs a merge with any union data inside the RegisterOutput, using the provided Mp4Output
+func (t *RegisterOutput) MergeMp4Output(v Mp4Output) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"mp4"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsWhipOutput returns the union data inside the RegisterOutput as a WhipOutput
+func (t RegisterOutput) AsWhipOutput() (WhipOutput, error) {
+	var body WhipOutput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterOutput3 overwrites any union data inside the RegisterOutput as the provided RegisterOutput3
-func (t *RegisterOutput) FromRegisterOutput3(v RegisterOutput3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterOutput3 performs a merge with any union data inside the RegisterOutput, using the provided RegisterOutput3
-func (t *RegisterOutput) MergeRegisterOutput3(v RegisterOutput3) error {
+// FromWhipOutput overwrites any union data inside the RegisterOutput as the provided WhipOutput
+func (t *RegisterOutput) FromWhipOutput(v WhipOutput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"whip_client"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterOutput4 returns the union data inside the RegisterOutput as a RegisterOutput4
-func (t RegisterOutput) AsRegisterOutput4() (RegisterOutput4, error) {
-	var body RegisterOutput4
+// MergeWhipOutput performs a merge with any union data inside the RegisterOutput, using the provided WhipOutput
+func (t *RegisterOutput) MergeWhipOutput(v WhipOutput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"whip_client"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsWhepOutput returns the union data inside the RegisterOutput as a WhepOutput
+func (t RegisterOutput) AsWhepOutput() (WhepOutput, error) {
+	var body WhepOutput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterOutput4 overwrites any union data inside the RegisterOutput as the provided RegisterOutput4
-func (t *RegisterOutput) FromRegisterOutput4(v RegisterOutput4) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterOutput4 performs a merge with any union data inside the RegisterOutput, using the provided RegisterOutput4
-func (t *RegisterOutput) MergeRegisterOutput4(v RegisterOutput4) error {
+// FromWhepOutput overwrites any union data inside the RegisterOutput as the provided WhepOutput
+func (t *RegisterOutput) FromWhepOutput(v WhepOutput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"whep_server"}`))
 	t.union = merged
 	return err
+
 }
 
-// AsRegisterOutput5 returns the union data inside the RegisterOutput as a RegisterOutput5
-func (t RegisterOutput) AsRegisterOutput5() (RegisterOutput5, error) {
-	var body RegisterOutput5
+// MergeWhepOutput performs a merge with any union data inside the RegisterOutput, using the provided WhepOutput
+func (t *RegisterOutput) MergeWhepOutput(v WhepOutput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"whep_server"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+// AsHlsOutput returns the union data inside the RegisterOutput as a HlsOutput
+func (t RegisterOutput) AsHlsOutput() (HlsOutput, error) {
+	var body HlsOutput
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromRegisterOutput5 overwrites any union data inside the RegisterOutput as the provided RegisterOutput5
-func (t *RegisterOutput) FromRegisterOutput5(v RegisterOutput5) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeRegisterOutput5 performs a merge with any union data inside the RegisterOutput, using the provided RegisterOutput5
-func (t *RegisterOutput) MergeRegisterOutput5(v RegisterOutput5) error {
+// FromHlsOutput overwrites any union data inside the RegisterOutput as the provided HlsOutput
+func (t *RegisterOutput) FromHlsOutput(v HlsOutput) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
+	merged, err := runtime.JSONMerge(b, []byte(`{"type":"hls"}`))
 	t.union = merged
 	return err
+
+}
+
+// MergeHlsOutput performs a merge with any union data inside the RegisterOutput, using the provided HlsOutput
+func (t *RegisterOutput) MergeHlsOutput(v HlsOutput) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	discriminated, err := runtime.JSONMerge(b, []byte(`{"type":"hls"}`))
+	if err != nil {
+		return err
+	}
+	merged, err := runtime.JSONMerge(t.union, discriminated)
+	t.union = merged
+	return err
+
+}
+
+func (t RegisterOutput) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t RegisterOutput) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "hls":
+		return t.AsHlsOutput()
+	case "mp4":
+		return t.AsMp4Output()
+	case "rtmp_client":
+		return t.AsRtmpOutput()
+	case "rtp_stream":
+		return t.AsRtpOutput()
+	case "whep_server":
+		return t.AsWhepOutput()
+	case "whip_client":
+		return t.AsWhipOutput()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
 }
 
 func (t RegisterOutput) MarshalJSON() ([]byte, error) {

@@ -8,6 +8,12 @@ import (
 	api "conference-to-stream/composition/generated"
 )
 
+// InputEntry associates a composition input ID with a display name.
+type InputEntry struct {
+	InputID  string
+	PeerName string
+}
+
 // Client wraps the generated composition API client.
 type Client struct {
 	httpClient *http.Client
@@ -56,6 +62,22 @@ func (c *Client) Start(apiURL, compositionID string) error {
 	return nil
 }
 
+// DeleteComposition deletes a composition by ID.
+func (c *Client) DeleteComposition(apiURL, compositionID string) error {
+	cl, err := c.newAPI(apiURL)
+	if err != nil {
+		return err
+	}
+	resp, err := cl.DeleteCompositionWithResponse(context.Background(), compositionID)
+	if err != nil {
+		return fmt.Errorf("delete composition: %w", err)
+	}
+	if resp.StatusCode() < 200 || resp.StatusCode() >= 300 {
+		return fmt.Errorf("delete composition: unexpected status %d: %s", resp.StatusCode(), string(resp.Body))
+	}
+	return nil
+}
+
 // RegisterWhepOutput registers a WHEP server output on the composition.
 func (c *Client) RegisterWhepOutput(apiURL, compositionID, outputID string) error {
 	cl, err := c.newAPI(apiURL)
@@ -64,13 +86,13 @@ func (c *Client) RegisterWhepOutput(apiURL, compositionID, outputID string) erro
 	}
 
 	var videoEncoder api.WhepVideoEncoderOptions
-	if err := videoEncoder.FromWhepVideoEncoderOptions0(api.WhepVideoEncoderOptions0{
-		Type: api.WhepVideoEncoderOptions0TypeFfmpegH264,
+	if err := videoEncoder.FromWhepVideoEncoderOptions3(api.WhepVideoEncoderOptions3{
+		Type: api.WhepVideoEncoderOptions3TypeVulkanH264,
 	}); err != nil {
 		return fmt.Errorf("build video encoder: %w", err)
 	}
 	var initialVideoRoot api.Component
-	if err := initialVideoRoot.FromComponent1(api.Component1{Type: api.Component1TypeView}); err != nil {
+	if err := initialVideoRoot.FromView(api.View{}); err != nil {
 		return fmt.Errorf("build initial video root: %w", err)
 	}
 
@@ -83,8 +105,7 @@ func (c *Client) RegisterWhepOutput(apiURL, compositionID, outputID string) erro
 	stereo := api.Stereo
 
 	var body api.RegisterOutput
-	if err := body.FromRegisterOutput4(api.RegisterOutput4{
-		Type: api.WhepServer,
+	if err := body.FromWhepOutput(api.WhepOutput{
 		Video: &api.OutputWhepVideoOptions{
 			Encoder:    videoEncoder,
 			Resolution: api.Resolution{Width: 1280, Height: 720},
@@ -108,38 +129,34 @@ func (c *Client) RegisterWhepOutput(apiURL, compositionID, outputID string) erro
 	return nil
 }
 
-// UpdateOutput updates a composition output with the given set of input stream IDs.
-func (c *Client) UpdateOutput(apiURL, compositionID, outputID string, inputIDs []string) error {
+// UpdateOutput updates a composition output with the given set of inputs.
+func (c *Client) UpdateOutput(apiURL, compositionID, outputID string, inputs []InputEntry) error {
 	cl, err := c.newAPI(apiURL)
 	if err != nil {
 		return err
 	}
 
 	var videoRoot api.Component
-	audioInputs := make([]api.AudioSceneInput, 0, len(inputIDs))
+	audioInputs := make([]api.AudioSceneInput, 0, len(inputs))
 
-	if len(inputIDs) == 0 {
-		if err := videoRoot.FromComponent1(api.Component1{Type: api.Component1TypeView}); err != nil {
+	if len(inputs) == 0 {
+		if err := videoRoot.FromView(api.View{}); err != nil {
 			return fmt.Errorf("build video root: %w", err)
 		}
 	} else {
-		children := make([]api.Component, 0, len(inputIDs))
-		for _, id := range inputIDs {
-			var child api.Component
-			if err := child.FromComponent0(api.Component0{
-				InputId: id,
-				Type:    api.Component0TypeInputStream,
-			}); err != nil {
-				return fmt.Errorf("build child component: %w", err)
+		tileChildren := make([]api.Component, 0, len(inputs))
+		for _, entry := range inputs {
+			tile, err := buildParticipantTile(entry)
+			if err != nil {
+				return err
 			}
-			children = append(children, child)
-			audioInputs = append(audioInputs, api.AudioSceneInput{InputId: id})
+			tileChildren = append(tileChildren, tile)
+			audioInputs = append(audioInputs, api.AudioSceneInput{InputId: entry.InputID})
 		}
 		bgColor := api.RGBAColor("#000000FF")
 		ratio := api.AspectRatio("16:9")
-		if err := videoRoot.FromComponent3(api.Component3{
-			Type:            api.Component3TypeTiles,
-			Children:        &children,
+		if err := videoRoot.FromTiles(api.Tiles{
+			Children:        &tileChildren,
 			BackgroundColor: &bgColor,
 			TileAspectRatio: &ratio,
 		}); err != nil {
@@ -159,6 +176,85 @@ func (c *Client) UpdateOutput(apiURL, compositionID, outputID string, inputIDs [
 		return fmt.Errorf("update output: unexpected status %d: %s", resp.StatusCode(), string(resp.Body))
 	}
 	return nil
+}
+
+// buildParticipantTile creates a Rescaler containing a View with the input stream
+// and an optional name label overlay at the bottom.
+func buildParticipantTile(entry InputEntry) (api.Component, error) {
+	// InputStream
+	var inputStream api.Component
+	if err := inputStream.FromInputStream(api.InputStream{
+		InputId: entry.InputID,
+	}); err != nil {
+		return api.Component{}, fmt.Errorf("build input stream: %w", err)
+	}
+
+	viewChildren := []api.Component{inputStream}
+
+	// Name label overlay (only if name is non-empty)
+	if entry.PeerName != "" {
+		var textComp api.Component
+		fontSize := float32(24)
+		textColor := api.RGBAColor("#FFFFFFFF")
+		weight := api.TextWeightBold
+		align := api.HorizontalAlignCenter
+		labelWidth := float32(1280)
+		if err := textComp.FromText(api.Text{
+			Text:     entry.PeerName,
+			FontSize: fontSize,
+			Color:    &textColor,
+			Weight:   &weight,
+			Align:    &align,
+			Width:    &labelWidth,
+		}); err != nil {
+			return api.Component{}, fmt.Errorf("build text component: %w", err)
+		}
+
+		labelChildren := []api.Component{textComp}
+		labelBg := api.RGBAColor("#00000088")
+		bottom := float32(0)
+		left := float32(0)
+		labelHeight := float32(40)
+		var labelView api.Component
+		if err := labelView.FromView(api.View{
+			Children:        &labelChildren,
+			Bottom:          &bottom,
+			Left:            &left,
+			Width:           &labelWidth,
+			Height:          &labelHeight,
+			BackgroundColor: &labelBg,
+		}); err != nil {
+			return api.Component{}, fmt.Errorf("build label view: %w", err)
+		}
+
+		viewChildren = append(viewChildren, labelView)
+	}
+
+	// Outer View wrapping input + label
+	overflow := api.OverflowHidden
+	viewWidth := float32(1280)
+	viewHeight := float32(720)
+	var outerView api.Component
+	if err := outerView.FromView(api.View{
+		Children: &viewChildren,
+		Width:    &viewWidth,
+		Height:   &viewHeight,
+		Overflow: &overflow,
+	}); err != nil {
+		return api.Component{}, fmt.Errorf("build outer view: %w", err)
+	}
+
+	// Rescaler
+	mode := api.RescaleModeFit
+	var rescaler api.Component
+	if err := rescaler.FromRescaler(api.Rescaler{
+		Child: outerView,
+		Mode:  &mode,
+	}); err != nil {
+		return api.Component{}, fmt.Errorf("build rescaler: %w", err)
+	}
+
+	return rescaler, nil
 }
 
 // WhepURL returns the WHEP playback URL for the given output.

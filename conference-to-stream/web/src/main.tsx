@@ -6,8 +6,6 @@ import "./index.css";
 
 const fishjamId = import.meta.env.FISHJAM_ID as string;
 
-console.log("fishjamId", fishjamId);
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <FishjamProvider fishjamId={fishjamId}>

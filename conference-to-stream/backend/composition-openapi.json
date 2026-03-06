@@ -1240,111 +1240,31 @@
       "Component": {
         "oneOf": [
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InputStream"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "input_stream"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/InputStream"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/View"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "view"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/View"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Text"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "text"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/Text"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Tiles"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "tiles"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/Tiles"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Rescaler"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "rescaler"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/Rescaler"
           }
-        ]
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "input_stream": "#/components/schemas/InputStream",
+            "rescaler": "#/components/schemas/Rescaler",
+            "text": "#/components/schemas/Text",
+            "tiles": "#/components/schemas/Tiles",
+            "view": "#/components/schemas/View"
+          }
+        }
       },
       "ComponentId": {
         "type": "string"
@@ -2776,262 +2696,68 @@
       "RegisterInput": {
         "oneOf": [
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RtpInput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "rtp_stream"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/RtpInput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RtmpInput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "rtmp_server"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/RtmpInput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Mp4Input"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "mp4"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/Mp4Input"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WhipInput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "whip_server"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/WhipInput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WhepInput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "whep_client"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/WhepInput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HlsInput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "hls"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/HlsInput"
           }
-        ]
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "hls": "#/components/schemas/HlsInput",
+            "mp4": "#/components/schemas/Mp4Input",
+            "rtmp_server": "#/components/schemas/RtmpInput",
+            "rtp_stream": "#/components/schemas/RtpInput",
+            "whep_client": "#/components/schemas/WhepInput",
+            "whip_server": "#/components/schemas/WhipInput"
+          }
+        }
       },
       "RegisterOutput": {
         "oneOf": [
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RtpOutput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "rtp_stream"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/RtpOutput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RtmpOutput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "rtmp_client"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/RtmpOutput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Mp4Output"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "mp4"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/Mp4Output"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WhipOutput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "whip_client"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/WhipOutput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WhepOutput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "whep_server"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/WhepOutput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HlsOutput"
-              },
-              {
-                "type": "object",
-                "required": [
-                  "type"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "hls"
-                    ]
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/HlsOutput"
           }
-        ]
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "hls": "#/components/schemas/HlsOutput",
+            "mp4": "#/components/schemas/Mp4Output",
+            "rtmp_client": "#/components/schemas/RtmpOutput",
+            "rtp_stream": "#/components/schemas/RtpOutput",
+            "whep_server": "#/components/schemas/WhepOutput",
+            "whip_client": "#/components/schemas/WhipOutput"
+          }
+        }
       },
       "RescaleMode": {
         "type": "string",

@@ -19,9 +19,16 @@ type TrackForwardingEvent struct {
 	InputID        string
 }
 
+type PeerEvent struct {
+	RoomID string
+	PeerID string
+}
+
 type NotifierCallbacks struct {
 	OnTrackForwarding        func(TrackForwardingEvent)
 	OnTrackForwardingRemoved func(TrackForwardingEvent)
+	OnPeerConnected          func(PeerEvent)
+	OnPeerDisconnected       func(PeerEvent)
 }
 
 type Notifier struct {
@@ -148,9 +155,21 @@ func (n *Notifier) dispatch(msg *pb.ServerMessage) {
 	case *pb.ServerMessage_PeerConnected_:
 		log.Printf("fishjam: peer connected - room=%s peer=%s",
 			content.PeerConnected.RoomId, content.PeerConnected.PeerId)
+		if n.callbacks.OnPeerConnected != nil {
+			n.callbacks.OnPeerConnected(PeerEvent{
+				RoomID: content.PeerConnected.RoomId,
+				PeerID: content.PeerConnected.PeerId,
+			})
+		}
 	case *pb.ServerMessage_PeerDisconnected_:
 		log.Printf("fishjam: peer disconnected - room=%s peer=%s",
 			content.PeerDisconnected.RoomId, content.PeerDisconnected.PeerId)
+		if n.callbacks.OnPeerDisconnected != nil {
+			n.callbacks.OnPeerDisconnected(PeerEvent{
+				RoomID: content.PeerDisconnected.RoomId,
+				PeerID: content.PeerDisconnected.PeerId,
+			})
+		}
 	default:
 		// Ignore other notification types
 	}
