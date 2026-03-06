@@ -1,63 +1,20 @@
 package fishjam
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
+
+	api "conference-to-stream/fishjam/generated"
 )
 
+// Client wraps the generated Fishjam API client.
 type Client struct {
 	baseURL         string
 	managementToken string
 	httpClient      *http.Client
-}
-
-type RoomConfig struct {
-	RoomType string `json:"roomType,omitempty"`
-}
-
-type Room struct {
-	ID     string   `json:"id"`
-	Config any      `json:"config"`
-	Peers  []Peer   `json:"peers"`
-}
-
-type Peer struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
-}
-
-type PeerConfig struct {
-	Type    string         `json:"type"`
-	Options PeerOptionsWeb `json:"options"`
-}
-
-type PeerOptionsWeb struct {
-	Metadata map[string]string `json:"metadata,omitempty"`
-}
-
-type TrackForwardingRequest struct {
-	CompositionURL string `json:"compositionURL"`
-	Selector       string `json:"selector"`
-}
-
-type createRoomResponse struct {
-	Data struct {
-		Room Room `json:"room"`
-	} `json:"data"`
-}
-
-type createPeerResponse struct {
-	Data struct {
-		Peer           Peer   `json:"peer"`
-		Token          string `json:"token"`
-		PeerWebsocketURL string `json:"peer_websocket_url"`
-	} `json:"data"`
 }
 
 func NewClient(fishjamID, managementToken string) *Client {
@@ -74,6 +31,14 @@ func NewClient(fishjamID, managementToken string) *Client {
 	}
 }
 
+func (c *Client) newAPI() (*api.ClientWithResponses, error) {
+	authHeader := api.WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
+		req.Header.Set("Authorization", "Bearer "+c.managementToken)
+		return nil
+	})
+	return api.NewClientWithResponses(c.baseURL, api.WithHTTPClient(c.httpClient), authHeader)
+}
+
 func (c *Client) BaseURL() string {
 	return c.baseURL
 }
@@ -82,100 +47,69 @@ func (c *Client) ManagementToken() string {
 	return c.managementToken
 }
 
-func (c *Client) CreateRoom() (*Room, error) {
-	body := RoomConfig{RoomType: "conference"}
-	resp, err := c.doJSON("POST", "/room", body)
+func (c *Client) CreateRoom() (*api.Room, error) {
+	cl, err := c.newAPI()
+	if err != nil {
+		return nil, err
+	}
+	roomType := api.Conference
+	resp, err := cl.CreateRoomWithResponse(context.Background(), api.RoomConfig{
+		RoomType: &roomType,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("create room: %w", err)
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		return nil, readError(resp)
+	if resp.JSON201 == nil {
+		return nil, fmt.Errorf("create room: unexpected status %d", resp.StatusCode())
 	}
-
-	var result createRoomResponse
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("decode create room response: %w", err)
-	}
-	return &result.Data.Room, nil
+	return &resp.JSON201.Data.Room, nil
 }
 
 func (c *Client) CreatePeer(roomID string, metadata map[string]string) (peerToken string, peerWebsocketURL string, err error) {
-	body := PeerConfig{
-		Type:    "webrtc",
-		Options: PeerOptionsWeb{Metadata: metadata},
+	cl, err := c.newAPI()
+	if err != nil {
+		return "", "", err
 	}
-	resp, err := c.doJSON("POST", fmt.Sprintf("/room/%s/peer", roomID), body)
+	meta := make(api.WebRTCMetadata, len(metadata))
+	for k, v := range metadata {
+		meta[k] = v
+	}
+	var opts api.PeerOptions
+	if err := opts.FromPeerOptionsWebRTC(api.PeerOptionsWebRTC{Metadata: &meta}); err != nil {
+		return "", "", fmt.Errorf("build peer options: %w", err)
+	}
+	resp, err := cl.AddPeerWithResponse(context.Background(), roomID, api.PeerConfig{
+		Type:    api.Webrtc,
+		Options: opts,
+	})
 	if err != nil {
 		return "", "", fmt.Errorf("create peer: %w", err)
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		return "", "", readError(resp)
+	if resp.JSON201 == nil {
+		return "", "", fmt.Errorf("create peer: unexpected status %d", resp.StatusCode())
 	}
-
-	var result createPeerResponse
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", "", fmt.Errorf("decode create peer response: %w", err)
+	wsURL := ""
+	if resp.JSON201.Data.PeerWebsocketUrl != nil {
+		wsURL = *resp.JSON201.Data.PeerWebsocketUrl
 	}
-	return result.Data.Token, result.Data.PeerWebsocketURL, nil
+	return resp.JSON201.Data.Token, wsURL, nil
 }
 
 func (c *Client) CreateTrackForwarding(roomID, compositionURL string) error {
-	body := TrackForwardingRequest{
-		CompositionURL: compositionURL,
-		Selector:       "all",
+	cl, err := c.newAPI()
+	if err != nil {
+		return err
 	}
-	resp, err := c.doJSON("POST", fmt.Sprintf("/room/%s/track_forwardings", roomID), body)
+	selector := "all"
+	resp, err := cl.CreateTrackForwardingWithResponse(context.Background(), roomID, api.TrackForwarding{
+		CompositionURL: compositionURL,
+		Selector:       &selector,
+	})
 	if err != nil {
 		return fmt.Errorf("create track forwarding: %w", err)
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		return readError(resp)
+	if resp.StatusCode() < 200 || resp.StatusCode() >= 300 {
+		return fmt.Errorf("create track forwarding: unexpected status %d: %s", resp.StatusCode(), string(resp.Body))
 	}
 	return nil
-}
-
-func (c *Client) doJSON(method, path string, body any) (*http.Response, error) {
-	jsonBody, err := json.Marshal(body)
-	if err != nil {
-		log.Printf("fishjam: marshal error for %s %s: %v (body: %+v)", method, path, err, body)
-		return nil, fmt.Errorf("marshal request body: %w", err)
-	}
-
-	fullURL := c.baseURL + path
-	log.Printf("fishjam: %s %s body=%s", method, fullURL, string(jsonBody))
-
-	req, err := http.NewRequest(method, fullURL, bytes.NewReader(jsonBody))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.managementToken)
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		log.Printf("fishjam: request error for %s %s: %v", method, fullURL, err)
-		return nil, err
-	}
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("fishjam: failed to read response body for %s %s: %v", method, fullURL, err)
-		return nil, fmt.Errorf("read response body: %w", err)
-	}
-	resp.Body = io.NopCloser(bytes.NewReader(respBody))
-
-	log.Printf("fishjam: %s %s -> %d body=%s", method, fullURL, resp.StatusCode, string(respBody))
-
-	return resp, nil
-}
-
-func readError(resp *http.Response) error {
-	body, _ := io.ReadAll(resp.Body)
-	return fmt.Errorf("unexpected status %d: %s", resp.StatusCode, string(body))
 }

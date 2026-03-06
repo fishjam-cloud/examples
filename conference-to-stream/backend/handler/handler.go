@@ -8,35 +8,38 @@ import (
 	"strings"
 	"sync"
 
+	"conference-to-stream/composition"
 	"conference-to-stream/fishjam"
-	"conference-to-stream/foundry"
 )
 
 const whepOutputID = "whep_output"
 
 type RoomState struct {
-	RoomID         string
-	CompositionURL string
-	InputIDs       map[string]string // input_id → peer_id
-	WhepURL        string
-	mu             sync.Mutex
+	RoomID        string
+	CompositionID string
+	CompositionURL string // base URL of the composition server (api_url)
+	InputIDs      map[string]string // input_id → peer_id
+	WhepURL       string
+	mu            sync.Mutex
 }
 
 type Handler struct {
-	fishjamClient  *fishjam.Client
-	foundryClient  *foundry.Client
-	managementToken string
+	fishjamClient     *fishjam.Client
+	compositionClient *composition.Client
+	compositionAPIURL string
+	managementToken   string
 
 	mu    sync.Mutex
 	rooms map[string]*RoomState // room_name → state
 }
 
-func New(fishjamClient *fishjam.Client, foundryClient *foundry.Client) *Handler {
+func New(fishjamClient *fishjam.Client, compositionClient *composition.Client, compositionAPIURL string) *Handler {
 	return &Handler{
-		fishjamClient:   fishjamClient,
-		foundryClient:   foundryClient,
-		managementToken: fishjamClient.ManagementToken(),
-		rooms:           make(map[string]*RoomState),
+		fishjamClient:     fishjamClient,
+		compositionClient: compositionClient,
+		compositionAPIURL: compositionAPIURL,
+		managementToken:   fishjamClient.ManagementToken(),
+		rooms:             make(map[string]*RoomState),
 	}
 }
 
@@ -78,24 +81,26 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	}
 	h.mu.Unlock()
 
+	apiURL := h.compositionAPIURL
+
 	// Create composition
-	compositionURL, err := h.foundryClient.CreateComposition()
+	compositionID, err := h.compositionClient.CreateComposition(apiURL)
 	if err != nil {
 		log.Printf("create composition: %v", err)
 		http.Error(w, "failed to create composition", http.StatusInternalServerError)
 		return
 	}
-	log.Printf("created composition: %s", compositionURL)
+	log.Printf("created composition: %s", compositionID)
 
 	// Start composition
-	if err := h.foundryClient.Start(compositionURL); err != nil {
+	if err := h.compositionClient.Start(apiURL, compositionID); err != nil {
 		log.Printf("start composition: %v", err)
 		http.Error(w, "failed to start composition", http.StatusInternalServerError)
 		return
 	}
 
 	// Register WHEP output
-	if err := h.foundryClient.RegisterWhepOutput(compositionURL, whepOutputID); err != nil {
+	if err := h.compositionClient.RegisterWhepOutput(apiURL, compositionID, whepOutputID); err != nil {
 		log.Printf("register whep output: %v", err)
 		http.Error(w, "failed to register WHEP output", http.StatusInternalServerError)
 		return
@@ -108,20 +113,23 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create room", http.StatusInternalServerError)
 		return
 	}
-	log.Printf("created room: %s", room.ID)
+	roomID := room.Id
+	log.Printf("created room: %s", roomID)
 
-	// Add track forwarding
-	if err := h.fishjamClient.CreateTrackForwarding(room.ID, compositionURL); err != nil {
+	// Add track forwarding — pass the composition base URL so Fishjam can forward tracks to it
+	compositionBaseURL := h.compositionClient.CompositionBaseURL(apiURL, compositionID)
+	if err := h.fishjamClient.CreateTrackForwarding(roomID, compositionBaseURL); err != nil {
 		log.Printf("create track forwarding: %v", err)
 		http.Error(w, "failed to create track forwarding", http.StatusInternalServerError)
 		return
 	}
 
-	whepURL := h.foundryClient.WhepURL(compositionURL, whepOutputID)
+	whepURL := h.compositionClient.WhepURL(apiURL, compositionID, whepOutputID)
 
 	state := &RoomState{
-		RoomID:         room.ID,
-		CompositionURL: compositionURL,
+		RoomID:         roomID,
+		CompositionID:  compositionID,
+		CompositionURL: apiURL,
 		InputIDs:       make(map[string]string),
 		WhepURL:        whepURL,
 	}
@@ -134,7 +142,7 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	fishjamBaseURL := h.fishjamClient.BaseURL()
 	_, err = fishjam.NewNotifier(fishjamBaseURL, h.managementToken, fishjam.NotifierCallbacks{
 		OnTrackForwarding: func(event fishjam.TrackForwardingEvent) {
-			if event.RoomID != room.ID {
+			if event.RoomID != roomID {
 				return
 			}
 			state.mu.Lock()
@@ -143,12 +151,12 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 			state.mu.Unlock()
 
 			log.Printf("track forwarding: room=%s peer=%s input=%s (total=%d)", event.RoomID, event.PeerID, event.InputID, len(inputIDs))
-			if err := h.foundryClient.UpdateOutput(compositionURL, whepOutputID, inputIDs); err != nil {
+			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whepOutputID, inputIDs); err != nil {
 				log.Printf("update output: %v", err)
 			}
 		},
 		OnTrackForwardingRemoved: func(event fishjam.TrackForwardingEvent) {
-			if event.RoomID != room.ID {
+			if event.RoomID != roomID {
 				return
 			}
 			state.mu.Lock()
@@ -157,7 +165,7 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 			state.mu.Unlock()
 
 			log.Printf("track forwarding removed: room=%s peer=%s input=%s (total=%d)", event.RoomID, event.PeerID, event.InputID, len(inputIDs))
-			if err := h.foundryClient.UpdateOutput(compositionURL, whepOutputID, inputIDs); err != nil {
+			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whepOutputID, inputIDs); err != nil {
 				log.Printf("update output: %v", err)
 			}
 		},
@@ -168,7 +176,7 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, createRoomResponse{RoomID: room.ID, WhepURL: whepURL})
+	writeJSON(w, createRoomResponse{RoomID: roomID, WhepURL: whepURL})
 }
 
 func (h *Handler) CreatePeer(w http.ResponseWriter, r *http.Request) {

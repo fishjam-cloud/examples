@@ -1,0 +1,20 @@
+# openapi-generator artifacts not needed for the build
+fishjam-client/test/
+fishjam-client/docs/
+fishjam-client/api/
+fishjam-client/git_push.sh
+fishjam-client/.travis.yml
+fishjam-client/.gitignore
+fishjam-client/.openapi-generator/
+fishjam-client/.openapi-generator-ignore
+fishjam-client/README.md
+
+composition-client/test/
+composition-client/docs/
+composition-client/api/
+composition-client/git_push.sh
+composition-client/.travis.yml
+composition-client/.gitignore
+composition-client/.openapi-generator/
+composition-client/.openapi-generator-ignore
+composition-client/README.md

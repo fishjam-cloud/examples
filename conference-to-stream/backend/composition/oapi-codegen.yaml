@@ -1,0 +1,5 @@
+package: compositionapi
+output: composition/generated/composition.gen.go
+generate:
+  models: true
+  client: true

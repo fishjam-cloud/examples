@@ -4,7 +4,9 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import "./index.css";
 
-const fishjamId = import.meta.env.VITE_FISHJAM_ID as string;
+const fishjamId = import.meta.env.FISHJAM_ID as string;
+
+console.log("fishjamId", fishjamId);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

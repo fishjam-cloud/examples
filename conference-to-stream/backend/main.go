@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"conference-to-stream/composition"
 	"conference-to-stream/fishjam"
-	"conference-to-stream/foundry"
 	"conference-to-stream/handler"
 
 	"github.com/joho/godotenv"
@@ -25,14 +25,18 @@ func main() {
 	if managementToken == "" {
 		log.Fatal("FISHJAM_MANAGEMENT_TOKEN is required")
 	}
+	compositionAPIURL := os.Getenv("COMPOSITION_API_URL")
+	if compositionAPIURL == "" {
+		compositionAPIURL = "https://rtc.fishjam.io"
+	}
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
 	fishjamClient := fishjam.NewClient(fishjamID, managementToken)
-	foundryClient := foundry.NewClient()
-	h := handler.New(fishjamClient, foundryClient)
+	compositionClient := composition.NewClient()
+	h := handler.New(fishjamClient, compositionClient, compositionAPIURL)
 
 	mux := http.NewServeMux()
 	h.Route(mux)
