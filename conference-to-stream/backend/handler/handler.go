@@ -148,9 +148,18 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	h.roomsByID[roomID] = state
 	h.mu.Unlock()
 
-	// Start WS notifier for this room
+	if err := h.startNotifier(state, apiURL, compositionID, roomID); err != nil {
+		log.Printf("start notifier: %v", err)
+		http.Error(w, "failed to start notifier", http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, createRoomResponse{RoomID: roomID, WhepURL: whepURL})
+}
+
+func (h *Handler) startNotifier(state *RoomState, apiURL, compositionID, roomID string) error {
 	fishjamBaseURL := h.fishjamClient.BaseURL()
-	_, err = fishjam.NewNotifier(fishjamBaseURL, h.managementToken, fishjam.NotifierCallbacks{
+	_, err := fishjam.NewNotifier(fishjamBaseURL, h.managementToken, fishjam.NotifierCallbacks{
 		OnTrackForwarding: func(event fishjam.TrackForwardingEvent) {
 			if event.RoomID != roomID {
 				return
@@ -235,7 +244,86 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 			log.Printf("deleted composition after last peer left: room=%s composition=%s", roomID, compositionID)
 		},
 	})
+	return err
+}
+
+type attachRoomRequest struct {
+	RoomID string `json:"roomId"`
+}
+
+func (h *Handler) AttachRoom(w http.ResponseWriter, r *http.Request) {
+	var req attachRoomRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	if req.RoomID == "" {
+		http.Error(w, "roomId is required", http.StatusBadRequest)
+		return
+	}
+
+	// Return existing state if already attached
+	h.mu.Lock()
+	if state, ok := h.roomsByID[req.RoomID]; ok {
+		h.mu.Unlock()
+		writeJSON(w, createRoomResponse{RoomID: state.RoomID, WhepURL: state.WhepURL})
+		return
+	}
+	h.mu.Unlock()
+
+	apiURL := h.compositionAPIURL
+	roomID := req.RoomID
+
+	// Create composition
+	compositionID, err := h.compositionClient.CreateComposition(apiURL)
 	if err != nil {
+		log.Printf("create composition: %v", err)
+		http.Error(w, "failed to create composition", http.StatusInternalServerError)
+		return
+	}
+	log.Printf("created composition: %s", compositionID)
+
+	// Start composition
+	if err := h.compositionClient.Start(apiURL, compositionID); err != nil {
+		log.Printf("start composition: %v", err)
+		http.Error(w, "failed to start composition", http.StatusInternalServerError)
+		return
+	}
+
+	// Register WHEP output
+	if err := h.compositionClient.RegisterWhepOutput(apiURL, compositionID, whepOutputID); err != nil {
+		log.Printf("register whep output: %v", err)
+		http.Error(w, "failed to register WHEP output", http.StatusInternalServerError)
+		return
+	}
+
+	// Add track forwarding
+	compositionBaseURL := h.compositionClient.CompositionBaseURL(apiURL, compositionID)
+	if err := h.fishjamClient.CreateTrackForwarding(roomID, compositionBaseURL); err != nil {
+		log.Printf("create track forwarding: %v", err)
+		http.Error(w, "failed to create track forwarding", http.StatusInternalServerError)
+		return
+	}
+
+	whepURL := h.compositionClient.WhepURL(apiURL, compositionID, whepOutputID)
+
+	state := &RoomState{
+		RoomID:         roomID,
+		RoomName:       roomID,
+		CompositionID:  compositionID,
+		CompositionURL: apiURL,
+		InputIDs:       make(map[string]string),
+		PeerIDs:        make(map[string]struct{}),
+		PeerNames:      make(map[string]string),
+		WhepURL:        whepURL,
+	}
+
+	h.mu.Lock()
+	h.roomsByID[roomID] = state
+	h.rooms[roomID] = state
+	h.mu.Unlock()
+
+	if err := h.startNotifier(state, apiURL, compositionID, roomID); err != nil {
 		log.Printf("start notifier: %v", err)
 		http.Error(w, "failed to start notifier", http.StatusInternalServerError)
 		return
@@ -318,6 +406,14 @@ func (h *Handler) Route(mux *http.ServeMux) {
 			return
 		}
 		h.CreateRoom(w, r)
+	})
+
+	mux.HandleFunc("/api/rooms/attach", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, fmt.Sprintf("method %s not allowed", r.Method), http.StatusMethodNotAllowed)
+			return
+		}
+		h.AttachRoom(w, r)
 	})
 
 	mux.HandleFunc("/api/rooms/", func(w http.ResponseWriter, r *http.Request) {

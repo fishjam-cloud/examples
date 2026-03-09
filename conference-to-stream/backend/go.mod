@@ -38,4 +38,4 @@ require (
 
 tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
 
-replace github.com/oapi-codegen/oapi-codegen/v2 => /Users/roznawsk/projects/oapi-codegen
+replace github.com/oapi-codegen/oapi-codegen/v2 => ./oapi-codegen
