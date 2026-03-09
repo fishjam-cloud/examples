@@ -19,8 +19,6 @@ import z from "zod";
 
 dotenv.config({ path: "../.env", quiet: true });
 
-// --- Config ---
-
 const config = z
   .object({
     PORT: z.coerce.number().int().default(8000),
@@ -30,19 +28,14 @@ const config = z
   })
   .parse(process.env);
 
-const GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-12-2025";
-
-// --- Clients ---
-
 const fishjam = new FishjamClient({
   fishjamId: config.FISHJAM_ID,
   managementToken: config.FISHJAM_MANAGEMENT_TOKEN,
 });
 
+const GEMINI_MODEL = "gemini-3.1-flash-audio-eap";
 const genai = new GoogleGenAI({
   apiKey: config.GEMINI_API_KEY,
-
-  httpOptions: { apiVersion: "v1alpha" },
 });
 
 // --- Per-room agent state ---
