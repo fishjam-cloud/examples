@@ -127,12 +127,12 @@ func (n *Notifier) listen() {
 func (n *Notifier) dispatch(msg *pb.ServerMessage) {
 	switch content := msg.Content.(type) {
 	case *pb.ServerMessage_Authenticated_:
-		log.Println("fishjam: authenticated")
+		log.Println("fishjam notifier: authenticated")
 	case *pb.ServerMessage_SubscribeResponse_:
-		log.Println("fishjam: subscribed to notifications")
+		log.Println("fishjam notifier: subscribed to notifications")
 	case *pb.ServerMessage_TrackForwarding_:
 		tf := content.TrackForwarding
-		log.Printf("fishjam: track forwarding - room=%s peer=%s input=%s", tf.RoomId, tf.PeerId, tf.InputId)
+		log.Printf("fishjam notifier: track forwarding - room=%s peer=%s input=%s", tf.RoomId, tf.PeerId, tf.InputId)
 		if n.callbacks.OnTrackForwarding != nil {
 			n.callbacks.OnTrackForwarding(TrackForwardingEvent{
 				RoomID:         tf.RoomId,
@@ -143,7 +143,7 @@ func (n *Notifier) dispatch(msg *pb.ServerMessage) {
 		}
 	case *pb.ServerMessage_TrackForwardingRemoved_:
 		tf := content.TrackForwardingRemoved
-		log.Printf("fishjam: track forwarding removed - room=%s peer=%s input=%s", tf.RoomId, tf.PeerId, tf.InputId)
+		log.Printf("fishjam notifier: track forwarding removed - room=%s peer=%s input=%s", tf.RoomId, tf.PeerId, tf.InputId)
 		if n.callbacks.OnTrackForwardingRemoved != nil {
 			n.callbacks.OnTrackForwardingRemoved(TrackForwardingEvent{
 				RoomID:         tf.RoomId,
@@ -153,7 +153,7 @@ func (n *Notifier) dispatch(msg *pb.ServerMessage) {
 			})
 		}
 	case *pb.ServerMessage_PeerConnected_:
-		log.Printf("fishjam: peer connected - room=%s peer=%s",
+		log.Printf("fishjam notifier: peer connected - room=%s peer=%s",
 			content.PeerConnected.RoomId, content.PeerConnected.PeerId)
 		if n.callbacks.OnPeerConnected != nil {
 			n.callbacks.OnPeerConnected(PeerEvent{
@@ -162,7 +162,7 @@ func (n *Notifier) dispatch(msg *pb.ServerMessage) {
 			})
 		}
 	case *pb.ServerMessage_PeerDisconnected_:
-		log.Printf("fishjam: peer disconnected - room=%s peer=%s",
+		log.Printf("fishjam notifier: peer disconnected - room=%s peer=%s",
 			content.PeerDisconnected.RoomId, content.PeerDisconnected.PeerId)
 		if n.callbacks.OnPeerDisconnected != nil {
 			n.callbacks.OnPeerDisconnected(PeerEvent{

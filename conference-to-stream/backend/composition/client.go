@@ -108,7 +108,7 @@ func (c *Client) RegisterWhepOutput(apiURL, compositionID, outputID string) erro
 	if err := body.FromWhepOutput(api.WhepOutput{
 		Video: &api.OutputWhepVideoOptions{
 			Encoder:    videoEncoder,
-			Resolution: api.Resolution{Width: 1280, Height: 720},
+			Resolution: api.Resolution{Width: 1920, Height: 1080},
 			Initial:    api.VideoScene{Root: initialVideoRoot},
 		},
 		Audio: &api.OutputWhepAudioOptions{
