@@ -21,6 +21,7 @@ export default function App() {
   const [systemPrompt, setSystemPrompt] = useState(DEFAULT_SYSTEM_PROMPT);
   const [agentActive, setAgentActive] = useState(false);
   const [loading, setLoading] = useState("");
+  const [capturedImages, setCapturedImages] = useState<string[]>([]);
 
   const { joinRoom, leaveRoom, peerStatus } = useConnection();
   const { initializeDevices } = useInitializeDevices();
@@ -39,6 +40,22 @@ export default function App() {
     () => remotePeers.filter((p) => p.metadata),
     [remotePeers],
   );
+
+  // Subscribe to captured image previews
+  useEffect(() => {
+    if (!roomId || !agentActive) return;
+
+    const sub = trpc.onImageCapture.subscribe(
+      { roomId },
+      {
+        onData: ({ dataUrl }) => {
+          setCapturedImages((prev) => [dataUrl, ...prev]);
+        },
+      },
+    );
+
+    return () => sub.unsubscribe();
+  }, [roomId, agentActive]);
 
   // Play agent audio
   useEffect(() => {
@@ -193,6 +210,18 @@ export default function App() {
         <div style={styles.agentStatus}>
           Agent is active
           {agentPeer ? " and connected" : " (connecting...)"}
+        </div>
+      )}
+
+      {/* Captured image previews */}
+      {capturedImages.length > 0 && (
+        <div style={styles.imagePanel}>
+          <div style={styles.imagePanelHeader}>Captured Images</div>
+          <div style={styles.imageGrid}>
+            {capturedImages.map((src, i) => (
+              <img key={i} src={src} alt={`Capture ${i + 1}`} style={styles.capturedImage} />
+            ))}
+          </div>
         </div>
       )}
 
@@ -406,5 +435,29 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 13,
     color: "#666",
     textAlign: "center" as const,
+  },
+  imagePanel: {
+    borderTop: "1px solid #eee",
+    padding: "12px 20px",
+    maxHeight: 200,
+    overflowY: "auto" as const,
+  },
+  imagePanelHeader: {
+    fontSize: 13,
+    fontWeight: 600,
+    marginBottom: 8,
+    color: "#333",
+  },
+  imageGrid: {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap" as const,
+  },
+  capturedImage: {
+    width: 160,
+    height: 120,
+    objectFit: "cover" as const,
+    borderRadius: 6,
+    border: "1px solid #eee",
   },
 };

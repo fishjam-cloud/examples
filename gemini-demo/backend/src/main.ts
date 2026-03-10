@@ -1,8 +1,14 @@
 import cors from "@fastify/cors";
-import { FishjamClient, type RoomId } from "@fishjam-cloud/js-server-sdk";
+import {
+  FishjamClient,
+  TrackId,
+  TrackType,
+  type RoomId,
+} from "@fishjam-cloud/js-server-sdk";
 import {
   GoogleGenAI,
   Modality,
+  type FunctionDeclaration,
   type LiveServerMessage,
   type Session,
 } from "@google/genai";
@@ -12,7 +18,9 @@ import {
 } from "@trpc/server/adapters/fastify";
 import { applyWSSHandler } from "@trpc/server/adapters/ws";
 import { initTRPC } from "@trpc/server";
+import { observable } from "@trpc/server/observable";
 import dotenv from "dotenv";
+import { EventEmitter } from "node:events";
 import Fastify from "fastify";
 import { WebSocketServer } from "ws";
 import z from "zod";
@@ -46,6 +54,11 @@ type AgentState = {
 };
 
 const agents = new Map<string, AgentState>();
+
+// Event emitter for streaming captured images to the frontend
+const imageEvents = new EventEmitter();
+
+// --- Gemini function declarations ---
 
 // --- tRPC ---
 
@@ -94,16 +107,25 @@ const appRouter = t.router({
         encoding: "pcm16",
       });
 
+      const captureImageDeclaration: FunctionDeclaration = {
+        name: "capture_image",
+        description:
+          "Capture an image from the user's camera. Use this when the user asks you to look at something, describe what you see, or when visual context would help answer their question.",
+      };
+
       // Connect to Gemini Live API
       const session = await genai.live.connect({
         model: GEMINI_MODEL,
         config: {
           responseModalities: [Modality.AUDIO],
           systemInstruction: input.systemPrompt,
-          tools: [{ googleSearch: {} }],
+          tools: [
+            { googleSearch: {} },
+            { functionDeclarations: [captureImageDeclaration] },
+          ],
         },
         callbacks: {
-          onmessage: (message: LiveServerMessage) => {
+          onmessage: async (message: LiveServerMessage) => {
             // Forward agent audio to Fishjam
             if (message.data) {
               const audio = Buffer.from(message.data, "base64");
@@ -112,6 +134,36 @@ const appRouter = t.router({
 
             if (message.serverContent?.interrupted) {
               fishjamAgent.interruptTrack(agentTrack.id);
+            }
+
+            // Handle Gemini function calls (e.g. capture_image)
+            if (message.toolCall?.functionCalls) {
+              console.log("functionCalls");
+              for (const fc of message.toolCall.functionCalls) {
+                console.log(fc);
+                if (fc.name === "capture_image") {
+                  // Capture a frame from each video track the agent is subscribed to
+                  //
+                  const room = await fishjam.getRoom(input.roomId as RoomId);
+
+                  for (const track of room.peers.find(
+                    (e) => e.type === "webrtc",
+                  )?.tracks ?? []) {
+                    fishjamAgent.captureImage(track.id as TrackId);
+                  }
+
+                  session.sendToolResponse({
+                    functionResponses: {
+                      id: fc.id!,
+                      name: fc.name,
+                      response: {
+                        output:
+                          "Image capture requested. The image will be sent shortly.",
+                      },
+                    },
+                  });
+                }
+              }
             }
           },
           onerror: (e) => console.error("Gemini error:", e),
@@ -123,8 +175,7 @@ const appRouter = t.router({
         },
       });
 
-      // Forward peer audio to Gemini
-      fishjamAgent.on("trackData", ({ data }) => {
+      fishjamAgent.on("trackData", ({ track, data }) => {
         session.sendRealtimeInput({
           audio: {
             data: Buffer.from(data).toString("base64"),
@@ -133,22 +184,48 @@ const appRouter = t.router({
         });
       });
 
+      // Forward captured images to Gemini and emit for frontend preview
+      fishjamAgent.on("trackImage", ({ contentType, data }) => {
+        const base64 = Buffer.from(data).toString("base64");
+
+        session.sendRealtimeInput({
+          video: { data: base64, mimeType: contentType },
+        });
+
+        imageEvents.emit(`image:${input.roomId}`, {
+          dataUrl: `data:${contentType};base64,${base64}`,
+        });
+      });
+
       const cleanup = () => {
         session.close();
         fishjamAgent.removeAllListeners("trackData");
+        fishjamAgent.removeAllListeners("trackImage");
         fishjamAgent.deleteTrack(agentTrack.id);
         agents.delete(input.roomId);
       };
 
       agents.set(input.roomId, { session, cleanup });
 
-      // Prompt the agent to introduce itself
-      session.sendClientContent({
-        turns: [{ text: "introduce yourself briefly" }],
-        turnComplete: true,
-      });
+      // // Prompt the agent to introduce itself
+      // session.sendClientContent({
+      //   turns: [{ text: "introduce yourself briefly" }],
+      //   turnComplete: true,
+      // });
 
       return { agentPeerId: agentPeer.id };
+    }),
+
+  onImageCapture: t.procedure
+    .input(z.object({ roomId: z.string() }))
+    .subscription(({ input }) => {
+      return observable<{ dataUrl: string }>((emit) => {
+        const handler = (data: { dataUrl: string }) => emit.next(data);
+        imageEvents.on(`image:${input.roomId}`, handler);
+        return () => {
+          imageEvents.off(`image:${input.roomId}`, handler);
+        };
+      });
     }),
 
   removeAgent: t.procedure
