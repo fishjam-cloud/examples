@@ -11,7 +11,7 @@
   "types": "./src/main.ts",
   "dependencies": {
     "@fastify/cors": "^11.1.0",
-    "@fishjam-cloud/js-server-sdk": "file:../package.tgz",
+    "@fishjam-cloud/js-server-sdk": "0.25.2",
     "@google/genai": "^1.44.0",
     "@trpc/server": "^11.6.0",
     "dotenv": "^17.2.3",
@@ -29,5 +29,6 @@
   },
   "scripts": {
     "start": "tsx watch src/main.ts"
-  }
+  },
+  "packageManager": "yarn@4.12.0"
 }

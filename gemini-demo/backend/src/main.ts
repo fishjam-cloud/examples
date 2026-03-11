@@ -2,9 +2,9 @@ import cors from "@fastify/cors";
 import {
   FishjamClient,
   TrackId,
-  TrackType,
   type RoomId,
 } from "@fishjam-cloud/js-server-sdk";
+import * as FishjamGemini from "@fishjam-cloud/js-server-sdk/gemini";
 import {
   GoogleGenAI,
   Modality,
@@ -12,6 +12,7 @@ import {
   type LiveServerMessage,
   type Session,
 } from "@google/genai";
+
 import {
   type FastifyTRPCPluginOptions,
   fastifyTRPCPlugin,
@@ -42,7 +43,8 @@ const fishjam = new FishjamClient({
 });
 
 const GEMINI_MODEL = "gemini-3.1-flash-audio-eap";
-const genai = new GoogleGenAI({
+
+const genai = FishjamGemini.createClient({
   apiKey: config.GEMINI_API_KEY,
 });
 
@@ -50,6 +52,7 @@ const genai = new GoogleGenAI({
 
 type AgentState = {
   session: Session;
+  fishjamAgent: Awaited<ReturnType<typeof fishjam.createAgent>>["agent"];
   cleanup: () => void;
 };
 
@@ -89,7 +92,9 @@ const appRouter = t.router({
       const { agent: fishjamAgent, peer: agentPeer } =
         await fishjam.createAgent(
           input.roomId as RoomId,
-          { output: { audioSampleRate: 16_000 } },
+          {
+            output: FishjamGemini.geminiInputAudioSettings,
+          },
           {
             onError: (event: Event) => {
               console.error("Fishjam agent error:", event);
@@ -101,16 +106,14 @@ const appRouter = t.router({
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Create an audio track for the agent to send audio to peers
-      const agentTrack = fishjamAgent.createTrack({
-        channels: 1,
-        sampleRate: 24000,
-        encoding: "pcm16",
-      });
+      const agentTrack = fishjamAgent.createTrack(
+        FishjamGemini.geminiOutputAudioSettings,
+      );
 
       const captureImageDeclaration: FunctionDeclaration = {
         name: "capture_image",
         description:
-          "Capture an image from the user's camera. Use this when the user asks you to look at something, describe what you see, or when visual context would help answer their question.",
+          "Capture an image from the user's camera. Use this when the user asks you to capture his camera..",
       };
 
       // Connect to Gemini Live API
@@ -138,9 +141,7 @@ const appRouter = t.router({
 
             // Handle Gemini function calls (e.g. capture_image)
             if (message.toolCall?.functionCalls) {
-              console.log("functionCalls");
               for (const fc of message.toolCall.functionCalls) {
-                console.log(fc);
                 if (fc.name === "capture_image") {
                   // Capture a frame from each video track the agent is subscribed to
                   //
@@ -205,13 +206,7 @@ const appRouter = t.router({
         agents.delete(input.roomId);
       };
 
-      agents.set(input.roomId, { session, cleanup });
-
-      // // Prompt the agent to introduce itself
-      // session.sendClientContent({
-      //   turns: [{ text: "introduce yourself briefly" }],
-      //   turnComplete: true,
-      // });
+      agents.set(input.roomId, { session, fishjamAgent, cleanup });
 
       return { agentPeerId: agentPeer.id };
     }),
@@ -226,6 +221,19 @@ const appRouter = t.router({
           imageEvents.off(`image:${input.roomId}`, handler);
         };
       });
+    }),
+
+  captureImage: t.procedure
+    .input(z.object({ roomId: z.string(), trackId: z.string() }))
+    .mutation(async ({ input }) => {
+      const agent = agents.get(input.roomId);
+      if (!agent) {
+        throw new Error("No agent exists for this room");
+      }
+
+      agent.fishjamAgent.captureImage(input.trackId as TrackId);
+
+      return { success: true };
     }),
 
   removeAgent: t.procedure
