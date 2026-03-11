@@ -1,6 +1,3 @@
-[submodule "conference-to-stream/oapi-codegen"]
-	path = conference-to-stream/oapi-codegen
-	url = https://github.com/roznawsk/oapi-codegen
 [submodule "conference-to-stream/backend/oapi-codegen"]
 	path = conference-to-stream/backend/oapi-codegen
 	url = https://github.com/roznawsk/oapi-codegen

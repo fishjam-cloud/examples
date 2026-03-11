@@ -1319,13 +1319,6 @@
   },
   "components": {
     "schemas": {
-      "AacRtpMode": {
-        "type": "string",
-        "enum": [
-          "low_bitrate",
-          "high_bitrate"
-        ]
-      },
       "ApiError": {
         "type": "object",
         "required": [
@@ -1435,31 +1428,111 @@
       "Component": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/InputStream"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputStream"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "input_stream"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/View"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/View"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "view"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/Text"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Text"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "text"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/Tiles"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Tiles"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "tiles"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/Rescaler"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Rescaler"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "rescaler"
+                    ]
+                  }
+                }
+              }
+            ]
           }
-        ],
-        "discriminator": {
-          "propertyName": "type",
-          "mapping": {
-            "input_stream": "#/components/schemas/InputStream",
-            "rescaler": "#/components/schemas/Rescaler",
-            "text": "#/components/schemas/Text",
-            "tiles": "#/components/schemas/Tiles",
-            "view": "#/components/schemas/View"
-          }
-        }
+        ]
       },
       "ComponentId": {
         "type": "string"
@@ -1586,33 +1659,6 @@
           "placebo"
         ]
       },
-      "HlsAudioEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "sample_rate": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "format": "int32",
-                "description": "(**default=`44100`**) Sample rate. Allowed values: [8000, 16000, 24000, 44100, 48000].",
-                "minimum": 0
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "aac"
-                ]
-              }
-            }
-          }
-        ]
-      },
       "HlsInput": {
         "type": "object",
         "description": "Parameters for an input stream from HLS source.",
@@ -1684,118 +1730,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "HlsVideoDecoderOptions": {
-        "type": "string",
-        "enum": [
-          "ffmpeg_h264",
-          "vulkan_h264"
-        ]
-      },
-      "HlsVideoEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "preset": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/H264EncoderPreset",
-                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
-                  }
-                ]
-              },
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. Default value depends on chosen encoder."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format"
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_h264"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "vulkan_h264"
-                ]
-              }
-            }
-          }
-        ]
       },
       "HorizontalAlign": {
         "type": "string",
@@ -1920,86 +1854,8 @@
           }
         ]
       },
-      "InputHlsCodec": {
-        "type": "string",
-        "enum": [
-          "h264"
-        ]
-      },
       "InputId": {
         "type": "string"
-      },
-      "InputMp4Codec": {
-        "type": "string",
-        "enum": [
-          "h264"
-        ]
-      },
-      "InputRtmpCodec": {
-        "type": "string",
-        "enum": [
-          "h264"
-        ]
-      },
-      "InputRtpAudioOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "decoder"
-            ],
-            "properties": {
-              "decoder": {
-                "type": "string",
-                "enum": [
-                  "opus"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "audio_specific_config",
-              "decoder"
-            ],
-            "properties": {
-              "audio_specific_config": {
-                "type": "string",
-                "description": "AudioSpecificConfig as described in MPEG-4 part 3, section 1.6.2.1\nThe config should be encoded as described in [RFC 3640](https://datatracker.ietf.org/doc/html/rfc3640#section-4.1).\n\nThe simplest way to obtain this value when using ffmpeg to stream to the compositor is\nto pass the additional `-sdp_file FILENAME` option to ffmpeg. This will cause it to\nwrite out an sdp file, which will contain this field. Programs which have the ability\nto stream AAC to the compositor should provide this information.\n\nIn MP4 files, the ASC is embedded inside the esds box (note that it is not the whole\nbox, only a part of it). This also applies to fragmented MP4s downloaded over HLS, if\nthe playlist uses MP4s instead of MPEG Transport Streams\n\nIn FLV files and the RTMP protocol, the ASC can be found in the `AACAUDIODATA` tag."
-              },
-              "rtp_mode": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/AacRtpMode",
-                    "description": "(**default=`\"high_bitrate\"`**)\nSpecifies the [RFC 3640 mode](https://datatracker.ietf.org/doc/html/rfc3640#section-3.3.1)\nthat should be used when depacketizing this stream."
-                  }
-                ]
-              },
-              "decoder": {
-                "type": "string",
-                "enum": [
-                  "aac"
-                ]
-              }
-            }
-          }
-        ]
-      },
-      "InputRtpVideoOptions": {
-        "type": "object",
-        "required": [
-          "decoder"
-        ],
-        "properties": {
-          "decoder": {
-            "$ref": "#/components/schemas/RtpVideoDecoderOptions"
-          }
-        },
-        "additionalProperties": false
       },
       "InputStream": {
         "type": "object",
@@ -2025,68 +1881,11 @@
         },
         "additionalProperties": false
       },
-      "InputWhepVideoOptions": {
-        "type": "object",
-        "properties": {
-          "decoder_preferences": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/WhepVideoDecoderOptions"
-            }
-          }
-        },
-        "additionalProperties": false
-      },
-      "InputWhipVideoOptions": {
-        "type": "object",
-        "properties": {
-          "decoder_preferences": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/WhipVideoDecoderOptions"
-            }
-          }
-        },
-        "additionalProperties": false
-      },
       "Interpolation": {
         "type": "string",
         "enum": [
           "linear",
           "spring"
-        ]
-      },
-      "Mp4AudioEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "sample_rate": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "format": "int32",
-                "description": "(**default=`44100`**) Sample rate. Allowed values: [8000, 16000, 24000, 44100, 48000].",
-                "minimum": 0
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "aac"
-                ]
-              }
-            }
-          }
         ]
       },
       "Mp4Input": {
@@ -2173,118 +1972,6 @@
         },
         "additionalProperties": false
       },
-      "Mp4VideoDecoderOptions": {
-        "type": "string",
-        "enum": [
-          "ffmpeg_h264",
-          "vulkan_h264"
-        ]
-      },
-      "Mp4VideoEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "preset": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/H264EncoderPreset",
-                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
-                  }
-                ]
-              },
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. Default value depends on chosen encoder."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_h264"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "vulkan_h264"
-                ]
-              }
-            }
-          }
-        ]
-      },
       "OpusEncoderPreset": {
         "type": "string",
         "enum": [
@@ -2337,7 +2024,6 @@
       "OutputHlsAudioOptions": {
         "type": "object",
         "required": [
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2362,10 +2048,6 @@
                 "description": "Condition for termination of output stream based on the input streams states."
               }
             ]
-          },
-          "encoder": {
-            "$ref": "#/components/schemas/HlsAudioEncoderOptions",
-            "description": "Audio encoder options."
           },
           "channels": {
             "oneOf": [
@@ -2389,7 +2071,6 @@
         "type": "object",
         "required": [
           "resolution",
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2408,10 +2089,6 @@
               }
             ]
           },
-          "encoder": {
-            "$ref": "#/components/schemas/HlsVideoEncoderOptions",
-            "description": "Video encoder options."
-          },
           "initial": {
             "$ref": "#/components/schemas/VideoScene",
             "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
@@ -2425,7 +2102,6 @@
       "OutputMp4AudioOptions": {
         "type": "object",
         "required": [
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2451,10 +2127,6 @@
               }
             ]
           },
-          "encoder": {
-            "$ref": "#/components/schemas/Mp4AudioEncoderOptions",
-            "description": "Audio encoder options."
-          },
           "channels": {
             "oneOf": [
               {
@@ -2477,7 +2149,6 @@
         "type": "object",
         "required": [
           "resolution",
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2496,10 +2167,6 @@
               }
             ]
           },
-          "encoder": {
-            "$ref": "#/components/schemas/Mp4VideoEncoderOptions",
-            "description": "Video encoder options."
-          },
           "initial": {
             "$ref": "#/components/schemas/VideoScene",
             "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
@@ -2510,7 +2177,6 @@
       "OutputRtmpClientAudioOptions": {
         "type": "object",
         "required": [
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2536,10 +2202,6 @@
               }
             ]
           },
-          "encoder": {
-            "$ref": "#/components/schemas/RtmpClientAudioEncoderOptions",
-            "description": "Audio encoder options."
-          },
           "channels": {
             "oneOf": [
               {
@@ -2562,7 +2224,6 @@
         "type": "object",
         "required": [
           "resolution",
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2581,10 +2242,6 @@
               }
             ]
           },
-          "encoder": {
-            "$ref": "#/components/schemas/RtmpClientVideoEncoderOptions",
-            "description": "Video encoder options."
-          },
           "initial": {
             "$ref": "#/components/schemas/VideoScene",
             "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
@@ -2595,7 +2252,6 @@
       "OutputRtpAudioOptions": {
         "type": "object",
         "required": [
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2621,10 +2277,6 @@
               }
             ]
           },
-          "encoder": {
-            "$ref": "#/components/schemas/RtpAudioEncoderOptions",
-            "description": "Audio encoder options."
-          },
           "channels": {
             "oneOf": [
               {
@@ -2647,7 +2299,6 @@
         "type": "object",
         "required": [
           "resolution",
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2666,10 +2317,6 @@
               }
             ]
           },
-          "encoder": {
-            "$ref": "#/components/schemas/RtpVideoEncoderOptions",
-            "description": "Video encoder options."
-          },
           "initial": {
             "$ref": "#/components/schemas/VideoScene",
             "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
@@ -2680,7 +2327,6 @@
       "OutputWhepAudioOptions": {
         "type": "object",
         "required": [
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2707,8 +2353,15 @@
             ]
           },
           "encoder": {
-            "$ref": "#/components/schemas/WhepAudioEncoderOptions",
-            "description": "Audio encoder options."
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/WhepAudioEncoderOptions",
+                "description": "(**default=`{\"type\": \"opus\"}`**) Audio encoder options."
+              }
+            ]
           },
           "channels": {
             "oneOf": [
@@ -2732,7 +2385,6 @@
         "type": "object",
         "required": [
           "resolution",
-          "encoder",
           "initial"
         ],
         "properties": {
@@ -2750,10 +2402,6 @@
                 "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
               }
             ]
-          },
-          "encoder": {
-            "$ref": "#/components/schemas/WhepVideoEncoderOptions",
-            "description": "Video encoder options."
           },
           "initial": {
             "$ref": "#/components/schemas/VideoScene",
@@ -2840,16 +2488,6 @@
               }
             ]
           },
-          "encoder_preferences": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/WhipVideoEncoderOptions"
-            },
-            "description": "Codec preferences list."
-          },
           "initial": {
             "$ref": "#/components/schemas/VideoScene",
             "description": "Root of a component tree/scene that should be rendered for the output."
@@ -2891,68 +2529,262 @@
       "RegisterInput": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/RtpInput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RtpInput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "rtp_stream"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/RtmpInput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RtmpInput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "rtmp_server"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/Mp4Input"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Mp4Input"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "mp4"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/WhipInput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WhipInput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "whip_server"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/WhepInput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WhepInput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "whep_client"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/HlsInput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HlsInput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "hls"
+                    ]
+                  }
+                }
+              }
+            ]
           }
-        ],
-        "discriminator": {
-          "propertyName": "type",
-          "mapping": {
-            "hls": "#/components/schemas/HlsInput",
-            "mp4": "#/components/schemas/Mp4Input",
-            "rtmp_server": "#/components/schemas/RtmpInput",
-            "rtp_stream": "#/components/schemas/RtpInput",
-            "whep_client": "#/components/schemas/WhepInput",
-            "whip_server": "#/components/schemas/WhipInput"
-          }
-        }
+        ]
       },
       "RegisterOutput": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/RtpOutput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RtpOutput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "rtp_stream"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/RtmpOutput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RtmpOutput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "rtmp_client"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/Mp4Output"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Mp4Output"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "mp4"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/WhipOutput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WhipOutput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "whip_client"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/WhepOutput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WhepOutput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "whep_server"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
-            "$ref": "#/components/schemas/HlsOutput"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HlsOutput"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "hls"
+                    ]
+                  }
+                }
+              }
+            ]
           }
-        ],
-        "discriminator": {
-          "propertyName": "type",
-          "mapping": {
-            "hls": "#/components/schemas/HlsOutput",
-            "mp4": "#/components/schemas/Mp4Output",
-            "rtmp_client": "#/components/schemas/RtmpOutput",
-            "rtp_stream": "#/components/schemas/RtpOutput",
-            "whep_server": "#/components/schemas/WhepOutput",
-            "whip_client": "#/components/schemas/WhipOutput"
-          }
-        }
+        ]
       },
       "RescaleMode": {
         "type": "string",
@@ -3193,138 +3025,6 @@
           }
         ]
       },
-      "RtmpClientAudioEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "sample_rate": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "format": "int32",
-                "description": "(**default=`48000`**) Sample rate. Allowed values: [8000, 16000, 24000, 44100, 48000].",
-                "minimum": 0
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "aac"
-                ]
-              }
-            }
-          }
-        ]
-      },
-      "RtmpClientVideoEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "preset": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/H264EncoderPreset",
-                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
-                  }
-                ]
-              },
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. Default value depends on chosen encoder."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format"
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_h264"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "vulkan_h264"
-                ]
-              }
-            }
-          }
-        ]
-      },
       "RtmpInput": {
         "type": "object",
         "required": [
@@ -3393,67 +3093,6 @@
         },
         "additionalProperties": false
       },
-      "RtmpVideoDecoderOptions": {
-        "type": "string",
-        "enum": [
-          "ffmpeg_h264",
-          "vulkan_h264"
-        ]
-      },
-      "RtpAudioEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "preset": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/OpusEncoderPreset",
-                    "description": "(**default=\"voip\"**) Audio output encoder preset."
-                  }
-                ]
-              },
-              "sample_rate": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "format": "int32",
-                "description": "(**default=`48000`**) Sample rate. Allowed values: [8000, 16000, 24000, 48000].",
-                "minimum": 0
-              },
-              "forward_error_correction": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "(**default=`false`**) Specifies if forward error correction (FEC) should be used."
-              },
-              "expected_packet_loss": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "format": "int32",
-                "description": "(**default=`0`**) Expected packet loss. When `forward_error_correction` is set to `true`,\nthen this value should be greater than `0`. Allowed values: [0, 100];",
-                "minimum": 0
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "opus"
-                ]
-              }
-            }
-          }
-        ]
-      },
       "RtpInput": {
         "type": "object",
         "description": "Parameters for an input stream from RTP source.\nAt least one of `video` and `audio` has to be defined.",
@@ -3477,26 +3116,18 @@
             ]
           },
           "video": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/InputRtpVideoOptions",
-                "description": "Parameters of a video source included in the RTP stream."
-              }
-            ]
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Enable video stream. The stream should be h264-encoded."
           },
           "audio": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/InputRtpAudioOptions",
-                "description": "Parameters of an audio source included in the RTP stream."
-              }
-            ]
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Enable audio stream. Uses Opus decoder."
           },
           "required": {
             "type": [
@@ -3568,223 +3199,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "RtpVideoDecoderOptions": {
-        "type": "string",
-        "enum": [
-          "ffmpeg_h264",
-          "ffmpeg_vp8",
-          "ffmpeg_vp9",
-          "vulkan_h264"
-        ]
-      },
-      "RtpVideoEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "preset": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/H264EncoderPreset",
-                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
-                  }
-                ]
-              },
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. Default value depends on chosen encoder."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_h264"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_vp8"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_vp9"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "vulkan_h264"
-                ]
-              }
-            }
-          }
-        ]
       },
       "ShaderParam": {
         "oneOf": [
@@ -4670,15 +4084,11 @@
             "description": "Optional Bearer token for auth"
           },
           "video": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/InputWhepVideoOptions",
-                "description": "Parameters of a video source included in the RTP stream."
-              }
-            ]
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "If `true`, requests a h264-encoded video track.\nIf not provided, it defaults to `true`"
           },
           "required": {
             "type": [
@@ -4732,224 +4142,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "WhepVideoDecoderOptions": {
-        "type": "string",
-        "enum": [
-          "ffmpeg_h264",
-          "ffmpeg_vp8",
-          "ffmpeg_vp9",
-          "vulkan_h264",
-          "any"
-        ]
-      },
-      "WhepVideoEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "preset": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/H264EncoderPreset",
-                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
-                  }
-                ]
-              },
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. Default value depends on chosen encoder."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_h264"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_vp8"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_vp9"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "vulkan_h264"
-                ]
-              }
-            }
-          }
-        ]
       },
       "WhipAudioEncoderOptions": {
         "oneOf": [
@@ -5012,19 +4204,7 @@
       },
       "WhipInput": {
         "type": "object",
-        "description": "Parameters for an input stream for WHIP server.\nAt least one of `video` and `audio` has to be defined.",
         "properties": {
-          "video": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/InputWhipVideoOptions",
-                "description": "Parameters of a video source included in the RTP stream."
-              }
-            ]
-          },
           "bearer_token": {
             "type": [
               "string",
@@ -5038,6 +4218,13 @@
               "null"
             ],
             "description": "Internal use only.\nOverrides whip endpoint id which is used when referencing the input via whip server.\nIf not provided, it defaults to input id."
+          },
+          "video": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "If `true`, accepts a h264-encoded video track.\nIf not provided, it defaults to `true`"
           },
           "required": {
             "type": [
@@ -5097,238 +4284,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "WhipVideoDecoderOptions": {
-        "type": "string",
-        "enum": [
-          "ffmpeg_h264",
-          "ffmpeg_vp8",
-          "ffmpeg_vp9",
-          "vulkan_h264",
-          "any"
-        ]
-      },
-      "WhipVideoEncoderOptions": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "preset": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/H264EncoderPreset",
-                    "description": "(**default=`\"fast\"`**) Preset for an encoder. See `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
-                  }
-                ]
-              },
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. Default value depends on chosen encoder."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format"
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_h264"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_vp8"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
-              },
-              "pixel_format": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/PixelFormat",
-                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format"
-                  }
-                ]
-              },
-              "ffmpeg_options": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "propertyNames": {
-                  "type": "string"
-                }
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ffmpeg_vp9"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "bitrate": {
-                "oneOf": [
-                  {
-                    "type": "null"
-                  },
-                  {
-                    "$ref": "#/components/schemas/VideoEncoderBitrate",
-                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
-                  }
-                ]
-              },
-              "keyframe_interval_ms": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "format": "double",
-                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "vulkan_h264"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "any"
-                ]
-              }
-            }
-          }
-        ]
       }
     },
     "securitySchemes": {

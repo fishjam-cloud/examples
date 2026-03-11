@@ -403,6 +403,12 @@ type StreamConfig struct {
 	WebhookUrl *string `json:"webhookUrl,omitempty"`
 }
 
+// StreamDetailsResponse Response containing stream details
+type StreamDetailsResponse struct {
+	// Data Describes stream status
+	Data Stream `json:"data"`
+}
+
 // Streamer Describes streamer status
 type Streamer struct {
 	// Id Assigned streamer id
@@ -415,6 +421,12 @@ type Streamer struct {
 
 // StreamerStatus defines model for Streamer.Status.
 type StreamerStatus string
+
+// StreamerDetailsResponse Response containing streamer details
+type StreamerDetailsResponse struct {
+	// Data Describes streamer status
+	Data Streamer `json:"data"`
+}
 
 // StreamerToken Token for authorizing broadcaster streamer connection
 type StreamerToken struct {
@@ -479,6 +491,12 @@ type Viewer struct {
 
 // ViewerStatus defines model for Viewer.Status.
 type ViewerStatus string
+
+// ViewerDetailsResponse Response containing viewer details
+type ViewerDetailsResponse struct {
+	// Data Describes viewer status
+	Data Viewer `json:"data"`
+}
 
 // ViewerToken Token for authorizing broadcaster viewer connection
 type ViewerToken struct {
@@ -1949,7 +1967,7 @@ func (r GetAllStreamsResponse) StatusCode() int {
 type CreateStreamResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *Stream
+	JSON201      *StreamDetailsResponse
 	JSON400      *Error
 	JSON401      *Error
 	JSON503      *Error
@@ -1997,7 +2015,7 @@ func (r DeleteStreamResponse) StatusCode() int {
 type GetStreamResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Stream
+	JSON200      *StreamDetailsResponse
 	JSON401      *Error
 	JSON404      *Error
 	JSON503      *Error
@@ -2022,7 +2040,7 @@ func (r GetStreamResponse) StatusCode() int {
 type CreateStreamerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *Streamer
+	JSON201      *StreamerDetailsResponse
 	JSON401      *Error
 	JSON404      *Error
 	JSON503      *Error
@@ -2070,7 +2088,7 @@ func (r DeleteStreamerResponse) StatusCode() int {
 type CreateViewerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *Viewer
+	JSON201      *ViewerDetailsResponse
 	JSON401      *Error
 	JSON404      *Error
 	JSON503      *Error
@@ -2693,7 +2711,7 @@ func ParseCreateStreamResponse(rsp *http.Response) (*CreateStreamResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest Stream
+		var dest StreamDetailsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2773,7 +2791,7 @@ func ParseGetStreamResponse(rsp *http.Response) (*GetStreamResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Stream
+		var dest StreamDetailsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2820,7 +2838,7 @@ func ParseCreateStreamerResponse(rsp *http.Response) (*CreateStreamerResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest Streamer
+		var dest StreamerDetailsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2900,7 +2918,7 @@ func ParseCreateViewerResponse(rsp *http.Response) (*CreateViewerResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest Viewer
+		var dest ViewerDetailsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
