@@ -35,7 +35,7 @@ func main() {
 	}
 
 	fishjamClient := fishjam.NewClient(fishjamID, managementToken)
-	compositionClient := composition.NewClient()
+	compositionClient := composition.NewClient(managementToken)
 	h := handler.New(fishjamClient, compositionClient, compositionAPIURL)
 
 	mux := http.NewServeMux()

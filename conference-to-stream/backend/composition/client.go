@@ -17,14 +17,19 @@ type InputEntry struct {
 // Client wraps the generated composition API client.
 type Client struct {
 	httpClient *http.Client
+	token      string
 }
 
-func NewClient() *Client {
-	return &Client{httpClient: &http.Client{}}
+func NewClient(token string) *Client {
+	return &Client{httpClient: &http.Client{}, token: token}
 }
 
 func (c *Client) newAPI(apiURL string) (*api.ClientWithResponses, error) {
-	return api.NewClientWithResponses(apiURL, api.WithHTTPClient(c.httpClient))
+	authHeader := api.WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
+		req.Header.Set("Authorization", "Bearer "+c.token)
+		return nil
+	})
+	return api.NewClientWithResponses(apiURL, api.WithHTTPClient(c.httpClient), authHeader)
 }
 
 // CreateComposition creates a new composition and returns its ID.
