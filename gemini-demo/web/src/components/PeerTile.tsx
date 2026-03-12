@@ -50,7 +50,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 200,
+    height: 560,
   },
   video: {
     width: "100%",

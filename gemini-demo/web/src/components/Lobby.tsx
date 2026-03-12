@@ -1,54 +1,48 @@
+import { useState } from "react";
+
 interface LobbyProps {
-  roomId: string | null;
-  name: string;
   loading: string | null;
-  onNameChange: (value: string) => void;
-  onCreateRoom: () => void;
-  onJoin: () => void;
+  onJoin: (roomName: string, userName: string) => void;
 }
 
-export function Lobby({
-  roomId,
-  name,
-  loading,
-  onNameChange,
-  onCreateRoom,
-  onJoin,
-}: LobbyProps) {
+export function Lobby({ loading, onJoin }: LobbyProps) {
+  const [roomName, setRoomName] = useState("");
+  const [userName, setUserName] = useState("");
+
+  const canJoin = roomName.trim() && userName.trim() && !loading;
+
+  const handleSubmit = () => {
+    if (canJoin) onJoin(roomName.trim(), userName.trim());
+  };
+
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Gemini Demo</h1>
-      <p style={styles.subtitle}>Voice call with a Gemini Live AI agent</p>
+      <h1 style={styles.title}>Gemini x Fishjam Demo</h1>
+      <p style={styles.subtitle}>Videoconference with a Gemini Live AI agent</p>
 
       <div style={styles.card}>
-        {!roomId ? (
-          <button
-            style={styles.button}
-            onClick={onCreateRoom}
-            disabled={!!loading}
-          >
-            {loading || "Create Room"}
-          </button>
-        ) : (
-          <>
-            <p style={styles.roomId}>Room: {roomId}</p>
-            <input
-              style={styles.input}
-              placeholder="Your name"
-              value={name}
-              onChange={(e) => onNameChange(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && onJoin()}
-              autoFocus
-            />
-            <button
-              style={styles.button}
-              onClick={onJoin}
-              disabled={!name || !!loading}
-            >
-              {loading ? "Joining..." : "Join"}
-            </button>
-          </>
-        )}
+        <input
+          style={styles.input}
+          placeholder="Room name"
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+          autoFocus
+        />
+        <input
+          style={styles.input}
+          placeholder="Your name"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+        />
+        <button
+          style={styles.button}
+          onClick={handleSubmit}
+          disabled={!canJoin}
+        >
+          {loading || "Join"}
+        </button>
       </div>
     </div>
   );
@@ -82,13 +76,6 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 12,
     width: 320,
     alignItems: "stretch",
-  },
-  roomId: {
-    fontSize: 13,
-    color: "#666",
-    textAlign: "center",
-    margin: 0,
-    fontFamily: "monospace",
   },
   input: {
     padding: "10px 12px",

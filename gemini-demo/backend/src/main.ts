@@ -57,6 +57,9 @@ type AgentState = {
 
 const agents = new Map<string, AgentState>();
 
+// Room name -> roomId mapping
+const roomsByName = new Map<string, string>();
+
 // Event emitter for streaming captured images to the frontend
 const imageEvents = new EventEmitter();
 
@@ -64,9 +67,17 @@ const imageEvents = new EventEmitter();
 const t = initTRPC.create();
 
 const appRouter = t.router({
-  createRoom: t.procedure.mutation(async () => {
-    return await fishjam.createRoom();
-  }),
+  joinOrCreateRoom: t.procedure
+    .input(z.object({ roomName: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      const existingRoomId = roomsByName.get(input.roomName);
+      if (existingRoomId) {
+        return { id: existingRoomId, created: false };
+      }
+      const room = await fishjam.createRoom();
+      roomsByName.set(input.roomName, room.id);
+      return { id: room.id, created: true };
+    }),
 
   createPeer: t.procedure
     .input(z.object({ roomId: z.string(), name: z.string().min(1) }))
@@ -97,9 +108,6 @@ const appRouter = t.router({
             },
           },
         );
-
-      // Wait for agent to be ready
-      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Create an audio track for the agent to send audio to peers
       const agentTrack = fishjamAgent.createTrack(

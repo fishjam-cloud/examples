@@ -7,23 +7,21 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { trpc } from "../trpc";
 import { PeerTile } from "./PeerTile";
 import { AgentTile } from "./AgentTile";
-import { AgentPanel } from "./AgentPanel";
+import { Toolbar } from "./Toolbar";
+import { SystemPromptModal } from "./SystemPromptModal";
 import { CapturedImages } from "./CapturedImages";
-
-const DEFAULT_SYSTEM_PROMPT = `You are a helpful voice assistant in a video call.
-Keep your responses concise and conversational.
-You can use Google Search to look up current information when asked.`;
 
 export function CallView({
   roomId,
+  roomName,
   onLeave,
 }: {
   roomId: string;
+  roomName: string;
   onLeave: () => void;
 }) {
-  const [systemPrompt, setSystemPrompt] = useState(DEFAULT_SYSTEM_PROMPT);
   const [agentActive, setAgentActive] = useState(false);
-  const [loading, setLoading] = useState("");
+  const [showPromptModal, setShowPromptModal] = useState(false);
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
 
   const { isCameraOn, toggleCamera, cameraStream } = useCamera();
@@ -41,7 +39,6 @@ export function CallView({
     [remotePeers],
   );
 
-  // Subscribe to captured image previews
   useEffect(() => {
     if (!agentActive) return;
 
@@ -57,20 +54,15 @@ export function CallView({
     return () => sub.unsubscribe();
   }, [roomId, agentActive]);
 
-  // Play agent audio
   useEffect(() => {
     if (!agentAudioRef.current) return;
     agentAudioRef.current.srcObject = agentPeer?.tracks[0]?.stream ?? null;
   }, [agentPeer?.tracks[0]?.stream]);
 
-  const handleStartAgent = async () => {
-    setLoading("Starting agent...");
-    try {
-      await trpc.createAgent.mutate({ roomId, systemPrompt });
-      setAgentActive(true);
-    } finally {
-      setLoading("");
-    }
+  const handleStartAgent = async (systemPrompt: string) => {
+    setShowPromptModal(false);
+    await trpc.createAgent.mutate({ roomId, systemPrompt });
+    setAgentActive(true);
   };
 
   const handleCaptureImage = async () => {
@@ -88,12 +80,12 @@ export function CallView({
 
   return (
     <div style={styles.container}>
-      <div style={styles.topBar}>
-        <span style={styles.roomLabel}>Room: {roomId}</span>
-        <button style={styles.leaveButton} onClick={handleLeave}>
-          Leave
-        </button>
-      </div>
+      <Toolbar
+        roomName={roomName}
+        agentActive={agentActive}
+        onAddAgent={() => setShowPromptModal(true)}
+        onLeave={handleLeave}
+      />
 
       <div style={styles.peerGrid}>
         <PeerTile
@@ -128,16 +120,14 @@ export function CallView({
         {agentActive && <AgentTile connected={!!agentPeer} />}
       </div>
 
-      <AgentPanel
-        agentActive={agentActive}
-        agentConnected={!!agentPeer}
-        systemPrompt={systemPrompt}
-        onSystemPromptChange={setSystemPrompt}
-        onStart={handleStartAgent}
-        loading={loading}
-      />
-
       <CapturedImages images={capturedImages} />
+
+      {showPromptModal && (
+        <SystemPromptModal
+          onStart={handleStartAgent}
+          onClose={() => setShowPromptModal(false)}
+        />
+      )}
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={agentAudioRef} autoPlay playsInline />
@@ -154,34 +144,14 @@ const styles: Record<string, React.CSSProperties> = {
       '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     background: "#fff",
   },
-  topBar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "12px 20px",
-    borderBottom: "1px solid #eee",
-  },
-  roomLabel: {
-    fontSize: 13,
-    color: "#666",
-    fontFamily: "monospace",
-  },
-  leaveButton: {
-    padding: "6px 16px",
-    fontSize: 13,
-    background: "#fff",
-    color: "#e00",
-    border: "1px solid #e00",
-    borderRadius: 6,
-    cursor: "pointer",
-  },
   peerGrid: {
     flex: 1,
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: 12,
-    padding: 12,
+    gap: 32,
+    padding: 32,
     overflow: "hidden",
+    alignContent: "center",
   },
   controls: {
     position: "absolute",

@@ -13,57 +13,48 @@ type View = "lobby" | "call";
 export default function App() {
   const [view, setView] = useState<View>("lobby");
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [name, setName] = useState("");
+  const [roomName, setRoomName] = useState<string>("");
   const [loading, setLoading] = useState<string | null>(null);
 
   const { joinRoom, leaveRoom } = useConnection();
   const { initializeDevices } = useInitializeDevices();
   const { isCameraOn, toggleCamera } = useCamera();
 
-  const handleCreateRoom = useCallback(async () => {
-    setLoading("Creating room...");
-    try {
-      const room = await trpc.createRoom.mutate();
-      setRoomId(room.id);
-    } finally {
-      setLoading("");
-    }
-  }, []);
+  const handleJoin = useCallback(
+    async (roomName: string, userName: string) => {
+      setLoading("Joining...");
+      try {
+        const { id } = await trpc.joinOrCreateRoom.mutate({ roomName });
+        setRoomId(id);
+        setRoomName(roomName);
 
-  const handleJoin = useCallback(async () => {
-    if (!roomId || !name) return;
-    setLoading("Joining...");
-    try {
-      await initializeDevices();
-      const { token } = await trpc.createPeer.mutate({ roomId, name });
+        await initializeDevices();
+        const { token } = await trpc.createPeer.mutate({
+          roomId: id,
+          name: userName,
+        });
 
-      await joinRoom({ peerToken: token, peerMetadata: { name } });
+        await joinRoom({ peerToken: token, peerMetadata: { name: userName } });
 
-      if (!isCameraOn) await toggleCamera();
-      setView("call");
-    } finally {
-      setLoading(null);
-    }
-  }, [roomId, name, joinRoom, initializeDevices, isCameraOn, toggleCamera]);
+        if (!isCameraOn) await toggleCamera();
+        setView("call");
+      } finally {
+        setLoading(null);
+      }
+    },
+    [joinRoom, initializeDevices, isCameraOn, toggleCamera],
+  );
 
   const handleLeave = useCallback(() => {
     leaveRoom();
     setView("lobby");
     setRoomId(null);
+    setRoomName("");
   }, [leaveRoom]);
 
   if (view === "lobby") {
-    return (
-      <Lobby
-        roomId={roomId}
-        name={name}
-        loading={loading}
-        onNameChange={setName}
-        onCreateRoom={handleCreateRoom}
-        onJoin={handleJoin}
-      />
-    );
+    return <Lobby loading={loading} onJoin={handleJoin} />;
   }
 
-  return <CallView roomId={roomId!} onLeave={handleLeave} />;
+  return <CallView roomId={roomId!} roomName={roomName} onLeave={handleLeave} />;
 }

@@ -1,34 +1,31 @@
+import geminiLogo from "/gemini.png";
+
 export function AgentTile({ connected }: { connected: boolean }) {
   return (
     <div style={styles.tile}>
-      <div style={styles.inner}>
-        <div style={styles.orb}>
-          <div
-            style={{
-              ...styles.orbRing,
-              animation: connected
-                ? "agent-pulse 2s ease-in-out infinite"
-                : "none",
-              opacity: connected ? 1 : 0.3,
-            }}
-          />
-          <div style={styles.orbCore} />
-        </div>
-        <div
-          style={{
-            fontSize: 13,
-            color: connected ? "#666" : "#aaa",
-            marginTop: 12,
-          }}
-        >
-          {connected ? "Listening..." : "Connecting..."}
-        </div>
+      <img
+        src={geminiLogo}
+        alt="Gemini"
+        style={{
+          ...styles.logo,
+          animation: connected ? "agent-pulse 2s ease-in-out infinite" : "none",
+          opacity: connected ? 1 : 0.4,
+        }}
+      />
+      <div
+        style={{
+          fontSize: 13,
+          color: connected ? "#666" : "#aaa",
+          marginTop: 12,
+        }}
+      >
+        {connected ? "Listening..." : "Connecting..."}
       </div>
       <div style={styles.name}>Gemini Agent</div>
       <style>{`
         @keyframes agent-pulse {
-          0%, 100% { transform: scale(1); opacity: 0.4; }
-          50% { transform: scale(1.5); opacity: 0; }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.15); }
         }
       `}</style>
     </div>
@@ -38,42 +35,19 @@ export function AgentTile({ connected }: { connected: boolean }) {
 const styles: Record<string, React.CSSProperties> = {
   tile: {
     position: "relative",
-    background: "#f5f5f5",
+    background: "#fff",
+    border: "1px solid #eee",
     borderRadius: 10,
     overflow: "hidden",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 200,
-  },
-  inner: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    height: "100%",
-    width: "100%",
-    background: "#1a1a2e",
+    height: 560,
   },
-  orb: {
-    position: "relative",
+  logo: {
     width: 64,
     height: 64,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  orbCore: {
-    width: 32,
-    height: 32,
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-  },
-  orbRing: {
-    position: "absolute",
-    inset: 0,
-    borderRadius: "50%",
-    border: "2px solid #8b5cf6",
   },
   name: {
     position: "absolute",
