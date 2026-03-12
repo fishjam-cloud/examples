@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "build": "tsc -b && vite build"
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "gemini-demo-backend": "file:../backend",
     "@fishjam-cloud/react-client": "^0.22.0",
     "@trpc/client": "^11.6.0",
     "@trpc/server": "^11.6.0",
+    "gemini-demo-backend": "workspace:*",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

@@ -28,7 +28,9 @@
     "typescript": "^5.9.2"
   },
   "scripts": {
-    "start": "tsx watch src/main.ts"
+    "start": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit"
   },
   "packageManager": "yarn@4.12.0"
 }

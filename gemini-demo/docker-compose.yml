@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    expose:
+      - "8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - FISHJAM_ID=${FISHJAM_ID}
+      - FISHJAM_MANAGEMENT_TOKEN=${FISHJAM_MANAGEMENT_TOKEN}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+      args:
+        - VITE_FISHJAM_ID=${FISHJAM_ID}
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "5001:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - web
+    restart: unless-stopped
