@@ -250,9 +250,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/js-server-sdk@npm:0.25.2":
-  version: 0.25.2
-  resolution: "@fishjam-cloud/js-server-sdk@npm:0.25.2"
+"@fishjam-cloud/js-server-sdk@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "@fishjam-cloud/js-server-sdk@npm:0.25.3"
   dependencies:
     axios: "npm:^1.7.9"
     uuid: "npm:^11.1.0"
@@ -261,7 +261,7 @@ __metadata:
   peerDependenciesMeta:
     "@google/genai":
       optional: true
-  checksum: 10c0/2b9bd212fbab3abc2fb0c164bd80f18543529af19f8099c31bca9db26fb57f8cf65b501fc5d065fb4f6dfcf447a086d6eff068d70bb2bb49d4593c372b876357
+  checksum: 10c0/475a6f9459396bd2124ee6771174e3ac4b4cdbef9ec02e195d525d78db16196cce5802260b76225bc70c1101c206152ec39dd2db17c7000bf3b1770f70b86bc1
   languageName: node
   linkType: hard
 
@@ -1226,7 +1226,7 @@ __metadata:
   resolution: "gemini-demo-backend@workspace:."
   dependencies:
     "@fastify/cors": "npm:^11.1.0"
-    "@fishjam-cloud/js-server-sdk": "npm:0.25.2"
+    "@fishjam-cloud/js-server-sdk": "npm:^0.25.3"
     "@google/genai": "npm:^1.44.0"
     "@trpc/server": "npm:^11.6.0"
     "@tsconfig/node24": "npm:^24.0.1"

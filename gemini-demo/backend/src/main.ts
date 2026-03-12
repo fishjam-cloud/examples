@@ -6,7 +6,6 @@ import {
 } from "@fishjam-cloud/js-server-sdk";
 import * as FishjamGemini from "@fishjam-cloud/js-server-sdk/gemini";
 import {
-  GoogleGenAI,
   Modality,
   type FunctionDeclaration,
   type LiveServerMessage,
@@ -61,10 +60,7 @@ const agents = new Map<string, AgentState>();
 // Event emitter for streaming captured images to the frontend
 const imageEvents = new EventEmitter();
 
-// --- Gemini function declarations ---
-
 // --- tRPC ---
-
 const t = initTRPC.create();
 
 const appRouter = t.router({

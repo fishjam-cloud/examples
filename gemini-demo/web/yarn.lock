@@ -349,10 +349,9 @@
     "@fastify/forwarded" "^3.0.0"
     ipaddr.js "^2.1.0"
 
-"@fishjam-cloud/js-server-sdk@^0.22.0":
-  version "0.22.1"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/js-server-sdk/-/js-server-sdk-0.22.1.tgz#55f8d711490dd2ba38ca8fd3920133a074d16dbc"
-  integrity sha512-+Nmg/UC76Ro2mTQr+1SaIiZ+eyCYu1Jw/2jWN2XDZsfyb+4fIyjg4DK4bx19cVUnK0llJ1k2EEPpVeRPjTpSMw==
+"@fishjam-cloud/js-server-sdk@../package.tgz":
+  version "0.25.1"
+  resolved "../package.tgz#1ce6ef8c4b783bfacac0ad702b5e2daffd559f57"
   dependencies:
     axios "^1.7.9"
     uuid "^11.1.0"
@@ -1211,7 +1210,7 @@ gcp-metadata@8.1.2:
   version "0.0.0"
   dependencies:
     "@fastify/cors" "^11.1.0"
-    "@fishjam-cloud/js-server-sdk" "^0.22.0"
+    "@fishjam-cloud/js-server-sdk" "../package.tgz"
     "@google/genai" "^1.44.0"
     "@trpc/server" "^11.6.0"
     dotenv "^17.2.3"
