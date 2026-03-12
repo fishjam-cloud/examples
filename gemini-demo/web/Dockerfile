@@ -9,10 +9,10 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY backend ./backend
 COPY web ./web
 
-RUN yarn install --frozen-lockfile
-
 ARG VITE_FISHJAM_ID
 ENV VITE_FISHJAM_ID=$VITE_FISHJAM_ID
+
+RUN yarn install --immutable
 
 RUN ./node_modules/.bin/vite build web
 
@@ -30,4 +30,4 @@ USER nodejs
 EXPOSE 3000
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["npx", "serve", "-s", "web/dist", "-l", "3000"]
+CMD ["npx", "serve", "-s", "web/dist", "-l", "tcp://0.0.0.0:3000"]

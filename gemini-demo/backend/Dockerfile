@@ -9,7 +9,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY backend ./backend
 COPY web ./web
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 RUN yarn workspace gemini-demo-backend build
 
@@ -24,7 +24,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY backend ./backend
 COPY web ./web
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 COPY --from=builder /app/backend/dist ./backend/dist
 
@@ -34,4 +34,4 @@ USER nodejs
 EXPOSE 8000
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "backend/dist/src/main.js"]
+CMD ["node", "backend/dist/main.js"]
