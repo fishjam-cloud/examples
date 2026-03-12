@@ -191,24 +191,6 @@ func (e VideoCodec) Valid() bool {
 	}
 }
 
-// Defines values for ViewerStatus.
-const (
-	Connected    ViewerStatus = "connected"
-	Disconnected ViewerStatus = "disconnected"
-)
-
-// Valid indicates whether the value is a known member of the ViewerStatus enum.
-func (e ViewerStatus) Valid() bool {
-	switch e {
-	case Connected:
-		return true
-	case Disconnected:
-		return true
-	default:
-		return false
-	}
-}
-
 // AgentOutput Output audio options
 type AgentOutput struct {
 	// AudioFormat The format of the output audio
@@ -429,9 +411,7 @@ type StreamerDetailsResponse struct {
 }
 
 // StreamerToken Token for authorizing broadcaster streamer connection
-type StreamerToken struct {
-	Token string `json:"token"`
-}
+type StreamerToken = string
 
 // StreamsListingResponse Response containing list of all streams
 type StreamsListingResponse struct {
@@ -482,15 +462,11 @@ type VideoCodec string
 // Viewer Describes viewer status
 type Viewer struct {
 	// Id Assigned viewer id
-	Id     string       `json:"id"`
-	Status ViewerStatus `json:"status"`
+	Id string `json:"id"`
 
 	// Token Token for authorizing broadcaster viewer connection
 	Token ViewerToken `json:"token"`
 }
-
-// ViewerStatus defines model for Viewer.Status.
-type ViewerStatus string
 
 // ViewerDetailsResponse Response containing viewer details
 type ViewerDetailsResponse struct {
@@ -499,9 +475,7 @@ type ViewerDetailsResponse struct {
 }
 
 // ViewerToken Token for authorizing broadcaster viewer connection
-type ViewerToken struct {
-	Token string `json:"token"`
-}
+type ViewerToken = string
 
 // WebRTCMetadata Custom peer metadata
 type WebRTCMetadata map[string]interface{}

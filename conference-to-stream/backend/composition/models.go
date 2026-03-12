@@ -285,6 +285,7 @@ type Rescaler struct {
 type RegisterOutput struct {
 	Type       string      `json:"type"`
 	WhepOutput *WhepOutput `json:"-"`
+	WhipOutput *WhipOutput `json:"-"`
 }
 
 func (r RegisterOutput) MarshalJSON() ([]byte, error) {
@@ -292,6 +293,8 @@ func (r RegisterOutput) MarshalJSON() ([]byte, error) {
 	switch r.Type {
 	case "whep_server":
 		data = r.WhepOutput
+	case "whip_client":
+		data = r.WhipOutput
 	default:
 		return nil, fmt.Errorf("unknown register output type: %s", r.Type)
 	}
@@ -312,6 +315,12 @@ func (r RegisterOutput) MarshalJSON() ([]byte, error) {
 func (r *RegisterOutput) FromWhepOutput(v WhepOutput) error {
 	r.Type = "whep_server"
 	r.WhepOutput = &v
+	return nil
+}
+
+func (r *RegisterOutput) FromWhipOutput(v WhipOutput) error {
+	r.Type = "whip_client"
+	r.WhipOutput = &v
 	return nil
 }
 
@@ -339,6 +348,26 @@ type OutputWhepAudioOptions struct {
 	Initial        AudioScene               `json:"initial"`
 	Encoder        *WhepAudioEncoderOptions `json:"encoder,omitempty"`
 	SendEosWhen    *OutputEndCondition      `json:"send_eos_when,omitempty"`
+}
+
+type WhipOutput struct {
+	EndpointUrl string                  `json:"endpoint_url"`
+	BearerToken *string                 `json:"bearer_token,omitempty"`
+	Video       *OutputWhipVideoOptions `json:"video,omitempty"`
+	Audio       *OutputWhipAudioOptions `json:"audio,omitempty"`
+}
+
+type OutputWhipVideoOptions struct {
+	Resolution  Resolution          `json:"resolution"`
+	Initial     VideoScene          `json:"initial"`
+	SendEosWhen *OutputEndCondition `json:"send_eos_when,omitempty"`
+}
+
+type OutputWhipAudioOptions struct {
+	MixingStrategy *AudioMixingStrategy `json:"mixing_strategy,omitempty"`
+	Channels       *AudioChannels       `json:"channels,omitempty"`
+	Initial        AudioScene           `json:"initial"`
+	SendEosWhen    *OutputEndCondition  `json:"send_eos_when,omitempty"`
 }
 
 type WhepAudioEncoderOptions struct {

@@ -284,9 +284,38 @@ func buildParticipantTile(entry InputEntry) (Component, error) {
 	return rescaler, nil
 }
 
-// WhepURL returns the WHEP playback URL for the given output.
-func (c *Client) WhepURL(apiURL, compositionID, outputID string) string {
-	return fmt.Sprintf("%s/api/composition/%s/whep/%s", apiURL, compositionID, outputID)
+// RegisterWhipOutput registers a WHIP output on the composition that pushes to an external WHIP endpoint.
+func (c *Client) RegisterWhipOutput(apiURL, compositionID, outputID, whipEndpointURL, bearerToken string) error {
+	var initialVideoRoot Component
+	if err := initialVideoRoot.FromView(View{}); err != nil {
+		return fmt.Errorf("build initial video root: %w", err)
+	}
+
+	var body RegisterOutput
+	if err := body.FromWhipOutput(WhipOutput{
+		EndpointUrl: whipEndpointURL,
+		BearerToken: &bearerToken,
+		Video: &OutputWhipVideoOptions{
+			Resolution: Resolution{Width: 1920, Height: 1080},
+			Initial:    VideoScene{Root: initialVideoRoot},
+		},
+		Audio: &OutputWhipAudioOptions{
+			Initial: AudioScene{Inputs: []AudioSceneInput{}},
+		},
+	}); err != nil {
+		return fmt.Errorf("build register whip output body: %w", err)
+	}
+
+	path := fmt.Sprintf("/api/composition/%s/output/%s/register", compositionID, outputID)
+	respBody, statusCode, err := c.doRequest(context.Background(), apiURL, "POST", path, body)
+	if err != nil {
+		return err
+	}
+
+	if statusCode < 200 || statusCode >= 300 {
+		return fmt.Errorf("register whip output: unexpected status %d: %s", statusCode, string(respBody))
+	}
+	return nil
 }
 
 // CompositionBaseURL returns the composition base URL used for track forwarding.

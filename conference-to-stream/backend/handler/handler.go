@@ -12,7 +12,7 @@ import (
 	"conference-to-stream/fishjam"
 )
 
-const whepOutputID = "whep_output"
+const whipOutputID = "whip_output"
 
 type RoomState struct {
 	RoomID             string
@@ -23,6 +23,7 @@ type RoomState struct {
 	PeerIDs            map[string]struct{}
 	PeerNames          map[string]string // peer_id → display name
 	WhepURL            string
+	LivestreamID       string
 	CompositionDeleted bool
 	mu                 sync.Mutex
 }
@@ -105,14 +106,32 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Register WHEP output
-	if err := h.compositionClient.RegisterWhepOutput(apiURL, compositionID, whepOutputID); err != nil {
-		log.Printf("register whep output: %v", err)
-		http.Error(w, "failed to register WHEP output", http.StatusInternalServerError)
+	// Create Fishjam livestream
+	stream, err := h.fishjamClient.CreateStream()
+	if err != nil {
+		log.Printf("create livestream: %v", err)
+		http.Error(w, "failed to create livestream", http.StatusInternalServerError)
+		return
+	}
+	log.Printf("created livestream: %s", stream.Id)
+
+	// Create streamer → get bearer token
+	streamerToken, err := h.fishjamClient.CreateStreamer(stream.Id)
+	if err != nil {
+		log.Printf("create streamer: %v", err)
+		http.Error(w, "failed to create streamer", http.StatusInternalServerError)
 		return
 	}
 
-	// Create Fishjam room
+	// Register WHIP output on composition pointing to Fishjam's WHIP endpoint
+	whipURL := h.fishjamClient.LiveWhipURL()
+	if err := h.compositionClient.RegisterWhipOutput(apiURL, compositionID, whipOutputID, whipURL, streamerToken); err != nil {
+		log.Printf("register whip output: %v", err)
+		http.Error(w, "failed to register WHIP output", http.StatusInternalServerError)
+		return
+	}
+
+	// Create Fishjam conference room
 	room, err := h.fishjamClient.CreateRoom()
 	if err != nil {
 		log.Printf("create room: %v", err)
@@ -130,7 +149,7 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	whepURL := h.compositionClient.WhepURL(apiURL, compositionID, whepOutputID)
+	whepURL := h.fishjamClient.LiveWhepURL(stream.Id)
 
 	state := &RoomState{
 		RoomID:         roomID,
@@ -141,6 +160,7 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		PeerIDs:        make(map[string]struct{}),
 		PeerNames:      make(map[string]string),
 		WhepURL:        whepURL,
+		LivestreamID:   stream.Id,
 	}
 
 	h.mu.Lock()
@@ -174,7 +194,7 @@ func (h *Handler) startNotifier(state *RoomState, apiURL, compositionID, roomID 
 			state.mu.Unlock()
 
 			log.Printf("track forwarding: room=%s peer=%s input=%s (total=%d)", event.RoomID, event.PeerID, event.InputID, len(inputs))
-			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whepOutputID, inputs); err != nil {
+			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whipOutputID, inputs); err != nil {
 				log.Printf("update output: %v", err)
 			}
 		},
@@ -192,7 +212,7 @@ func (h *Handler) startNotifier(state *RoomState, apiURL, compositionID, roomID 
 			state.mu.Unlock()
 
 			log.Printf("track forwarding removed: room=%s peer=%s input=%s (total=%d)", event.RoomID, event.PeerID, event.InputID, len(inputs))
-			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whepOutputID, inputs); err != nil {
+			if err := h.compositionClient.UpdateOutput(apiURL, compositionID, whipOutputID, inputs); err != nil {
 				log.Printf("update output: %v", err)
 			}
 		},
@@ -217,6 +237,7 @@ func (h *Handler) startNotifier(state *RoomState, apiURL, compositionID, roomID 
 			shouldDelete := !state.CompositionDeleted && len(state.PeerIDs) == 0
 			compositionID := state.CompositionID
 			compositionURL := state.CompositionURL
+			livestreamID := state.LivestreamID
 			roomName := state.RoomName
 			roomID := state.RoomID
 			state.mu.Unlock()
@@ -233,6 +254,14 @@ func (h *Handler) startNotifier(state *RoomState, apiURL, compositionID, roomID 
 			state.mu.Lock()
 			state.CompositionDeleted = true
 			state.mu.Unlock()
+
+			if livestreamID != "" {
+				if err := h.fishjamClient.DeleteStream(livestreamID); err != nil {
+					log.Printf("delete livestream: room=%s stream=%s err=%v", roomID, livestreamID, err)
+				} else {
+					log.Printf("deleted livestream after last peer left: room=%s stream=%s", roomID, livestreamID)
+				}
+			}
 
 			h.mu.Lock()
 			delete(h.roomsByID, roomID)
@@ -290,10 +319,28 @@ func (h *Handler) AttachRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Register WHEP output
-	if err := h.compositionClient.RegisterWhepOutput(apiURL, compositionID, whepOutputID); err != nil {
-		log.Printf("register whep output: %v", err)
-		http.Error(w, "failed to register WHEP output", http.StatusInternalServerError)
+	// Create Fishjam livestream
+	stream, err := h.fishjamClient.CreateStream()
+	if err != nil {
+		log.Printf("create livestream: %v", err)
+		http.Error(w, "failed to create livestream", http.StatusInternalServerError)
+		return
+	}
+	log.Printf("created livestream: %s", stream.Id)
+
+	// Create streamer → get bearer token
+	streamerToken, err := h.fishjamClient.CreateStreamer(stream.Id)
+	if err != nil {
+		log.Printf("create streamer: %v", err)
+		http.Error(w, "failed to create streamer", http.StatusInternalServerError)
+		return
+	}
+
+	// Register WHIP output on composition pointing to Fishjam's WHIP endpoint
+	whipURL := h.fishjamClient.LiveWhipURL()
+	if err := h.compositionClient.RegisterWhipOutput(apiURL, compositionID, whipOutputID, whipURL, streamerToken); err != nil {
+		log.Printf("register whip output: %v", err)
+		http.Error(w, "failed to register WHIP output", http.StatusInternalServerError)
 		return
 	}
 
@@ -305,7 +352,7 @@ func (h *Handler) AttachRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	whepURL := h.compositionClient.WhepURL(apiURL, compositionID, whepOutputID)
+	whepURL := h.fishjamClient.LiveWhepURL(stream.Id)
 
 	state := &RoomState{
 		RoomID:         roomID,
@@ -316,6 +363,7 @@ func (h *Handler) AttachRoom(w http.ResponseWriter, r *http.Request) {
 		PeerIDs:        make(map[string]struct{}),
 		PeerNames:      make(map[string]string),
 		WhepURL:        whepURL,
+		LivestreamID:   stream.Id,
 	}
 
 	h.mu.Lock()
