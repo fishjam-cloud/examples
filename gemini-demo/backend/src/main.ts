@@ -41,11 +41,11 @@ const fishjam = new FishjamClient({
   managementToken: config.FISHJAM_MANAGEMENT_TOKEN,
 });
 
-const GEMINI_MODEL = "gemini-3.1-flash-audio-eap";
-
 const genai = FishjamGemini.createClient({
   apiKey: config.GEMINI_API_KEY,
 });
+
+const GEMINI_MODEL = "gemini-3.1-flash-audio-eap";
 
 // --- Per-room agent state ---
 
@@ -114,10 +114,10 @@ const appRouter = t.router({
         FishjamGemini.geminiOutputAudioSettings,
       );
 
-      const captureImageDeclaration: FunctionDeclaration = {
-        name: "capture_image",
+      const disconnectDeclaration: FunctionDeclaration = {
+        name: "disconnect",
         description:
-          "Capture an image from the user's camera. Use this when the user asks you to capture his camera..",
+          "Disconnect yourself from the room. Use this when the user asks you to disconnect.",
       };
 
       // Connect to Gemini Live API
@@ -128,7 +128,7 @@ const appRouter = t.router({
           systemInstruction: input.systemPrompt,
           tools: [
             { googleSearch: {} },
-            { functionDeclarations: [captureImageDeclaration] },
+            { functionDeclarations: [disconnectDeclaration] },
           ],
         },
         callbacks: {
@@ -143,33 +143,11 @@ const appRouter = t.router({
               fishjamAgent.interruptTrack(agentTrack.id);
             }
 
-            // Handle Gemini function calls (e.g. capture_image)
-            if (message.toolCall?.functionCalls) {
-              for (const fc of message.toolCall.functionCalls) {
-                if (fc.name === "capture_image") {
-                  // Capture a frame from each video track the agent is subscribed to
-                  //
-                  const room = await fishjam.getRoom(input.roomId as RoomId);
-
-                  for (const track of room.peers.find(
-                    (e) => e.type === "webrtc",
-                  )?.tracks ?? []) {
-                    fishjamAgent.captureImage(track.id as TrackId);
-                  }
-
-                  session.sendToolResponse({
-                    functionResponses: {
-                      id: fc.id!,
-                      name: fc.name,
-                      response: {
-                        output:
-                          "Image capture requested. The image will be sent shortly.",
-                      },
-                    },
-                  });
-                }
+            message.toolCall?.functionCalls?.forEach((call) => {
+              if (call.name === "disconnect") {
+                fishjamAgent.disconnect();
               }
-            }
+            });
           },
           onerror: (e) => console.error("Gemini error:", e),
           onclose: (e) => {
