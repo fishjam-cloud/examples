@@ -120,6 +120,8 @@ const appRouter = t.router({
           "Disconnect yourself from the room. Use this when the user asks you to disconnect.",
       };
 
+      let cleanup: () => void | null = null;
+
       // Connect to Gemini Live API
       const session = await genai.live.connect({
         model: GEMINI_MODEL,
@@ -145,7 +147,7 @@ const appRouter = t.router({
 
             message.toolCall?.functionCalls?.forEach((call) => {
               if (call.name === "disconnect") {
-                fishjamAgent.disconnect();
+                cleanup?.();
               }
             });
           },
@@ -180,11 +182,12 @@ const appRouter = t.router({
         });
       });
 
-      const cleanup = () => {
+      cleanup = () => {
         session.close();
         fishjamAgent.removeAllListeners("trackData");
         fishjamAgent.removeAllListeners("trackImage");
         fishjamAgent.deleteTrack(agentTrack.id);
+        fishjamAgent.disconnect();
         agents.delete(input.roomId);
       };
 
