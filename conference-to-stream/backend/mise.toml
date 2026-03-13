@@ -1,0 +1,11 @@
+[tasks.generate-composition-client]
+description = "Generate the composition API client from composition-openapi.json"
+run = "go tool oapi-codegen -config composition/oapi-codegen.yaml composition-openapi.json"
+
+[tasks.generate-fishjam-client]
+description = "Generate the Fishjam API client from ~/fjc/fishjam/openapi.yaml"
+run = "go tool oapi-codegen -config fishjam/oapi-codegen.yaml ~/fjc/fishjam/openapi.yaml"
+
+[tasks.generate]
+description = "Regenerate all API clients"
+depends = ["generate-composition-client", "generate-fishjam-client"]
