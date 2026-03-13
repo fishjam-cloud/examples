@@ -197,7 +197,7 @@ const file_fishjam_notifications_shared_proto_rawDesc = "" +
 	"\rTrackEncoding\x12\x1e\n" +
 	"\x1aTRACK_ENCODING_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14TRACK_ENCODING_PCM16\x10\x01\x12\x17\n" +
-	"\x13TRACK_ENCODING_OPUS\x10\x02b\x06proto3"
+	"\x13TRACK_ENCODING_OPUS\x10\x02B2Z0conference-to-stream/proto/fishjam/notificationsb\x06proto3"
 
 var (
 	file_fishjam_notifications_shared_proto_rawDescOnce sync.Once

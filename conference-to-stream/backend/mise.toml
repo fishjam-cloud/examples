@@ -1,7 +1,11 @@
+[tasks.generate-protos]
+description = "Generate Go protobufs from the source"
+run = "find protos -name '*.proto' | xargs protoc --proto_path=protos --go_out=. --go_opt=module=conference-to-stream"
+
 [tasks.generate-fishjam-client]
-description = "Generate the Fishjam API client from ~/fjc/fishjam/openapi.yaml"
-run = "go tool oapi-codegen -config fishjam/oapi-codegen.yaml ~/fjc/fishjam/openapi.yaml"
+description = "Generate the Fishjam API client from openapi"
+run = "go tool oapi-codegen -config fishjam/oapi-codegen.yaml ./fishjam/openapi.yaml"
 
 [tasks.generate]
 description = "Regenerate all API clients"
-depends = ["generate-fishjam-client"]
+depends = ["generate-protos", "generate-fishjam-client"]

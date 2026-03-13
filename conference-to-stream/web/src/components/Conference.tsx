@@ -104,7 +104,7 @@ export function Conference({ whepUrl, roomName, peerName, onLeave }: Props) {
           >
             Open in vdo.ninja player
           </a>
-          <p className="text-xs text-gray-500">Composed stream via Foundry</p>
+          <p className="text-xs text-gray-500">Composed stream via Composition API</p>
         </div>
       </div>
     </div>

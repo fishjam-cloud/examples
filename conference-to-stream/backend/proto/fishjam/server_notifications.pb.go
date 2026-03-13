@@ -118,6 +118,55 @@ func (ServerMessage_EventType) EnumDescriptor() ([]byte, []int) {
 	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 1}
 }
 
+type ServerMessage_VadNotification_Status int32
+
+const (
+	ServerMessage_VadNotification_STATUS_UNSPECIFIED ServerMessage_VadNotification_Status = 0
+	ServerMessage_VadNotification_STATUS_SILENCE     ServerMessage_VadNotification_Status = 1
+	ServerMessage_VadNotification_STATUS_SPEECH      ServerMessage_VadNotification_Status = 2
+)
+
+// Enum value maps for ServerMessage_VadNotification_Status.
+var (
+	ServerMessage_VadNotification_Status_name = map[int32]string{
+		0: "STATUS_UNSPECIFIED",
+		1: "STATUS_SILENCE",
+		2: "STATUS_SPEECH",
+	}
+	ServerMessage_VadNotification_Status_value = map[string]int32{
+		"STATUS_UNSPECIFIED": 0,
+		"STATUS_SILENCE":     1,
+		"STATUS_SPEECH":      2,
+	}
+)
+
+func (x ServerMessage_VadNotification_Status) Enum() *ServerMessage_VadNotification_Status {
+	p := new(ServerMessage_VadNotification_Status)
+	*p = x
+	return p
+}
+
+func (x ServerMessage_VadNotification_Status) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ServerMessage_VadNotification_Status) Descriptor() protoreflect.EnumDescriptor {
+	return file_fishjam_server_notifications_proto_enumTypes[2].Descriptor()
+}
+
+func (ServerMessage_VadNotification_Status) Type() protoreflect.EnumType {
+	return &file_fishjam_server_notifications_proto_enumTypes[2]
+}
+
+func (x ServerMessage_VadNotification_Status) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ServerMessage_VadNotification_Status.Descriptor instead.
+func (ServerMessage_VadNotification_Status) EnumDescriptor() ([]byte, []int) {
+	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 24, 0}
+}
+
 // Defines any type of message passed between FJ and server peer
 type ServerMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -143,6 +192,7 @@ type ServerMessage struct {
 	//	*ServerMessage_ChannelRemoved_
 	//	*ServerMessage_TrackForwarding_
 	//	*ServerMessage_TrackForwardingRemoved_
+	//	*ServerMessage_VadNotification_
 	//	*ServerMessage_ViewerConnected_
 	//	*ServerMessage_ViewerDisconnected_
 	//	*ServerMessage_StreamerConnected_
@@ -375,6 +425,15 @@ func (x *ServerMessage) GetTrackForwardingRemoved() *ServerMessage_TrackForwardi
 	return nil
 }
 
+func (x *ServerMessage) GetVadNotification() *ServerMessage_VadNotification {
+	if x != nil {
+		if x, ok := x.Content.(*ServerMessage_VadNotification_); ok {
+			return x.VadNotification
+		}
+	}
+	return nil
+}
+
 func (x *ServerMessage) GetViewerConnected() *ServerMessage_ViewerConnected {
 	if x != nil {
 		if x, ok := x.Content.(*ServerMessage_ViewerConnected_); ok {
@@ -555,6 +614,10 @@ type ServerMessage_TrackForwardingRemoved_ struct {
 	TrackForwardingRemoved *ServerMessage_TrackForwardingRemoved `protobuf:"bytes,31,opt,name=track_forwarding_removed,json=trackForwardingRemoved,proto3,oneof"`
 }
 
+type ServerMessage_VadNotification_ struct {
+	VadNotification *ServerMessage_VadNotification `protobuf:"bytes,32,opt,name=vad_notification,json=vadNotification,proto3,oneof"`
+}
+
 type ServerMessage_ViewerConnected_ struct {
 	ViewerConnected *ServerMessage_ViewerConnected `protobuf:"bytes,24,opt,name=viewer_connected,json=viewerConnected,proto3,oneof"`
 }
@@ -640,6 +703,8 @@ func (*ServerMessage_ChannelRemoved_) isServerMessage_Content() {}
 func (*ServerMessage_TrackForwarding_) isServerMessage_Content() {}
 
 func (*ServerMessage_TrackForwardingRemoved_) isServerMessage_Content() {}
+
+func (*ServerMessage_VadNotification_) isServerMessage_Content() {}
 
 func (*ServerMessage_ViewerConnected_) isServerMessage_Content() {}
 
@@ -2043,7 +2108,7 @@ func (*ServerMessage_ChannelRemoved_PeerId) isServerMessage_ChannelRemoved_Endpo
 
 func (*ServerMessage_ChannelRemoved_ComponentId) isServerMessage_ChannelRemoved_EndpointInfo() {}
 
-// Sent when there is an upsert to track forwardings from Fishjam to Foundry
+// Sent when there is an upsert to track forwardings from Fishjam to Composition
 type ServerMessage_TrackForwarding struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	RoomId         string                 `protobuf:"bytes,1,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
@@ -2197,6 +2262,75 @@ func (x *ServerMessage_TrackForwardingRemoved) GetInputId() string {
 	return ""
 }
 
+// Notification sent when voice activity changes on a track
+type ServerMessage_VadNotification struct {
+	state         protoimpl.MessageState               `protogen:"open.v1"`
+	RoomId        string                               `protobuf:"bytes,1,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
+	PeerId        string                               `protobuf:"bytes,2,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
+	TrackId       string                               `protobuf:"bytes,3,opt,name=track_id,json=trackId,proto3" json:"track_id,omitempty"`
+	Status        ServerMessage_VadNotification_Status `protobuf:"varint,4,opt,name=status,proto3,enum=fishjam.ServerMessage_VadNotification_Status" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServerMessage_VadNotification) Reset() {
+	*x = ServerMessage_VadNotification{}
+	mi := &file_fishjam_server_notifications_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServerMessage_VadNotification) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServerMessage_VadNotification) ProtoMessage() {}
+
+func (x *ServerMessage_VadNotification) ProtoReflect() protoreflect.Message {
+	mi := &file_fishjam_server_notifications_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServerMessage_VadNotification.ProtoReflect.Descriptor instead.
+func (*ServerMessage_VadNotification) Descriptor() ([]byte, []int) {
+	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 24}
+}
+
+func (x *ServerMessage_VadNotification) GetRoomId() string {
+	if x != nil {
+		return x.RoomId
+	}
+	return ""
+}
+
+func (x *ServerMessage_VadNotification) GetPeerId() string {
+	if x != nil {
+		return x.PeerId
+	}
+	return ""
+}
+
+func (x *ServerMessage_VadNotification) GetTrackId() string {
+	if x != nil {
+		return x.TrackId
+	}
+	return ""
+}
+
+func (x *ServerMessage_VadNotification) GetStatus() ServerMessage_VadNotification_Status {
+	if x != nil {
+		return x.Status
+	}
+	return ServerMessage_VadNotification_STATUS_UNSPECIFIED
+}
+
 // Notification sent when streamer successfully connects
 type ServerMessage_StreamConnected struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -2207,7 +2341,7 @@ type ServerMessage_StreamConnected struct {
 
 func (x *ServerMessage_StreamConnected) Reset() {
 	*x = ServerMessage_StreamConnected{}
-	mi := &file_fishjam_server_notifications_proto_msgTypes[25]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2219,7 +2353,7 @@ func (x *ServerMessage_StreamConnected) String() string {
 func (*ServerMessage_StreamConnected) ProtoMessage() {}
 
 func (x *ServerMessage_StreamConnected) ProtoReflect() protoreflect.Message {
-	mi := &file_fishjam_server_notifications_proto_msgTypes[25]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2232,7 +2366,7 @@ func (x *ServerMessage_StreamConnected) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerMessage_StreamConnected.ProtoReflect.Descriptor instead.
 func (*ServerMessage_StreamConnected) Descriptor() ([]byte, []int) {
-	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 24}
+	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 25}
 }
 
 func (x *ServerMessage_StreamConnected) GetStreamId() string {
@@ -2252,7 +2386,7 @@ type ServerMessage_StreamDisconnected struct {
 
 func (x *ServerMessage_StreamDisconnected) Reset() {
 	*x = ServerMessage_StreamDisconnected{}
-	mi := &file_fishjam_server_notifications_proto_msgTypes[26]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2264,7 +2398,7 @@ func (x *ServerMessage_StreamDisconnected) String() string {
 func (*ServerMessage_StreamDisconnected) ProtoMessage() {}
 
 func (x *ServerMessage_StreamDisconnected) ProtoReflect() protoreflect.Message {
-	mi := &file_fishjam_server_notifications_proto_msgTypes[26]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2277,7 +2411,7 @@ func (x *ServerMessage_StreamDisconnected) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerMessage_StreamDisconnected.ProtoReflect.Descriptor instead.
 func (*ServerMessage_StreamDisconnected) Descriptor() ([]byte, []int) {
-	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 25}
+	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 26}
 }
 
 func (x *ServerMessage_StreamDisconnected) GetStreamId() string {
@@ -2298,7 +2432,7 @@ type ServerMessage_ViewerConnected struct {
 
 func (x *ServerMessage_ViewerConnected) Reset() {
 	*x = ServerMessage_ViewerConnected{}
-	mi := &file_fishjam_server_notifications_proto_msgTypes[27]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2310,7 +2444,7 @@ func (x *ServerMessage_ViewerConnected) String() string {
 func (*ServerMessage_ViewerConnected) ProtoMessage() {}
 
 func (x *ServerMessage_ViewerConnected) ProtoReflect() protoreflect.Message {
-	mi := &file_fishjam_server_notifications_proto_msgTypes[27]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2323,7 +2457,7 @@ func (x *ServerMessage_ViewerConnected) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerMessage_ViewerConnected.ProtoReflect.Descriptor instead.
 func (*ServerMessage_ViewerConnected) Descriptor() ([]byte, []int) {
-	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 26}
+	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 27}
 }
 
 func (x *ServerMessage_ViewerConnected) GetStreamId() string {
@@ -2351,7 +2485,7 @@ type ServerMessage_ViewerDisconnected struct {
 
 func (x *ServerMessage_ViewerDisconnected) Reset() {
 	*x = ServerMessage_ViewerDisconnected{}
-	mi := &file_fishjam_server_notifications_proto_msgTypes[28]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2363,7 +2497,7 @@ func (x *ServerMessage_ViewerDisconnected) String() string {
 func (*ServerMessage_ViewerDisconnected) ProtoMessage() {}
 
 func (x *ServerMessage_ViewerDisconnected) ProtoReflect() protoreflect.Message {
-	mi := &file_fishjam_server_notifications_proto_msgTypes[28]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2376,7 +2510,7 @@ func (x *ServerMessage_ViewerDisconnected) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerMessage_ViewerDisconnected.ProtoReflect.Descriptor instead.
 func (*ServerMessage_ViewerDisconnected) Descriptor() ([]byte, []int) {
-	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 27}
+	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 28}
 }
 
 func (x *ServerMessage_ViewerDisconnected) GetStreamId() string {
@@ -2403,7 +2537,7 @@ type ServerMessage_StreamerConnected struct {
 
 func (x *ServerMessage_StreamerConnected) Reset() {
 	*x = ServerMessage_StreamerConnected{}
-	mi := &file_fishjam_server_notifications_proto_msgTypes[29]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2415,7 +2549,7 @@ func (x *ServerMessage_StreamerConnected) String() string {
 func (*ServerMessage_StreamerConnected) ProtoMessage() {}
 
 func (x *ServerMessage_StreamerConnected) ProtoReflect() protoreflect.Message {
-	mi := &file_fishjam_server_notifications_proto_msgTypes[29]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2428,7 +2562,7 @@ func (x *ServerMessage_StreamerConnected) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerMessage_StreamerConnected.ProtoReflect.Descriptor instead.
 func (*ServerMessage_StreamerConnected) Descriptor() ([]byte, []int) {
-	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 28}
+	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 29}
 }
 
 func (x *ServerMessage_StreamerConnected) GetStreamId() string {
@@ -2455,7 +2589,7 @@ type ServerMessage_StreamerDisconnected struct {
 
 func (x *ServerMessage_StreamerDisconnected) Reset() {
 	*x = ServerMessage_StreamerDisconnected{}
-	mi := &file_fishjam_server_notifications_proto_msgTypes[30]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2467,7 +2601,7 @@ func (x *ServerMessage_StreamerDisconnected) String() string {
 func (*ServerMessage_StreamerDisconnected) ProtoMessage() {}
 
 func (x *ServerMessage_StreamerDisconnected) ProtoReflect() protoreflect.Message {
-	mi := &file_fishjam_server_notifications_proto_msgTypes[30]
+	mi := &file_fishjam_server_notifications_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2480,7 +2614,7 @@ func (x *ServerMessage_StreamerDisconnected) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ServerMessage_StreamerDisconnected.ProtoReflect.Descriptor instead.
 func (*ServerMessage_StreamerDisconnected) Descriptor() ([]byte, []int) {
-	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 29}
+	return file_fishjam_server_notifications_proto_rawDescGZIP(), []int{0, 30}
 }
 
 func (x *ServerMessage_StreamerDisconnected) GetStreamId() string {
@@ -2501,7 +2635,7 @@ var File_fishjam_server_notifications_proto protoreflect.FileDescriptor
 
 const file_fishjam_server_notifications_proto_rawDesc = "" +
 	"\n" +
-	"\"fishjam/server_notifications.proto\x12\afishjam\x1a\"fishjam/notifications/shared.proto\"\xd9-\n" +
+	"\"fishjam/server_notifications.proto\x12\afishjam\x1a\"fishjam/notifications/shared.proto\"\x9f0\n" +
 	"\rServerMessage\x12L\n" +
 	"\rauthenticated\x18\x06 \x01(\v2$.fishjam.ServerMessage.AuthenticatedH\x00R\rauthenticated\x12G\n" +
 	"\fauth_request\x18\a \x01(\v2\".fishjam.ServerMessage.AuthRequestH\x00R\vauthRequest\x12V\n" +
@@ -2526,6 +2660,7 @@ const file_fishjam_server_notifications_proto_rawDesc = "" +
 	"\x0fchannel_removed\x18\x1d \x01(\v2%.fishjam.ServerMessage.ChannelRemovedH\x00R\x0echannelRemoved\x12S\n" +
 	"\x10track_forwarding\x18\x1e \x01(\v2&.fishjam.ServerMessage.TrackForwardingH\x00R\x0ftrackForwarding\x12i\n" +
 	"\x18track_forwarding_removed\x18\x1f \x01(\v2-.fishjam.ServerMessage.TrackForwardingRemovedH\x00R\x16trackForwardingRemoved\x12S\n" +
+	"\x10vad_notification\x18  \x01(\v2&.fishjam.ServerMessage.VadNotificationH\x00R\x0fvadNotification\x12S\n" +
 	"\x10viewer_connected\x18\x18 \x01(\v2&.fishjam.ServerMessage.ViewerConnectedH\x00R\x0fviewerConnected\x12\\\n" +
 	"\x13viewer_disconnected\x18\x19 \x01(\v2).fishjam.ServerMessage.ViewerDisconnectedH\x00R\x12viewerDisconnected\x12Y\n" +
 	"\x12streamer_connected\x18\x1a \x01(\v2(.fishjam.ServerMessage.StreamerConnectedH\x00R\x11streamerConnected\x12b\n" +
@@ -2635,7 +2770,16 @@ const file_fishjam_server_notifications_proto_rawDesc = "" +
 	"\aroom_id\x18\x01 \x01(\tR\x06roomId\x12\x17\n" +
 	"\apeer_id\x18\x02 \x01(\tR\x06peerId\x12'\n" +
 	"\x0fcomposition_url\x18\x03 \x01(\tR\x0ecompositionUrl\x12\x19\n" +
-	"\binput_id\x18\x04 \x01(\tR\ainputId\x1a.\n" +
+	"\binput_id\x18\x04 \x01(\tR\ainputId\x1a\xee\x01\n" +
+	"\x0fVadNotification\x12\x17\n" +
+	"\aroom_id\x18\x01 \x01(\tR\x06roomId\x12\x17\n" +
+	"\apeer_id\x18\x02 \x01(\tR\x06peerId\x12\x19\n" +
+	"\btrack_id\x18\x03 \x01(\tR\atrackId\x12E\n" +
+	"\x06status\x18\x04 \x01(\x0e2-.fishjam.ServerMessage.VadNotification.StatusR\x06status\"G\n" +
+	"\x06Status\x12\x16\n" +
+	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eSTATUS_SILENCE\x10\x01\x12\x11\n" +
+	"\rSTATUS_SPEECH\x10\x02\x1a.\n" +
 	"\x0fStreamConnected\x12\x1b\n" +
 	"\tstream_id\x18\x01 \x01(\tR\bstreamId\x1a1\n" +
 	"\x12StreamDisconnected\x12\x1b\n" +
@@ -2661,7 +2805,7 @@ const file_fishjam_server_notifications_proto_rawDesc = "" +
 	"\tEventType\x12\x1a\n" +
 	"\x16EVENT_TYPE_UNSPECIFIED\x10\x00\x12\"\n" +
 	"\x1eEVENT_TYPE_SERVER_NOTIFICATION\x10\x01\"\x04\b\x02\x10\x02B\t\n" +
-	"\acontentJ\x04\b\f\x10\rb\x06proto3"
+	"\acontentJ\x04\b\f\x10\rB$Z\"conference-to-stream/proto/fishjamb\x06proto3"
 
 var (
 	file_fishjam_server_notifications_proto_rawDescOnce sync.Once
@@ -2675,93 +2819,97 @@ func file_fishjam_server_notifications_proto_rawDescGZIP() []byte {
 	return file_fishjam_server_notifications_proto_rawDescData
 }
 
-var file_fishjam_server_notifications_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_fishjam_server_notifications_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
+var file_fishjam_server_notifications_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_fishjam_server_notifications_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
 var file_fishjam_server_notifications_proto_goTypes = []any{
 	(ServerMessage_PeerType)(0),                  // 0: fishjam.ServerMessage.PeerType
 	(ServerMessage_EventType)(0),                 // 1: fishjam.ServerMessage.EventType
-	(*ServerMessage)(nil),                        // 2: fishjam.ServerMessage
-	(*ServerMessage_RoomCrashed)(nil),            // 3: fishjam.ServerMessage.RoomCrashed
-	(*ServerMessage_PeerAdded)(nil),              // 4: fishjam.ServerMessage.PeerAdded
-	(*ServerMessage_PeerDeleted)(nil),            // 5: fishjam.ServerMessage.PeerDeleted
-	(*ServerMessage_PeerConnected)(nil),          // 6: fishjam.ServerMessage.PeerConnected
-	(*ServerMessage_PeerDisconnected)(nil),       // 7: fishjam.ServerMessage.PeerDisconnected
-	(*ServerMessage_PeerCrashed)(nil),            // 8: fishjam.ServerMessage.PeerCrashed
-	(*ServerMessage_ComponentCrashed)(nil),       // 9: fishjam.ServerMessage.ComponentCrashed
-	(*ServerMessage_Authenticated)(nil),          // 10: fishjam.ServerMessage.Authenticated
-	(*ServerMessage_AuthRequest)(nil),            // 11: fishjam.ServerMessage.AuthRequest
-	(*ServerMessage_SubscribeRequest)(nil),       // 12: fishjam.ServerMessage.SubscribeRequest
-	(*ServerMessage_SubscribeResponse)(nil),      // 13: fishjam.ServerMessage.SubscribeResponse
-	(*ServerMessage_RoomCreated)(nil),            // 14: fishjam.ServerMessage.RoomCreated
-	(*ServerMessage_RoomDeleted)(nil),            // 15: fishjam.ServerMessage.RoomDeleted
-	(*ServerMessage_HlsPlayable)(nil),            // 16: fishjam.ServerMessage.HlsPlayable
-	(*ServerMessage_HlsUploaded)(nil),            // 17: fishjam.ServerMessage.HlsUploaded
-	(*ServerMessage_HlsUploadCrashed)(nil),       // 18: fishjam.ServerMessage.HlsUploadCrashed
-	(*ServerMessage_PeerMetadataUpdated)(nil),    // 19: fishjam.ServerMessage.PeerMetadataUpdated
-	(*ServerMessage_TrackAdded)(nil),             // 20: fishjam.ServerMessage.TrackAdded
-	(*ServerMessage_TrackRemoved)(nil),           // 21: fishjam.ServerMessage.TrackRemoved
-	(*ServerMessage_TrackMetadataUpdated)(nil),   // 22: fishjam.ServerMessage.TrackMetadataUpdated
-	(*ServerMessage_ChannelAdded)(nil),           // 23: fishjam.ServerMessage.ChannelAdded
-	(*ServerMessage_ChannelRemoved)(nil),         // 24: fishjam.ServerMessage.ChannelRemoved
-	(*ServerMessage_TrackForwarding)(nil),        // 25: fishjam.ServerMessage.TrackForwarding
-	(*ServerMessage_TrackForwardingRemoved)(nil), // 26: fishjam.ServerMessage.TrackForwardingRemoved
-	(*ServerMessage_StreamConnected)(nil),        // 27: fishjam.ServerMessage.StreamConnected
-	(*ServerMessage_StreamDisconnected)(nil),     // 28: fishjam.ServerMessage.StreamDisconnected
-	(*ServerMessage_ViewerConnected)(nil),        // 29: fishjam.ServerMessage.ViewerConnected
-	(*ServerMessage_ViewerDisconnected)(nil),     // 30: fishjam.ServerMessage.ViewerDisconnected
-	(*ServerMessage_StreamerConnected)(nil),      // 31: fishjam.ServerMessage.StreamerConnected
-	(*ServerMessage_StreamerDisconnected)(nil),   // 32: fishjam.ServerMessage.StreamerDisconnected
-	(*notifications.Track)(nil),                  // 33: fishjam.notifications.Track
+	(ServerMessage_VadNotification_Status)(0),    // 2: fishjam.ServerMessage.VadNotification.Status
+	(*ServerMessage)(nil),                        // 3: fishjam.ServerMessage
+	(*ServerMessage_RoomCrashed)(nil),            // 4: fishjam.ServerMessage.RoomCrashed
+	(*ServerMessage_PeerAdded)(nil),              // 5: fishjam.ServerMessage.PeerAdded
+	(*ServerMessage_PeerDeleted)(nil),            // 6: fishjam.ServerMessage.PeerDeleted
+	(*ServerMessage_PeerConnected)(nil),          // 7: fishjam.ServerMessage.PeerConnected
+	(*ServerMessage_PeerDisconnected)(nil),       // 8: fishjam.ServerMessage.PeerDisconnected
+	(*ServerMessage_PeerCrashed)(nil),            // 9: fishjam.ServerMessage.PeerCrashed
+	(*ServerMessage_ComponentCrashed)(nil),       // 10: fishjam.ServerMessage.ComponentCrashed
+	(*ServerMessage_Authenticated)(nil),          // 11: fishjam.ServerMessage.Authenticated
+	(*ServerMessage_AuthRequest)(nil),            // 12: fishjam.ServerMessage.AuthRequest
+	(*ServerMessage_SubscribeRequest)(nil),       // 13: fishjam.ServerMessage.SubscribeRequest
+	(*ServerMessage_SubscribeResponse)(nil),      // 14: fishjam.ServerMessage.SubscribeResponse
+	(*ServerMessage_RoomCreated)(nil),            // 15: fishjam.ServerMessage.RoomCreated
+	(*ServerMessage_RoomDeleted)(nil),            // 16: fishjam.ServerMessage.RoomDeleted
+	(*ServerMessage_HlsPlayable)(nil),            // 17: fishjam.ServerMessage.HlsPlayable
+	(*ServerMessage_HlsUploaded)(nil),            // 18: fishjam.ServerMessage.HlsUploaded
+	(*ServerMessage_HlsUploadCrashed)(nil),       // 19: fishjam.ServerMessage.HlsUploadCrashed
+	(*ServerMessage_PeerMetadataUpdated)(nil),    // 20: fishjam.ServerMessage.PeerMetadataUpdated
+	(*ServerMessage_TrackAdded)(nil),             // 21: fishjam.ServerMessage.TrackAdded
+	(*ServerMessage_TrackRemoved)(nil),           // 22: fishjam.ServerMessage.TrackRemoved
+	(*ServerMessage_TrackMetadataUpdated)(nil),   // 23: fishjam.ServerMessage.TrackMetadataUpdated
+	(*ServerMessage_ChannelAdded)(nil),           // 24: fishjam.ServerMessage.ChannelAdded
+	(*ServerMessage_ChannelRemoved)(nil),         // 25: fishjam.ServerMessage.ChannelRemoved
+	(*ServerMessage_TrackForwarding)(nil),        // 26: fishjam.ServerMessage.TrackForwarding
+	(*ServerMessage_TrackForwardingRemoved)(nil), // 27: fishjam.ServerMessage.TrackForwardingRemoved
+	(*ServerMessage_VadNotification)(nil),        // 28: fishjam.ServerMessage.VadNotification
+	(*ServerMessage_StreamConnected)(nil),        // 29: fishjam.ServerMessage.StreamConnected
+	(*ServerMessage_StreamDisconnected)(nil),     // 30: fishjam.ServerMessage.StreamDisconnected
+	(*ServerMessage_ViewerConnected)(nil),        // 31: fishjam.ServerMessage.ViewerConnected
+	(*ServerMessage_ViewerDisconnected)(nil),     // 32: fishjam.ServerMessage.ViewerDisconnected
+	(*ServerMessage_StreamerConnected)(nil),      // 33: fishjam.ServerMessage.StreamerConnected
+	(*ServerMessage_StreamerDisconnected)(nil),   // 34: fishjam.ServerMessage.StreamerDisconnected
+	(*notifications.Track)(nil),                  // 35: fishjam.notifications.Track
 }
 var file_fishjam_server_notifications_proto_depIdxs = []int32{
-	10, // 0: fishjam.ServerMessage.authenticated:type_name -> fishjam.ServerMessage.Authenticated
-	11, // 1: fishjam.ServerMessage.auth_request:type_name -> fishjam.ServerMessage.AuthRequest
-	12, // 2: fishjam.ServerMessage.subscribe_request:type_name -> fishjam.ServerMessage.SubscribeRequest
-	13, // 3: fishjam.ServerMessage.subscribe_response:type_name -> fishjam.ServerMessage.SubscribeResponse
-	14, // 4: fishjam.ServerMessage.room_created:type_name -> fishjam.ServerMessage.RoomCreated
-	15, // 5: fishjam.ServerMessage.room_deleted:type_name -> fishjam.ServerMessage.RoomDeleted
-	3,  // 6: fishjam.ServerMessage.room_crashed:type_name -> fishjam.ServerMessage.RoomCrashed
-	6,  // 7: fishjam.ServerMessage.peer_connected:type_name -> fishjam.ServerMessage.PeerConnected
-	7,  // 8: fishjam.ServerMessage.peer_disconnected:type_name -> fishjam.ServerMessage.PeerDisconnected
-	8,  // 9: fishjam.ServerMessage.peer_crashed:type_name -> fishjam.ServerMessage.PeerCrashed
-	19, // 10: fishjam.ServerMessage.peer_metadata_updated:type_name -> fishjam.ServerMessage.PeerMetadataUpdated
-	20, // 11: fishjam.ServerMessage.track_added:type_name -> fishjam.ServerMessage.TrackAdded
-	21, // 12: fishjam.ServerMessage.track_removed:type_name -> fishjam.ServerMessage.TrackRemoved
-	22, // 13: fishjam.ServerMessage.track_metadata_updated:type_name -> fishjam.ServerMessage.TrackMetadataUpdated
-	4,  // 14: fishjam.ServerMessage.peer_added:type_name -> fishjam.ServerMessage.PeerAdded
-	5,  // 15: fishjam.ServerMessage.peer_deleted:type_name -> fishjam.ServerMessage.PeerDeleted
-	23, // 16: fishjam.ServerMessage.channel_added:type_name -> fishjam.ServerMessage.ChannelAdded
-	24, // 17: fishjam.ServerMessage.channel_removed:type_name -> fishjam.ServerMessage.ChannelRemoved
-	25, // 18: fishjam.ServerMessage.track_forwarding:type_name -> fishjam.ServerMessage.TrackForwarding
-	26, // 19: fishjam.ServerMessage.track_forwarding_removed:type_name -> fishjam.ServerMessage.TrackForwardingRemoved
-	29, // 20: fishjam.ServerMessage.viewer_connected:type_name -> fishjam.ServerMessage.ViewerConnected
-	30, // 21: fishjam.ServerMessage.viewer_disconnected:type_name -> fishjam.ServerMessage.ViewerDisconnected
-	31, // 22: fishjam.ServerMessage.streamer_connected:type_name -> fishjam.ServerMessage.StreamerConnected
-	32, // 23: fishjam.ServerMessage.streamer_disconnected:type_name -> fishjam.ServerMessage.StreamerDisconnected
-	27, // 24: fishjam.ServerMessage.stream_connected:type_name -> fishjam.ServerMessage.StreamConnected
-	28, // 25: fishjam.ServerMessage.stream_disconnected:type_name -> fishjam.ServerMessage.StreamDisconnected
-	16, // 26: fishjam.ServerMessage.hls_playable:type_name -> fishjam.ServerMessage.HlsPlayable
-	17, // 27: fishjam.ServerMessage.hls_uploaded:type_name -> fishjam.ServerMessage.HlsUploaded
-	18, // 28: fishjam.ServerMessage.hls_upload_crashed:type_name -> fishjam.ServerMessage.HlsUploadCrashed
-	9,  // 29: fishjam.ServerMessage.component_crashed:type_name -> fishjam.ServerMessage.ComponentCrashed
-	0,  // 30: fishjam.ServerMessage.PeerAdded.peer_type:type_name -> fishjam.ServerMessage.PeerType
-	0,  // 31: fishjam.ServerMessage.PeerDeleted.peer_type:type_name -> fishjam.ServerMessage.PeerType
-	0,  // 32: fishjam.ServerMessage.PeerConnected.peer_type:type_name -> fishjam.ServerMessage.PeerType
-	0,  // 33: fishjam.ServerMessage.PeerDisconnected.peer_type:type_name -> fishjam.ServerMessage.PeerType
-	0,  // 34: fishjam.ServerMessage.PeerCrashed.peer_type:type_name -> fishjam.ServerMessage.PeerType
-	1,  // 35: fishjam.ServerMessage.SubscribeRequest.event_type:type_name -> fishjam.ServerMessage.EventType
-	1,  // 36: fishjam.ServerMessage.SubscribeResponse.event_type:type_name -> fishjam.ServerMessage.EventType
-	0,  // 37: fishjam.ServerMessage.PeerMetadataUpdated.peer_type:type_name -> fishjam.ServerMessage.PeerType
-	33, // 38: fishjam.ServerMessage.TrackAdded.track:type_name -> fishjam.notifications.Track
-	33, // 39: fishjam.ServerMessage.TrackRemoved.track:type_name -> fishjam.notifications.Track
-	33, // 40: fishjam.ServerMessage.TrackMetadataUpdated.track:type_name -> fishjam.notifications.Track
-	33, // 41: fishjam.ServerMessage.TrackForwarding.audio_track:type_name -> fishjam.notifications.Track
-	33, // 42: fishjam.ServerMessage.TrackForwarding.video_track:type_name -> fishjam.notifications.Track
-	43, // [43:43] is the sub-list for method output_type
-	43, // [43:43] is the sub-list for method input_type
-	43, // [43:43] is the sub-list for extension type_name
-	43, // [43:43] is the sub-list for extension extendee
-	0,  // [0:43] is the sub-list for field type_name
+	11, // 0: fishjam.ServerMessage.authenticated:type_name -> fishjam.ServerMessage.Authenticated
+	12, // 1: fishjam.ServerMessage.auth_request:type_name -> fishjam.ServerMessage.AuthRequest
+	13, // 2: fishjam.ServerMessage.subscribe_request:type_name -> fishjam.ServerMessage.SubscribeRequest
+	14, // 3: fishjam.ServerMessage.subscribe_response:type_name -> fishjam.ServerMessage.SubscribeResponse
+	15, // 4: fishjam.ServerMessage.room_created:type_name -> fishjam.ServerMessage.RoomCreated
+	16, // 5: fishjam.ServerMessage.room_deleted:type_name -> fishjam.ServerMessage.RoomDeleted
+	4,  // 6: fishjam.ServerMessage.room_crashed:type_name -> fishjam.ServerMessage.RoomCrashed
+	7,  // 7: fishjam.ServerMessage.peer_connected:type_name -> fishjam.ServerMessage.PeerConnected
+	8,  // 8: fishjam.ServerMessage.peer_disconnected:type_name -> fishjam.ServerMessage.PeerDisconnected
+	9,  // 9: fishjam.ServerMessage.peer_crashed:type_name -> fishjam.ServerMessage.PeerCrashed
+	20, // 10: fishjam.ServerMessage.peer_metadata_updated:type_name -> fishjam.ServerMessage.PeerMetadataUpdated
+	21, // 11: fishjam.ServerMessage.track_added:type_name -> fishjam.ServerMessage.TrackAdded
+	22, // 12: fishjam.ServerMessage.track_removed:type_name -> fishjam.ServerMessage.TrackRemoved
+	23, // 13: fishjam.ServerMessage.track_metadata_updated:type_name -> fishjam.ServerMessage.TrackMetadataUpdated
+	5,  // 14: fishjam.ServerMessage.peer_added:type_name -> fishjam.ServerMessage.PeerAdded
+	6,  // 15: fishjam.ServerMessage.peer_deleted:type_name -> fishjam.ServerMessage.PeerDeleted
+	24, // 16: fishjam.ServerMessage.channel_added:type_name -> fishjam.ServerMessage.ChannelAdded
+	25, // 17: fishjam.ServerMessage.channel_removed:type_name -> fishjam.ServerMessage.ChannelRemoved
+	26, // 18: fishjam.ServerMessage.track_forwarding:type_name -> fishjam.ServerMessage.TrackForwarding
+	27, // 19: fishjam.ServerMessage.track_forwarding_removed:type_name -> fishjam.ServerMessage.TrackForwardingRemoved
+	28, // 20: fishjam.ServerMessage.vad_notification:type_name -> fishjam.ServerMessage.VadNotification
+	31, // 21: fishjam.ServerMessage.viewer_connected:type_name -> fishjam.ServerMessage.ViewerConnected
+	32, // 22: fishjam.ServerMessage.viewer_disconnected:type_name -> fishjam.ServerMessage.ViewerDisconnected
+	33, // 23: fishjam.ServerMessage.streamer_connected:type_name -> fishjam.ServerMessage.StreamerConnected
+	34, // 24: fishjam.ServerMessage.streamer_disconnected:type_name -> fishjam.ServerMessage.StreamerDisconnected
+	29, // 25: fishjam.ServerMessage.stream_connected:type_name -> fishjam.ServerMessage.StreamConnected
+	30, // 26: fishjam.ServerMessage.stream_disconnected:type_name -> fishjam.ServerMessage.StreamDisconnected
+	17, // 27: fishjam.ServerMessage.hls_playable:type_name -> fishjam.ServerMessage.HlsPlayable
+	18, // 28: fishjam.ServerMessage.hls_uploaded:type_name -> fishjam.ServerMessage.HlsUploaded
+	19, // 29: fishjam.ServerMessage.hls_upload_crashed:type_name -> fishjam.ServerMessage.HlsUploadCrashed
+	10, // 30: fishjam.ServerMessage.component_crashed:type_name -> fishjam.ServerMessage.ComponentCrashed
+	0,  // 31: fishjam.ServerMessage.PeerAdded.peer_type:type_name -> fishjam.ServerMessage.PeerType
+	0,  // 32: fishjam.ServerMessage.PeerDeleted.peer_type:type_name -> fishjam.ServerMessage.PeerType
+	0,  // 33: fishjam.ServerMessage.PeerConnected.peer_type:type_name -> fishjam.ServerMessage.PeerType
+	0,  // 34: fishjam.ServerMessage.PeerDisconnected.peer_type:type_name -> fishjam.ServerMessage.PeerType
+	0,  // 35: fishjam.ServerMessage.PeerCrashed.peer_type:type_name -> fishjam.ServerMessage.PeerType
+	1,  // 36: fishjam.ServerMessage.SubscribeRequest.event_type:type_name -> fishjam.ServerMessage.EventType
+	1,  // 37: fishjam.ServerMessage.SubscribeResponse.event_type:type_name -> fishjam.ServerMessage.EventType
+	0,  // 38: fishjam.ServerMessage.PeerMetadataUpdated.peer_type:type_name -> fishjam.ServerMessage.PeerType
+	35, // 39: fishjam.ServerMessage.TrackAdded.track:type_name -> fishjam.notifications.Track
+	35, // 40: fishjam.ServerMessage.TrackRemoved.track:type_name -> fishjam.notifications.Track
+	35, // 41: fishjam.ServerMessage.TrackMetadataUpdated.track:type_name -> fishjam.notifications.Track
+	35, // 42: fishjam.ServerMessage.TrackForwarding.audio_track:type_name -> fishjam.notifications.Track
+	35, // 43: fishjam.ServerMessage.TrackForwarding.video_track:type_name -> fishjam.notifications.Track
+	2,  // 44: fishjam.ServerMessage.VadNotification.status:type_name -> fishjam.ServerMessage.VadNotification.Status
+	45, // [45:45] is the sub-list for method output_type
+	45, // [45:45] is the sub-list for method input_type
+	45, // [45:45] is the sub-list for extension type_name
+	45, // [45:45] is the sub-list for extension extendee
+	0,  // [0:45] is the sub-list for field type_name
 }
 
 func init() { file_fishjam_server_notifications_proto_init() }
@@ -2790,6 +2938,7 @@ func file_fishjam_server_notifications_proto_init() {
 		(*ServerMessage_ChannelRemoved_)(nil),
 		(*ServerMessage_TrackForwarding_)(nil),
 		(*ServerMessage_TrackForwardingRemoved_)(nil),
+		(*ServerMessage_VadNotification_)(nil),
 		(*ServerMessage_ViewerConnected_)(nil),
 		(*ServerMessage_ViewerDisconnected_)(nil),
 		(*ServerMessage_StreamerConnected_)(nil),
@@ -2827,8 +2976,8 @@ func file_fishjam_server_notifications_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_fishjam_server_notifications_proto_rawDesc), len(file_fishjam_server_notifications_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   31,
+			NumEnums:      3,
+			NumMessages:   32,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
