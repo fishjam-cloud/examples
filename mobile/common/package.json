@@ -1,0 +1,8 @@
+{
+  "name": "fishjam-examples-common",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@expo/config-plugins": "~54.0.4"
+  }
+}
