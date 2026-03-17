@@ -8,7 +8,9 @@ export const FishjamContext = React.createContext<{
 export const useFishjamId = () => {
   const context = React.useContext(FishjamContext);
   if (!context) {
-    throw new Error("useSetFishjamId must be used within a FishjamCtxProvider");
+    throw new Error(
+      "useFishjamId must be used within a FishjamContext.Provider",
+    );
   }
   return context;
 };

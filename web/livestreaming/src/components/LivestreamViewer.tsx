@@ -1,7 +1,7 @@
 import { useLivestreamViewer, useSandbox } from "@fishjam-cloud/react-client";
 import { AlertCircleIcon } from "lucide-react";
 import type { FC } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
@@ -27,11 +27,13 @@ const LivestreamViewer: FC<LivestreamViewerProps> = ({
 }) => {
   const { connect, disconnect, stream, error } = useLivestreamViewer();
   const { getSandboxViewerToken } = useSandbox();
-  const [nameOverriden, setNameOverriden] = useState(false);
+  const [nameOverridden, setNameOverridden] = useState(false);
   const [roomName, setRoomName] = useState(streamerRoomName);
 
-  if (!nameOverriden && roomName != streamerRoomName)
-    setRoomName(streamerRoomName);
+  useEffect(() => {
+    if (!nameOverridden && roomName != streamerRoomName)
+      setRoomName(streamerRoomName);
+  }, [nameOverridden, roomName, streamerRoomName]);
 
   const handleConnect = async () => {
     if (!roomName) {
@@ -61,7 +63,7 @@ const LivestreamViewer: FC<LivestreamViewerProps> = ({
               id="viewer-room-name"
               value={roomName}
               onChange={(e) => {
-                setNameOverriden(true);
+                setNameOverridden(true);
                 setRoomName(e.target.value);
               }}
               placeholder="Stream you want to watch"

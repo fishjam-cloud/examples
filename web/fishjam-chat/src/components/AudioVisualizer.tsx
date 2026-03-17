@@ -12,8 +12,8 @@ export const AudioVisualizer = ({ stream }: Props) => {
     if (!stream) return;
     if (!canvasRef.current) return;
 
-    const audioContext = new AudioContext();
     if (stream.getAudioTracks().length === 0) return;
+    const audioContext = new AudioContext();
     const mediaStreamSource = audioContext.createMediaStreamSource(stream);
     const analyser = audioContext.createAnalyser();
 
@@ -32,7 +32,9 @@ export const AudioVisualizer = ({ stream }: Props) => {
       idRef.current = requestAnimationFrame(renderFrame);
 
       if (!canvasRef.current) {
-        cancelAnimationFrame(idRef.current);
+        if (idRef.current) {
+          cancelAnimationFrame(idRef.current);
+        }
         return;
       }
 
@@ -64,6 +66,10 @@ export const AudioVisualizer = ({ stream }: Props) => {
       if (idRef.current) {
         cancelAnimationFrame(idRef.current);
       }
+
+      mediaStreamSource.disconnect();
+      analyser.disconnect();
+      audioContext.close();
     };
   }, [stream]);
 
