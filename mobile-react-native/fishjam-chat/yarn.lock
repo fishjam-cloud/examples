@@ -1211,37 +1211,39 @@
     chalk "^4.1.0"
     js-yaml "^4.1.0"
 
-"@fishjam-cloud/react-client@0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-client/-/react-client-0.25.1.tgz#650e7d24687fd28def51ec8843c8b153c4ebda5b"
-  integrity sha512-Gg/bhpFyd7lZ0TvHPvdYue9Y70wOIvoiq3MPs0SB9maXnBxOJQl2LDO/BEXPtDB0Pz3KAVdHit/VJrVNacFaZQ==
+"@fishjam-cloud/react-client@0.25.3":
+  version "0.25.3"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-client/-/react-client-0.25.3.tgz#b560e92265ebf647d38e0dd0f75fb3621fe541ad"
+  integrity sha512-pJH0aGL3Ld/gVLJ5T0GYZk5CQKquVUDu+GAXeqp7yCW+PwgJE+GnXGGkPOxnZ+BoVzV643py2Y38HbhUEIXrLw==
   dependencies:
-    "@fishjam-cloud/ts-client" "0.25.1"
+    "@fishjam-cloud/ts-client" "0.25.3"
     events "3.3.0"
     lodash.isequal "4.5.0"
 
-"@fishjam-cloud/react-native-client@file:../shared/react-native-client.tgz":
-  version "0.25.1"
-  resolved "file:../shared/react-native-client.tgz#f768f24c1b1639b2a4867e0a76fc3ae47c026d3f"
+"@fishjam-cloud/react-native-client@^0.25.3":
+  version "0.25.3"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-client/-/react-native-client-0.25.3.tgz#474694a86ef9c0f88bd56d813dcf718995d9d7ae"
+  integrity sha512-ds7ojeJsRnBl7p5nGiYESizVljRfNNfoinONrukh7RKnZh0sa45V8d+kt97oete3ruR8b7t9cq0Een4KxPsgAw==
   dependencies:
-    "@fishjam-cloud/react-client" "0.25.1"
-    "@fishjam-cloud/react-native-webrtc" "0.25.0"
-    fast-text-encoding "^1.0.6"
+    "@fishjam-cloud/react-client" "0.25.3"
+    "@fishjam-cloud/react-native-webrtc" "0.25.4"
+    fast-text-encoding "1.0.6"
     react-native-get-random-values "1.11.0"
+    react-native-url-polyfill "3.0.0"
 
-"@fishjam-cloud/react-native-webrtc@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-webrtc/-/react-native-webrtc-0.25.0.tgz#dd99d7b4ab8fa150c1ea3bd46d5690551996a142"
-  integrity sha512-VGeZci0c1KEUpvcFjugc6bd64RFMtXEkmcUI037jA+z0aij0BpATn4ZvuC6QJTVBXhuWRwQdTrDktEehoy4cCw==
+"@fishjam-cloud/react-native-webrtc@0.25.4":
+  version "0.25.4"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-webrtc/-/react-native-webrtc-0.25.4.tgz#01c4411a3686f992665427107cf234b6da4fa6cc"
+  integrity sha512-9WZkGwZlqs3+t2H7KU5Q6HgtfmUWnaL+l7dtzGygDC+WSmq8zCmipLUSM6YXM7wlFEsVesArNjJ+d+LU09HwSg==
   dependencies:
     base64-js "1.5.1"
     debug "4.3.4"
     event-target-shim "6.0.2"
 
-"@fishjam-cloud/ts-client@0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.25.1.tgz#0f433ae75bf6747974a47564c2f65ffb6a6276bd"
-  integrity sha512-waYluwtjSu0lnl4+8qi4tR5J04pEK04Xx/7xMKDEp5ycXh3iZoUZO9vJvEhMDGjGLiw9JZ9WsffGgP9vkT/Y2A==
+"@fishjam-cloud/ts-client@0.25.3":
+  version "0.25.3"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.25.3.tgz#44b5195fa889c03679f6eb99f5dbd7d70aecf991"
+  integrity sha512-7wZxnarnCAwEXDmYz4JGqbYfJO551KFUE5U5FPl1trl52Dfx/Z4XrcW7iph9lqdgeRdac+ccptH6cvFpeImYXQ==
   dependencies:
     "@binbat/whip-whep" "^1.1.1-sdp-trickle-throw"
     "@bufbuild/protobuf" "^2.2.3"
@@ -3640,7 +3642,7 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
-fast-text-encoding@^1.0.6:
+fast-text-encoding@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/fast-text-encoding/-/fast-text-encoding-1.0.6.tgz#0aa25f7f638222e3396d72bf936afcf1d42d6867"
   integrity sha512-VhXlQgj9ioXCqGstD37E/HBeqEGV/qOD/kmbVG8h5xKBYvM1L3lR1Zn4555cQ8GkYbJa8aJSipLPndE1k6zK2w==
@@ -5847,6 +5849,13 @@ react-native-screens@~4.16.0:
     react-freeze "^1.0.0"
     react-native-is-edge-to-edge "^1.2.1"
     warn-once "^0.1.0"
+
+react-native-url-polyfill@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-url-polyfill/-/react-native-url-polyfill-3.0.0.tgz#16b809c35d45f7d4cf968967bc35ab73b7542826"
+  integrity sha512-aA5CiuUCUb/lbrliVCJ6lZ17/RpNJzvTO/C7gC/YmDQhTUoRD5q5HlJfwLWcxz4VgAhHwXKzhxH+wUN24tAdqg==
+  dependencies:
+    whatwg-url-without-unicode "8.0.0-3"
 
 react-native-web@~0.21.0:
   version "0.21.2"
