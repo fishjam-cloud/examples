@@ -16,7 +16,7 @@ const RoomScreen = () => {
   const videoTracks = parsePeersToTracks(localPeer, remotePeers);
 
   const keyExtractor = useCallback(
-    (item: GridTrack, index: number) => String(item.track?.trackId ?? index),
+    (item: GridTrack, index: number) => item.track?.trackId ?? index.toString(),
     [],
   );
 
