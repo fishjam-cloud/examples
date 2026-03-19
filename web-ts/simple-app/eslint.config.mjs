@@ -6,7 +6,7 @@ import simpleImportSort from "eslint-plugin-simple-import-sort";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist/", "lib/"] },
+  { ignores: ["dist/", "lib/", "**/*.cjs"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   prettier,

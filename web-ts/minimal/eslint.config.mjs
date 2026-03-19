@@ -1,12 +1,12 @@
 import js from "@eslint/js";
-import tseslint from "typescript-eslint";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
-import importPlugin from "eslint-plugin-import";
 import prettier from "eslint-config-prettier";
+import importPlugin from "eslint-plugin-import";
 import prettierPlugin from "eslint-plugin-prettier";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist/", "lib/"] },
+  { ignores: ["dist/", "lib/", "**/*.cjs"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   prettier,
