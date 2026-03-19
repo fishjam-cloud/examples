@@ -37,8 +37,8 @@ A mobile video chat demo showcasing **real-time camera background blur** using t
    - Fill in your Fishjam ID. _You can find the value for this variable by creating an account on [fishjam.io](https://fishjam.io) and copying it from the sandbox dashboard._
 
    There also exists this additional environment variable, which is used for internal testing purposes:
-
    - `EXPO_PUBLIC_FISHJAM_URL` - Sandbox URL for custom Fishjam environment
+
 4. **Prebuild native files:**
    ```sh
    cd examples/mobile-client/blur-example
