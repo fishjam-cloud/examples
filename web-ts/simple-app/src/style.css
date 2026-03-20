@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .mockup-code pre:before {
+    @apply hidden;
+  }
+
+  .mockup-code:before {
+    @apply hidden;
+  }
+
+  .mockup-code pre {
+    @apply pl-5;
+  }
+}

@@ -1,1 +1,6 @@
 .aider*
+node_modules
+dist
+build
+.env
+.vscode

@@ -1,0 +1,16 @@
+import React from "react";
+
+export const FishjamContext = React.createContext<{
+  fishjamId: string;
+  setFishjamId: (id: string) => void;
+} | null>(null);
+
+export const useFishjamId = () => {
+  const context = React.useContext(FishjamContext);
+  if (!context) {
+    throw new Error(
+      "useFishjamId must be used within a FishjamContext.Provider",
+    );
+  }
+  return context;
+};
