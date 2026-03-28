@@ -75,7 +75,7 @@ export const createAgent = async (
         mimeType: image.contentType,
       },
     });
-  }, 1000);
+  }, 10000);
 
   fishjamAgent.on("trackData", ({ data }) => {
     session.sendRealtimeInput({
