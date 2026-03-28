@@ -1,57 +1,26 @@
-# Gemini Demo
+# Gemini Live x Fishjam Cloud Demo
 
-A minimal example of a video call with a Gemini Live AI agent using Fishjam Cloud.
+A video call where you can invite a Gemini Live AI agent into the room. The agent hears everyone, sees your camera, responds with voice, and can search the web for real-time answers. Participants can customize the agent's behavior with a system prompt.
 
-## What it does
+## Running locally
 
-- Create a room and join a video call
-- Spawn a Gemini Live voice agent with a custom system prompt
-- The agent joins the call, listens to participants, and responds with voice
-- Supports Google Search for real-time information
+1. Copy `.env.example` to `.env` and fill in your Fishjam and Gemini credentials:
 
-## Setup
-
-1. Copy `.env.example` to `.env` and fill in your credentials:
-
-```
+```bash
 cp .env.example .env
 ```
 
 2. Install dependencies:
 
-```
-cd backend && npm install
-cd ../web && npm install
-```
-
-3. Start the backend:
-
-```
-cd backend && npm run start
+```bash
+yarn install
 ```
 
-4. Start the frontend (in another terminal):
+3. Start the backend and frontend in separate terminals:
 
-```
-cd web && npm run start
-```
-
-5. Open http://localhost:5173
-
-## Architecture
-
-```
-backend/src/main.ts   - Fastify + tRPC server, Fishjam SDK, Gemini Live API
-web/src/App.tsx        - React frontend with Fishjam React Client
-web/src/trpc.ts        - tRPC client setup
+```bash
+cd backend && yarn start
+cd web && yarn start
 ```
 
-### Audio flow
-
-```
-Peer audio (16kHz) → Fishjam Agent → Gemini Live API
-                                          ↓
-                    Fishjam Agent Track ← Gemini response (24kHz)
-                          ↓
-                    All peers hear the agent
-```
+4. Open http://localhost:5173
