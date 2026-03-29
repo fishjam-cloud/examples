@@ -1,0 +1,5146 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Composition API",
+    "description": "Real-time video compositing",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://rtc.fishjam.io"
+    }
+  ],
+  "paths": {
+    "/api/composition": {
+      "post": {
+        "tags": [
+          "composition"
+        ],
+        "operationId": "create_composition",
+        "requestBody": {
+          "description": "Composition creation options.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompositionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Composition created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompositionCreatedResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}": {
+      "delete": {
+        "tags": [
+          "composition"
+        ],
+        "operationId": "delete_composition",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition deleted."
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/start": {
+      "post": {
+        "tags": [
+          "control_request"
+        ],
+        "operationId": "start",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/reset": {
+      "post": {
+        "tags": [
+          "control_request"
+        ],
+        "operationId": "reset",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition reset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/input/{input_id}/register": {
+      "post": {
+        "tags": [
+          "register_request"
+        ],
+        "operationId": "register_input",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "input_id",
+            "in": "path",
+            "description": "Input ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Input registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/register": {
+      "post": {
+        "tags": [
+          "register_request"
+        ],
+        "operationId": "register_output",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterOutput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Output registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/image/{image_id}/register": {
+      "post": {
+        "tags": [
+          "register_request"
+        ],
+        "operationId": "register_image",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_id",
+            "in": "path",
+            "description": "Image ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageSpec"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Image registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/font/register": {
+      "post": {
+        "tags": [
+          "register_request"
+        ],
+        "operationId": "register_font",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "font"
+                ],
+                "properties": {
+                  "font": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Font registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/input/{input_id}/unregister": {
+      "post": {
+        "tags": [
+          "unregister_request"
+        ],
+        "operationId": "unregister_input",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "input_id",
+            "in": "path",
+            "description": "Input ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnregisterInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Input unregistered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Input not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/unregister": {
+      "post": {
+        "tags": [
+          "unregister_request"
+        ],
+        "operationId": "unregister_output",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnregisterOutput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Output unregistered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Output not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/image/{image_id}/unregister": {
+      "post": {
+        "tags": [
+          "unregister_request"
+        ],
+        "operationId": "unregister_image",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_id",
+            "in": "path",
+            "description": "Image ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnregisterRenderer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Image unregistered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Image not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/update": {
+      "post": {
+        "tags": [
+          "update_request"
+        ],
+        "operationId": "update_output",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOutputRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Output updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/request_keyframe": {
+      "post": {
+        "tags": [
+          "update_request"
+        ],
+        "operationId": "request_keyframe",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Keyframe request successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/{composition_id}/whip/{input_id}": {
+      "post": {
+        "tags": [
+          "whip_whep"
+        ],
+        "operationId": "whip_offer",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "input_id",
+            "in": "path",
+            "description": "Input ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "SDP offer.",
+          "content": {
+            "application/sdp": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Session created.",
+            "headers": {
+              "location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Session URL."
+              }
+            },
+            "content": {
+              "application/sdp": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition or input not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/whep/{output_id}": {
+      "post": {
+        "tags": [
+          "whip_whep"
+        ],
+        "operationId": "whep_offer",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "SDP offer.",
+          "content": {
+            "application/sdp": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Session created.",
+            "headers": {
+              "location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Session URL."
+              }
+            },
+            "content": {
+              "application/sdp": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition or output not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {},
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AacRtpMode": {
+        "type": "string",
+        "enum": [
+          "low_bitrate",
+          "high_bitrate"
+        ]
+      },
+      "ApiError": {
+        "type": "object",
+        "required": [
+          "message",
+          "http_status_code"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "http_status_code": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
+      "AspectRatio": {
+        "type": "string"
+      },
+      "AudioChannels": {
+        "type": "string",
+        "enum": [
+          "mono",
+          "stereo"
+        ]
+      },
+      "AudioMixingStrategy": {
+        "type": "string",
+        "enum": [
+          "sum_clip",
+          "sum_scale"
+        ]
+      },
+      "AudioScene": {
+        "type": "object",
+        "required": [
+          "inputs"
+        ],
+        "properties": {
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AudioSceneInput"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "AudioSceneInput": {
+        "type": "object",
+        "required": [
+          "input_id"
+        ],
+        "properties": {
+          "input_id": {
+            "$ref": "#/components/schemas/InputId"
+          },
+          "volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`1.0`**) float in `[0, 2]` range representing input volume"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BoxShadow": {
+        "type": "object",
+        "properties": {
+          "offset_x": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float"
+          },
+          "offset_y": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float"
+          },
+          "color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor"
+              }
+            ]
+          },
+          "blur_radius": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Component": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/InputStream"
+          },
+          {
+            "$ref": "#/components/schemas/View"
+          },
+          {
+            "$ref": "#/components/schemas/Text"
+          },
+          {
+            "$ref": "#/components/schemas/Tiles"
+          },
+          {
+            "$ref": "#/components/schemas/Rescaler"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "input_stream": "#/components/schemas/InputStream",
+            "rescaler": "#/components/schemas/Rescaler",
+            "text": "#/components/schemas/Text",
+            "tiles": "#/components/schemas/Tiles",
+            "view": "#/components/schemas/View"
+          }
+        }
+      },
+      "ComponentId": {
+        "type": "string"
+      },
+      "CompositionCreatedResponse": {
+        "type": "object",
+        "required": [
+          "composition_id",
+          "api_url"
+        ],
+        "properties": {
+          "composition_id": {
+            "$ref": "#/components/schemas/CompositionId"
+          },
+          "api_url": {
+            "type": "string"
+          }
+        }
+      },
+      "CompositionId": {
+        "type": "string"
+      },
+      "CreateCompositionRequest": {
+        "type": "object",
+        "properties": {
+          "autostart": {
+            "type": "boolean",
+            "description": "If true, outputs will immediately start producing audio and video.\nIf false, call `POST /api/composition/{composition_id}/start` to start the composition.",
+            "default": true
+          }
+        }
+      },
+      "EasingFunction": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "function_name"
+            ],
+            "properties": {
+              "function_name": {
+                "type": "string",
+                "enum": [
+                  "linear"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "function_name"
+            ],
+            "properties": {
+              "function_name": {
+                "type": "string",
+                "enum": [
+                  "bounce"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "points",
+              "function_name"
+            ],
+            "properties": {
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "function_name": {
+                "type": "string",
+                "enum": [
+                  "cubic_bezier"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Easing functions are used to interpolate between two values over time.\n\nCustom easing functions can be implemented with cubic Bézier.\nThe control points are defined with `points` field by providing four numerical values: `x1`, `y1`, `x2` and `y2`. The `x1` and `x2` values have to be in the range `[0; 1]`. The cubic Bézier result is clamped to the range `[0; 1]`.\nYou can find example control point configurations [here](https://easings.net/)."
+      },
+      "FontUpload": {
+        "type": "object",
+        "required": [
+          "font"
+        ],
+        "properties": {
+          "font": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      },
+      "Framerate": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        ]
+      },
+      "H264EncoderPreset": {
+        "type": "string",
+        "enum": [
+          "ultrafast",
+          "superfast",
+          "veryfast",
+          "faster",
+          "fast",
+          "medium",
+          "slow",
+          "slower",
+          "veryslow",
+          "placebo"
+        ]
+      },
+      "HlsAudioEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "sample_rate": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "(**default=`44100`**) Sample rate. Allowed values: [8000, 16000, 24000, 44100, 48000].",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "aac"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "HlsInput": {
+        "type": "object",
+        "description": "Parameters for an input stream from HLS source.",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL to HLS playlist"
+          },
+          "required": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "(**default=`false`**) If input is required and the stream is not delivered\non time, then Smelter will delay producing output frames."
+          },
+          "offset_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Offset in milliseconds relative to the pipeline start (start request). If the offset is\nnot defined then the stream will be synchronized based on the delivery time of the initial\nframes."
+          }
+        },
+        "additionalProperties": false
+      },
+      "HlsOutput": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to output HLS playlist."
+          },
+          "max_playlist_size": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of segments kept in the playlist. When the limit is reached the oldest segment is removed.\nIf not specified, no segments will removed.",
+            "minimum": 0
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputHlsVideoOptions",
+                "description": "Video track configuration."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputHlsAudioOptions",
+                "description": "Audio track configuration."
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "HlsVideoDecoderOptions": {
+        "type": "string",
+        "enum": [
+          "ffmpeg_h264",
+          "vulkan_h264"
+        ]
+      },
+      "HlsVideoEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/H264EncoderPreset",
+                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
+                  }
+                ]
+              },
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. Default value depends on chosen encoder."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format"
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_h264"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vulkan_h264"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "HorizontalAlign": {
+        "type": "string",
+        "enum": [
+          "left",
+          "right",
+          "justified",
+          "center"
+        ]
+      },
+      "ImageSpec": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "asset_type"
+            ],
+            "properties": {
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": [
+                  "png"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset_type"
+            ],
+            "properties": {
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": [
+                  "jpeg"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset_type"
+            ],
+            "properties": {
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "resolution": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Resolution"
+                  }
+                ]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": [
+                  "svg"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset_type"
+            ],
+            "properties": {
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": [
+                  "gif"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset_type"
+            ],
+            "properties": {
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": [
+                  "auto"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "InputHlsCodec": {
+        "type": "string",
+        "enum": [
+          "h264"
+        ]
+      },
+      "InputId": {
+        "type": "string"
+      },
+      "InputMp4Codec": {
+        "type": "string",
+        "enum": [
+          "h264"
+        ]
+      },
+      "InputRtmpCodec": {
+        "type": "string",
+        "enum": [
+          "h264"
+        ]
+      },
+      "InputRtpAudioOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "decoder"
+            ],
+            "properties": {
+              "decoder": {
+                "type": "string",
+                "enum": [
+                  "opus"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "audio_specific_config",
+              "decoder"
+            ],
+            "properties": {
+              "audio_specific_config": {
+                "type": "string",
+                "description": "AudioSpecificConfig as described in MPEG-4 part 3, section 1.6.2.1\nThe config should be encoded as described in [RFC 3640](https://datatracker.ietf.org/doc/html/rfc3640#section-4.1).\n\nThe simplest way to obtain this value when using ffmpeg to stream to the compositor is\nto pass the additional `-sdp_file FILENAME` option to ffmpeg. This will cause it to\nwrite out an sdp file, which will contain this field. Programs which have the ability\nto stream AAC to the compositor should provide this information.\n\nIn MP4 files, the ASC is embedded inside the esds box (note that it is not the whole\nbox, only a part of it). This also applies to fragmented MP4s downloaded over HLS, if\nthe playlist uses MP4s instead of MPEG Transport Streams\n\nIn FLV files and the RTMP protocol, the ASC can be found in the `AACAUDIODATA` tag."
+              },
+              "rtp_mode": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AacRtpMode",
+                    "description": "(**default=`\"high_bitrate\"`**)\nSpecifies the [RFC 3640 mode](https://datatracker.ietf.org/doc/html/rfc3640#section-3.3.1)\nthat should be used when depacketizing this stream."
+                  }
+                ]
+              },
+              "decoder": {
+                "type": "string",
+                "enum": [
+                  "aac"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "InputRtpVideoOptions": {
+        "type": "object",
+        "required": [
+          "decoder"
+        ],
+        "properties": {
+          "decoder": {
+            "$ref": "#/components/schemas/RtpVideoDecoderOptions"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InputStream": {
+        "type": "object",
+        "required": [
+          "input_id"
+        ],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "input_id": {
+            "$ref": "#/components/schemas/InputId",
+            "description": "Id of an input. It identifies a stream registered using a [`RegisterInputStream`](../routes.md#register-input) request."
+          }
+        },
+        "additionalProperties": false
+      },
+      "InputWhepVideoOptions": {
+        "type": "object",
+        "properties": {
+          "decoder_preferences": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WhepVideoDecoderOptions"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "InputWhipVideoOptions": {
+        "type": "object",
+        "properties": {
+          "decoder_preferences": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WhipVideoDecoderOptions"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Interpolation": {
+        "type": "string",
+        "enum": [
+          "linear",
+          "spring"
+        ]
+      },
+      "Mp4AudioEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "sample_rate": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "(**default=`44100`**) Sample rate. Allowed values: [8000, 16000, 24000, 44100, 48000].",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "aac"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Mp4Input": {
+        "type": "object",
+        "description": "Input stream from MP4 file.\nExactly one of `url` and `path` has to be defined.",
+        "properties": {
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "URL of the MP4 file."
+          },
+          "loop": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "(**default=`false`**) If input should be played in the loop. <span class=\"badge badge--primary\">Added in v0.4.0</span>"
+          },
+          "required": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "(**default=`false`**) If input is required and frames are not processed\non time, then Smelter will delay producing output frames."
+          },
+          "offset_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Offset in milliseconds relative to the pipeline start (start request). If offset is\nnot defined then stream is synchronized based on the first frames delivery time."
+          }
+        },
+        "additionalProperties": false
+      },
+      "Mp4Output": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to output MP4 file."
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputMp4VideoOptions",
+                "description": "Video stream configuration."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputMp4AudioOptions",
+                "description": "Audio stream configuration."
+              }
+            ]
+          },
+          "ffmpeg_options": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Raw FFmpeg muxer options. See [docs](https://ffmpeg.org/ffmpeg-formats.html) for more.",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Mp4VideoDecoderOptions": {
+        "type": "string",
+        "enum": [
+          "ffmpeg_h264",
+          "vulkan_h264"
+        ]
+      },
+      "Mp4VideoEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/H264EncoderPreset",
+                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
+                  }
+                ]
+              },
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. Default value depends on chosen encoder."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_h264"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vulkan_h264"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "OpusEncoderPreset": {
+        "type": "string",
+        "enum": [
+          "quality",
+          "voip",
+          "lowest_latency"
+        ]
+      },
+      "OutputEndCondition": {
+        "type": "object",
+        "description": "This type defines when end of an input stream should trigger end of the output stream. Only one of those fields can be set at the time.\nUnless specified otherwise the input stream is considered finished/ended when:\n- TCP connection was dropped/closed.\n- RTCP Goodbye packet (`BYE`) was received.\n- Mp4 track has ended.\n- Input was unregistered already (or never registered).",
+        "properties": {
+          "any_of": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/InputId"
+            },
+            "description": "Terminate output stream if any of the input streams from the list are finished."
+          },
+          "all_of": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/InputId"
+            },
+            "description": "Terminate output stream if all the input streams from the list are finished."
+          },
+          "any_input": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Terminate output stream if any of the input streams ends. This includes streams added after the output was registered. In particular, output stream will **not be** terminated if no inputs were ever connected."
+          },
+          "all_inputs": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Terminate output stream if all the input streams finish. In particular, output stream will **be** terminated if no inputs were ever connected."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputHlsAudioOptions": {
+        "type": "object",
+        "required": [
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "mixing_strategy": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioMixingStrategy",
+                "description": "(**default=\"sum_clip\"**) Specifies how audio should be mixed."
+              }
+            ]
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of output stream based on the input streams states."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/HlsAudioEncoderOptions",
+            "description": "Audio encoder options."
+          },
+          "channels": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioChannels",
+                "description": "Specifies channels configuration."
+              }
+            ]
+          },
+          "initial": {
+            "$ref": "#/components/schemas/AudioScene",
+            "description": "Initial audio mixer configuration for output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputHlsVideoOptions": {
+        "type": "object",
+        "required": [
+          "resolution",
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "resolution": {
+            "$ref": "#/components/schemas/Resolution",
+            "description": "Output resolution in pixels."
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/HlsVideoEncoderOptions",
+            "description": "Video encoder options."
+          },
+          "initial": {
+            "$ref": "#/components/schemas/VideoScene",
+            "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputId": {
+        "type": "string"
+      },
+      "OutputMp4AudioOptions": {
+        "type": "object",
+        "required": [
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "mixing_strategy": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioMixingStrategy",
+                "description": "(**default=\"sum_clip\"**) Specifies how audio should be mixed."
+              }
+            ]
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of output stream based on the input streams states."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/Mp4AudioEncoderOptions",
+            "description": "Audio encoder options."
+          },
+          "channels": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioChannels",
+                "description": "Specifies channels configuration."
+              }
+            ]
+          },
+          "initial": {
+            "$ref": "#/components/schemas/AudioScene",
+            "description": "Initial audio mixer configuration for output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputMp4VideoOptions": {
+        "type": "object",
+        "required": [
+          "resolution",
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "resolution": {
+            "$ref": "#/components/schemas/Resolution",
+            "description": "Output resolution in pixels."
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/Mp4VideoEncoderOptions",
+            "description": "Video encoder options."
+          },
+          "initial": {
+            "$ref": "#/components/schemas/VideoScene",
+            "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputRtmpClientAudioOptions": {
+        "type": "object",
+        "required": [
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "mixing_strategy": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioMixingStrategy",
+                "description": "(**default=\"sum_clip\"**) Specifies how audio should be mixed."
+              }
+            ]
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/RtmpClientAudioEncoderOptions",
+            "description": "Audio encoder options."
+          },
+          "channels": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioChannels",
+                "description": "Channels configuration."
+              }
+            ]
+          },
+          "initial": {
+            "$ref": "#/components/schemas/AudioScene",
+            "description": "Initial audio mixer configuration for output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputRtmpClientVideoOptions": {
+        "type": "object",
+        "required": [
+          "resolution",
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "resolution": {
+            "$ref": "#/components/schemas/Resolution",
+            "description": "Output resolution in pixels."
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/RtmpClientVideoEncoderOptions",
+            "description": "Video encoder options."
+          },
+          "initial": {
+            "$ref": "#/components/schemas/VideoScene",
+            "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputRtpAudioOptions": {
+        "type": "object",
+        "required": [
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "mixing_strategy": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioMixingStrategy",
+                "description": "(**default=\"sum_clip\"**) Specifies how audio should be mixed."
+              }
+            ]
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/RtpAudioEncoderOptions",
+            "description": "Audio encoder options."
+          },
+          "channels": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioChannels",
+                "description": "Channels configuration."
+              }
+            ]
+          },
+          "initial": {
+            "$ref": "#/components/schemas/AudioScene",
+            "description": "Initial audio mixer configuration for output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputRtpVideoOptions": {
+        "type": "object",
+        "required": [
+          "resolution",
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "resolution": {
+            "$ref": "#/components/schemas/Resolution",
+            "description": "Output resolution in pixels."
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/RtpVideoEncoderOptions",
+            "description": "Video encoder options."
+          },
+          "initial": {
+            "$ref": "#/components/schemas/VideoScene",
+            "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputWhepAudioOptions": {
+        "type": "object",
+        "required": [
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "mixing_strategy": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioMixingStrategy",
+                "description": "(**default=\"sum_clip\"**) Specifies how audio should be mixed."
+              }
+            ]
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of output stream based on the input streams states."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/WhepAudioEncoderOptions",
+            "description": "Audio encoder options."
+          },
+          "channels": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioChannels",
+                "description": "Specifies channels configuration."
+              }
+            ]
+          },
+          "initial": {
+            "$ref": "#/components/schemas/AudioScene",
+            "description": "Initial audio mixer configuration for output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputWhepVideoOptions": {
+        "type": "object",
+        "required": [
+          "resolution",
+          "encoder",
+          "initial"
+        ],
+        "properties": {
+          "resolution": {
+            "$ref": "#/components/schemas/Resolution",
+            "description": "Output resolution in pixels."
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "encoder": {
+            "$ref": "#/components/schemas/WhepVideoEncoderOptions",
+            "description": "Video encoder options."
+          },
+          "initial": {
+            "$ref": "#/components/schemas/VideoScene",
+            "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputWhipAudioOptions": {
+        "type": "object",
+        "required": [
+          "initial"
+        ],
+        "properties": {
+          "mixing_strategy": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioMixingStrategy",
+                "description": "(**default=\"sum_clip\"**) Specifies how audio should be mixed."
+              }
+            ]
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of output stream based on the input streams states."
+              }
+            ]
+          },
+          "channels": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioChannels",
+                "description": "Specifies channels configuration."
+              }
+            ]
+          },
+          "encoder_preferences": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WhipAudioEncoderOptions"
+            },
+            "description": "Codec preferences list."
+          },
+          "initial": {
+            "$ref": "#/components/schemas/AudioScene",
+            "description": "Initial audio mixer configuration for output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputWhipVideoOptions": {
+        "type": "object",
+        "required": [
+          "resolution",
+          "initial"
+        ],
+        "properties": {
+          "resolution": {
+            "$ref": "#/components/schemas/Resolution",
+            "description": "Output resolution in pixels."
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Defines when output stream should end if some of the input streams are finished. If output includes both audio and video streams, then EOS needs to be sent on both."
+              }
+            ]
+          },
+          "encoder_preferences": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WhipVideoEncoderOptions"
+            },
+            "description": "Codec preferences list."
+          },
+          "initial": {
+            "$ref": "#/components/schemas/VideoScene",
+            "description": "Root of a component tree/scene that should be rendered for the output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "Overflow": {
+        "type": "string",
+        "enum": [
+          "visible",
+          "hidden",
+          "fit"
+        ]
+      },
+      "PixelFormat": {
+        "type": "string",
+        "enum": [
+          "yuv420p",
+          "yuv422p",
+          "yuv444p"
+        ]
+      },
+      "PortOrPortRange": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        ]
+      },
+      "RGBAColor": {
+        "type": "string"
+      },
+      "RegisterInput": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RtpInput"
+          },
+          {
+            "$ref": "#/components/schemas/RtmpInput"
+          },
+          {
+            "$ref": "#/components/schemas/Mp4Input"
+          },
+          {
+            "$ref": "#/components/schemas/WhipInput"
+          },
+          {
+            "$ref": "#/components/schemas/WhepInput"
+          },
+          {
+            "$ref": "#/components/schemas/HlsInput"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "hls": "#/components/schemas/HlsInput",
+            "mp4": "#/components/schemas/Mp4Input",
+            "rtmp_server": "#/components/schemas/RtmpInput",
+            "rtp_stream": "#/components/schemas/RtpInput",
+            "whep_client": "#/components/schemas/WhepInput",
+            "whip_server": "#/components/schemas/WhipInput"
+          }
+        }
+      },
+      "RegisterOutput": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RtpOutput"
+          },
+          {
+            "$ref": "#/components/schemas/RtmpOutput"
+          },
+          {
+            "$ref": "#/components/schemas/Mp4Output"
+          },
+          {
+            "$ref": "#/components/schemas/WhipOutput"
+          },
+          {
+            "$ref": "#/components/schemas/WhepOutput"
+          },
+          {
+            "$ref": "#/components/schemas/HlsOutput"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "hls": "#/components/schemas/HlsOutput",
+            "mp4": "#/components/schemas/Mp4Output",
+            "rtmp_client": "#/components/schemas/RtmpOutput",
+            "rtp_stream": "#/components/schemas/RtpOutput",
+            "whep_server": "#/components/schemas/WhepOutput",
+            "whip_client": "#/components/schemas/WhipOutput"
+          }
+        }
+      },
+      "RescaleMode": {
+        "type": "string",
+        "enum": [
+          "fit",
+          "fill"
+        ]
+      },
+      "Rescaler": {
+        "type": "object",
+        "required": [
+          "child"
+        ],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "child": {
+            "$ref": "#/components/schemas/Component",
+            "description": "List of component's children."
+          },
+          "mode": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RescaleMode",
+                "description": "(**default=`\"fit\"`**) Resize mode:"
+              }
+            ]
+          },
+          "horizontal_align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/HorizontalAlign",
+                "description": "(**default=`\"center\"`**) Horizontal alignment."
+              }
+            ]
+          },
+          "vertical_align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VerticalAlign",
+                "description": "(**default=`\"center\"`**) Vertical alignment."
+              }
+            ]
+          },
+          "width": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Width of a component in pixels (without a border). Exact behavior might be different\nbased on the parent component:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "height": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Height of a component in pixels (without a border). Exact behavior might be different\nbased on the parent component:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "top": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance in pixels between this component's top edge and its parent's top edge (including a border).\nIf this field is defined, then the component will ignore a layout defined by its parent."
+          },
+          "left": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance in pixels between this component's left edge and its parent's left edge (including a border).\nIf this field is defined, this element will be absolutely positioned, instead of being\nlaid out by its parent."
+          },
+          "bottom": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance in pixels between the bottom edge of this component and the bottom edge of its\nparent (including a border). If this field is defined, this element will be absolutely\npositioned, instead of being laid out by its parent."
+          },
+          "right": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance in pixels between this component's right edge and its parent's right edge.\nIf this field is defined, this element will be absolutely positioned, instead of being\nlaid out by its parent."
+          },
+          "rotation": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Rotation of a component in degrees. If this field is defined, this element will be\nabsolutely positioned, instead of being laid out by its parent."
+          },
+          "transition": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Transition",
+                "description": "Defines how this component will behave during a scene update. This will only have an\neffect if the previous scene already contained a `Rescaler` component with the same id."
+              }
+            ]
+          },
+          "border_radius": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Radius of a rounded corner."
+          },
+          "border_width": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Border width."
+          },
+          "border_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Border color in a `\"#RRGGBBAA\"` format."
+              }
+            ]
+          },
+          "box_shadow": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/BoxShadow"
+            },
+            "description": "List of box shadows."
+          }
+        },
+        "additionalProperties": false
+      },
+      "Resolution": {
+        "type": "object",
+        "required": [
+          "width",
+          "height"
+        ],
+        "properties": {
+          "width": {
+            "type": "integer",
+            "description": "Width in pixels.",
+            "minimum": 0
+          },
+          "height": {
+            "type": "integer",
+            "description": "Height in pixels.",
+            "minimum": 0
+          }
+        }
+      },
+      "Response": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "bearer_token"
+            ],
+            "properties": {
+              "bearer_token": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "video_duration_ms": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int64",
+                "minimum": 0
+              },
+              "audio_duration_ms": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int64",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "port": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "RtmpClientAudioEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "sample_rate": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "(**default=`48000`**) Sample rate. Allowed values: [8000, 16000, 24000, 44100, 48000].",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "aac"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "RtmpClientVideoEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/H264EncoderPreset",
+                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
+                  }
+                ]
+              },
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. Default value depends on chosen encoder."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format"
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_h264"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vulkan_h264"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "RtmpInput": {
+        "type": "object",
+        "required": [
+          "app",
+          "stream_key"
+        ],
+        "properties": {
+          "app": {
+            "type": "string",
+            "description": "The RTMP application name.\nThis is the first path segment of the RTMP stream URL that Smelter listens on for incoming streams.\nFormat: `rtmp://<ip_address>:<port>/<app>/<stream_key`"
+          },
+          "stream_key": {
+            "type": "string",
+            "description": "The RTMP stream key.\nThis is the second path segment of the RTMP stream URL that Smelter listens on for incoming streams.\nFormat: `rtmp://<ip_address>:<port>/<app>/<stream_key`"
+          },
+          "required": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "(**default=`false`**) If input is required and the stream is not delivered\non time, then Smelter will delay producing output frames."
+          },
+          "offset_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Offset in milliseconds relative to the pipeline start (start request). If the offset is\nnot defined then the stream will be synchronized based on the delivery time of the initial\nframes."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RtmpOutput": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "RTMP endpoint url."
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputRtmpClientVideoOptions",
+                "description": "Video stream configuration."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputRtmpClientAudioOptions",
+                "description": "Audio stream configuration."
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "RtmpVideoDecoderOptions": {
+        "type": "string",
+        "enum": [
+          "ffmpeg_h264",
+          "vulkan_h264"
+        ]
+      },
+      "RtpAudioEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/OpusEncoderPreset",
+                    "description": "(**default=\"voip\"**) Audio output encoder preset."
+                  }
+                ]
+              },
+              "sample_rate": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "(**default=`48000`**) Sample rate. Allowed values: [8000, 16000, 24000, 48000].",
+                "minimum": 0
+              },
+              "forward_error_correction": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "(**default=`false`**) Specifies if forward error correction (FEC) should be used."
+              },
+              "expected_packet_loss": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "(**default=`0`**) Expected packet loss. When `forward_error_correction` is set to `true`,\nthen this value should be greater than `0`. Allowed values: [0, 100];",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "opus"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "RtpInput": {
+        "type": "object",
+        "description": "Parameters for an input stream from RTP source.\nAt least one of `video` and `audio` has to be defined.",
+        "required": [
+          "port"
+        ],
+        "properties": {
+          "port": {
+            "$ref": "#/components/schemas/PortOrPortRange",
+            "description": "UDP port or port range on which the compositor should listen for the stream."
+          },
+          "transport_protocol": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TransportProtocol",
+                "description": "Transport protocol."
+              }
+            ]
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/InputRtpVideoOptions",
+                "description": "Parameters of a video source included in the RTP stream."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/InputRtpAudioOptions",
+                "description": "Parameters of an audio source included in the RTP stream."
+              }
+            ]
+          },
+          "required": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "(**default=`false`**) If input is required and the stream is not delivered\non time, then Smelter will delay producing output frames."
+          },
+          "offset_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Offset in milliseconds relative to the pipeline start (start request). If the offset is\nnot defined then the stream will be synchronized based on the delivery time of the initial\nframes."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RtpOutput": {
+        "type": "object",
+        "required": [
+          "port"
+        ],
+        "properties": {
+          "port": {
+            "$ref": "#/components/schemas/PortOrPortRange",
+            "description": "Depends on the value of the `transport_protocol` field:\n  - `udp` - An UDP port number that RTP packets will be sent to.\n  - `tcp_server` - A local TCP port number or a port range that Smelter will listen for incoming connections."
+          },
+          "ip": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address to which RTP packets should be sent. This field is only valid if `transport_protocol` field is set to `udp`."
+          },
+          "transport_protocol": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TransportProtocol",
+                "description": "(**default=`\"udp\"`**) Transport layer protocol that will be used to send RTP packets."
+              }
+            ]
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputRtpVideoOptions",
+                "description": "Parameters of a video included in the RTP stream."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputRtpAudioOptions",
+                "description": "Parameters of an audio included in the RTP stream."
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "RtpVideoDecoderOptions": {
+        "type": "string",
+        "enum": [
+          "ffmpeg_h264",
+          "ffmpeg_vp8",
+          "ffmpeg_vp9",
+          "vulkan_h264"
+        ]
+      },
+      "RtpVideoEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/H264EncoderPreset",
+                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
+                  }
+                ]
+              },
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. Default value depends on chosen encoder."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_h264"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_vp8"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_vp9"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vulkan_h264"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ShaderParam": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "value",
+              "type"
+            ],
+            "properties": {
+              "value": {
+                "type": "number",
+                "format": "float"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "f32"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "value",
+              "type"
+            ],
+            "properties": {
+              "value": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "u32"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "value",
+              "type"
+            ],
+            "properties": {
+              "value": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "i32"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "value",
+              "type"
+            ],
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ShaderParam"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "list"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "value",
+              "type"
+            ],
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ShaderParamStructField"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "struct"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ShaderParamStructField": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ShaderParam"
+          },
+          {
+            "type": "object",
+            "required": [
+              "field_name"
+            ],
+            "properties": {
+              "field_name": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ShaderSpec": {
+        "type": "object",
+        "required": [
+          "source"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Shader source code. [Learn more.](../../concept/shaders)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Text": {
+        "type": "object",
+        "required": [
+          "text",
+          "font_size"
+        ],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "text": {
+            "type": "string",
+            "description": "Text that will be rendered."
+          },
+          "width": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Width of a texture that text will be rendered on. If not provided, the resulting texture\nwill be sized based on the defined text but limited to `max_width` value."
+          },
+          "height": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Height of a texture that text will be rendered on. If not provided, the resulting texture\nwill be sized based on the defined text but limited to `max_height` value.\nIt's an error to provide `height` if `width` is not defined."
+          },
+          "max_width": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`7682`**) Maximal `width`. Limits the width of the texture that the text will be rendered on.\nValue is ignored if `width` is defined."
+          },
+          "max_height": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`4320`**) Maximal `height`. Limits the height of the texture that the text will be rendered on.\nValue is ignored if height is defined."
+          },
+          "font_size": {
+            "type": "number",
+            "format": "float",
+            "description": "Font size in pixels."
+          },
+          "line_height": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance between lines in pixels. Defaults to the value of the `font_size` property."
+          },
+          "color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#FFFFFFFF\"`**) Font color in `#RRGGBBAA` format."
+              }
+            ]
+          },
+          "background_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Background color in `#RRGGBBAA` format."
+              }
+            ]
+          },
+          "font_family": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "(**default=`\"Verdana\"`**) Font family. Provide [family-name](https://www.w3.org/TR/2018/REC-css-fonts-3-20180920/#family-name-value)\nfor a specific font. \"generic-family\" values like e.g. \"sans-serif\" will not work."
+          },
+          "style": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TextStyle",
+                "description": "(**default=`\"normal\"`**) Font style. The selected font needs to support the specified style."
+              }
+            ]
+          },
+          "align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/HorizontalAlign",
+                "description": "(**default=`\"left\"`**) Text align."
+              }
+            ]
+          },
+          "wrap": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TextWrapMode",
+                "description": "(**default=`\"none\"`**) Text wrapping options."
+              }
+            ]
+          },
+          "weight": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TextWeight",
+                "description": "(**default=`\"normal\"`**) Font weight. The selected font needs to support the specified weight."
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "TextStyle": {
+        "type": "string",
+        "enum": [
+          "normal",
+          "italic",
+          "oblique"
+        ]
+      },
+      "TextWeight": {
+        "type": "string",
+        "description": "Font weight, based on the [OpenType specification](https://learn.microsoft.com/en-gb/typography/opentype/spec/os2#usweightclass).",
+        "enum": [
+          "thin",
+          "extra_light",
+          "light",
+          "normal",
+          "medium",
+          "semi_bold",
+          "bold",
+          "extra_bold",
+          "black"
+        ]
+      },
+      "TextWrapMode": {
+        "type": "string",
+        "enum": [
+          "none",
+          "glyph",
+          "word"
+        ]
+      },
+      "Tiles": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "children": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Component"
+            },
+            "description": "List of component's children."
+          },
+          "width": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Width of a component in pixels. Exact behavior might be different based on the parent\ncomponent:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "height": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Height of a component in pixels. Exact behavior might be different based on the parent\ncomponent:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "background_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Background color in a `\"#RRGGBBAA\"` format."
+              }
+            ]
+          },
+          "tile_aspect_ratio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AspectRatio",
+                "description": "(**default=`\"16:9\"`**) Aspect ratio of a tile in `\"W:H\"` format, where W and H are integers."
+              }
+            ]
+          },
+          "margin": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0`**) Margin of each tile in pixels."
+          },
+          "padding": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0`**) Padding on each tile in pixels."
+          },
+          "horizontal_align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/HorizontalAlign",
+                "description": "(**default=`\"center\"`**) Horizontal alignment of tiles."
+              }
+            ]
+          },
+          "vertical_align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VerticalAlign",
+                "description": "(**default=`\"center\"`**) Vertical alignment of tiles."
+              }
+            ]
+          },
+          "transition": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Transition",
+                "description": "Defines how this component will behave during a scene update. This will only have an\neffect if the previous scene already contained a `Tiles` component with the same id."
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Transition": {
+        "type": "object",
+        "required": [
+          "duration_ms"
+        ],
+        "properties": {
+          "duration_ms": {
+            "type": "number",
+            "format": "double",
+            "description": "Duration of a transition in milliseconds."
+          },
+          "easing_function": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/EasingFunction",
+                "description": "(**default=`\"linear\"`**) Easing function to be used for the transition."
+              }
+            ]
+          },
+          "should_interrupt": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "(**default=`false`**) On scene update, if there is already a transition in progress,\nit will be interrupted and the new transition will start from the current state."
+          }
+        }
+      },
+      "TransportProtocol": {
+        "type": "string",
+        "enum": [
+          "udp",
+          "tcp_server"
+        ]
+      },
+      "UnregisterInput": {
+        "type": "object",
+        "properties": {
+          "schedule_time_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Time in milliseconds when this request should be applied. Value `0` represents\ntime of the start request."
+          }
+        }
+      },
+      "UnregisterOutput": {
+        "type": "object",
+        "properties": {
+          "schedule_time_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Time in milliseconds when this request should be applied. Value `0` represents\ntime of the start request."
+          }
+        }
+      },
+      "UnregisterRenderer": {
+        "type": "object",
+        "properties": {
+          "schedule_time_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Time in milliseconds when this request should be applied. Value `0` represents\ntime of the start request."
+          }
+        }
+      },
+      "UpdateOutputRequest": {
+        "type": "object",
+        "properties": {
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VideoScene"
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioScene"
+              }
+            ]
+          },
+          "schedule_time_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerticalAlign": {
+        "type": "string",
+        "enum": [
+          "top",
+          "center",
+          "bottom",
+          "justified"
+        ]
+      },
+      "VideoEncoderBitrate": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "Average bitrate measured in bits/second. Encoder will try to keep the bitrate around the provided average,\nbut may temporarily increase it by 25%.",
+            "minimum": 0
+          },
+          {
+            "type": "object",
+            "required": [
+              "average_bitrate",
+              "max_bitrate"
+            ],
+            "properties": {
+              "average_bitrate": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Average bitrate measured in bits/second. Encoder will try to keep the bitrate around the provided average,\nbut may temporarily increase it to the provided max bitrate.",
+                "minimum": 0
+              },
+              "max_bitrate": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Max bitrate measured in bits/second.",
+                "minimum": 0
+              }
+            }
+          }
+        ]
+      },
+      "VideoScene": {
+        "type": "object",
+        "required": [
+          "root"
+        ],
+        "properties": {
+          "root": {
+            "$ref": "#/components/schemas/Component"
+          }
+        },
+        "additionalProperties": false
+      },
+      "View": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "children": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Component"
+            },
+            "description": "List of component's children."
+          },
+          "width": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Width of a component in pixels (without a border). Exact behavior might be different\nbased on the parent component:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "height": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Height of a component in pixels (without a border). Exact behavior might be different\nbased on the parent component:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "direction": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ViewDirection",
+                "description": "Direction defines how static children are positioned inside a View component."
+              }
+            ]
+          },
+          "top": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance in pixels between this component's top edge and its parent's top edge (including a border).\nIf this field is defined, then the component will ignore a layout defined by its parent."
+          },
+          "left": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance in pixels between this component's left edge and its parent's left edge (including a border).\nIf this field is defined, this element will be absolutely positioned, instead of being\nlaid out by its parent."
+          },
+          "bottom": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance in pixels between the bottom edge of this component and the bottom edge of its\nparent (including a border). If this field is defined, this element will be absolutely\npositioned, instead of being laid out by its parent."
+          },
+          "right": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Distance in pixels between this component's right edge and its parent's right edge.\nIf this field is defined, this element will be absolutely positioned, instead of being\nlaid out by its parent."
+          },
+          "rotation": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Rotation of a component in degrees. If this field is defined, this element will be\nabsolutely positioned, instead of being laid out by its parent."
+          },
+          "transition": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Transition",
+                "description": "Defines how this component will behave during a scene update. This will only have an\neffect if the previous scene already contained a `View` component with the same id."
+              }
+            ]
+          },
+          "overflow": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Overflow",
+                "description": "(**default=`\"hidden\"`**) Controls what happens to content that is too big to fit into an area."
+              }
+            ]
+          },
+          "background_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Background color in a `\"#RRGGBBAA\"` format."
+              }
+            ]
+          },
+          "border_radius": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Radius of a rounded corner."
+          },
+          "border_width": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Border width."
+          },
+          "border_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Border color in a `\"#RRGGBBAA\"` format."
+              }
+            ]
+          },
+          "box_shadow": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/BoxShadow"
+            },
+            "description": "List of box shadows."
+          },
+          "padding": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding for all sides of the component."
+          },
+          "padding_vertical": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding for the top and bottom of the component."
+          },
+          "padding_horizontal": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding for the left and right of the component."
+          },
+          "padding_top": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding on top side in pixels."
+          },
+          "padding_right": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding on right side in pixels."
+          },
+          "padding_bottom": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding on bottom side in pixels."
+          },
+          "padding_left": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding on left side in pixels."
+          }
+        },
+        "additionalProperties": false
+      },
+      "ViewDirection": {
+        "type": "string",
+        "enum": [
+          "row",
+          "column"
+        ]
+      },
+      "WhepAudioEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/OpusEncoderPreset",
+                    "description": "(**default=\"voip\"**) Specifies preset for audio output encoder."
+                  }
+                ]
+              },
+              "sample_rate": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "(**default=`48000`**) Sample rate. Allowed values: [8000, 16000, 24000, 48000].",
+                "minimum": 0
+              },
+              "forward_error_correction": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "(**default=`false`**) Specifies if forward error correction (FEC) should be used."
+              },
+              "expected_packet_loss": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "(**default=`0`**) Expected packet loss. When `forward_error_correction` is set to `true`,\nthen this value should be greater than `0`. Allowed values: [0, 100];",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "opus"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "WhepInput": {
+        "type": "object",
+        "required": [
+          "endpoint_url"
+        ],
+        "properties": {
+          "endpoint_url": {
+            "type": "string",
+            "description": "WHEP server endpoint URL"
+          },
+          "bearer_token": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional Bearer token for auth"
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/InputWhepVideoOptions",
+                "description": "Parameters of a video source included in the RTP stream."
+              }
+            ]
+          },
+          "required": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "(**default=`false`**) If input is required and the stream is not delivered\non time, then Smelter will delay producing output frames."
+          },
+          "offset_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Offset in milliseconds relative to the pipeline start (start request)."
+          }
+        },
+        "additionalProperties": false
+      },
+      "WhepOutput": {
+        "type": "object",
+        "properties": {
+          "bearer_token": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Token used for authentication in WHEP protocol.\nIf not provided, the bearer token is not required to establish the session."
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputWhepVideoOptions",
+                "description": "Video track configuration."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputWhepAudioOptions",
+                "description": "Audio track configuration."
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "WhepVideoDecoderOptions": {
+        "type": "string",
+        "enum": [
+          "ffmpeg_h264",
+          "ffmpeg_vp8",
+          "ffmpeg_vp9",
+          "vulkan_h264",
+          "any"
+        ]
+      },
+      "WhepVideoEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/H264EncoderPreset",
+                    "description": "(**default=`\"fast\"`**) Video output encoder preset. Visit `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
+                  }
+                ]
+              },
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. Default value depends on chosen encoder."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_h264"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_vp8"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format."
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html) to learn more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_vp9"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vulkan_h264"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "WhipAudioEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/OpusEncoderPreset",
+                    "description": "(**default=\"voip\"**) Specifies preset for audio output encoder."
+                  }
+                ]
+              },
+              "sample_rate": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "(**default=`48000`**) Sample rate. Allowed values: [8000, 16000, 24000, 48000].",
+                "minimum": 0
+              },
+              "forward_error_correction": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "(**default=`false`**) Specifies if forward error correction (FEC) should be used."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "opus"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "any"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "WhipInput": {
+        "type": "object",
+        "description": "Parameters for an input stream for WHIP server.\nAt least one of `video` and `audio` has to be defined.",
+        "properties": {
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/InputWhipVideoOptions",
+                "description": "Parameters of a video source included in the RTP stream."
+              }
+            ]
+          },
+          "bearer_token": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Token used for authentication in WHIP protocol. If not provided, the random value\nwill be generated and returned in the response."
+          },
+          "endpoint_override": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Internal use only.\nOverrides whip endpoint id which is used when referencing the input via whip server.\nIf not provided, it defaults to input id."
+          },
+          "required": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "(**default=`false`**) If input is required and the stream is not delivered\non time, then Smelter will delay producing output frames."
+          },
+          "offset_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Offset in milliseconds relative to the pipeline start (start request). If the offset is\nnot defined then the stream will be synchronized based on the delivery time of the initial\nframes."
+          }
+        },
+        "additionalProperties": false
+      },
+      "WhipOutput": {
+        "type": "object",
+        "required": [
+          "endpoint_url"
+        ],
+        "properties": {
+          "endpoint_url": {
+            "type": "string",
+            "description": "WHIP server endpoint"
+          },
+          "bearer_token": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputWhipVideoOptions",
+                "description": "Video track configuration."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputWhipAudioOptions",
+                "description": "Audio track configuration."
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "WhipVideoDecoderOptions": {
+        "type": "string",
+        "enum": [
+          "ffmpeg_h264",
+          "ffmpeg_vp8",
+          "ffmpeg_vp9",
+          "vulkan_h264",
+          "any"
+        ]
+      },
+      "WhipVideoEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/H264EncoderPreset",
+                    "description": "(**default=`\"fast\"`**) Preset for an encoder. See `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
+                  }
+                ]
+              },
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. Default value depends on chosen encoder."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format"
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_h264"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_vp8"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Maximal interval between keyframes, in milliseconds."
+              },
+              "pixel_format": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PixelFormat",
+                    "description": "(**default=`\"yuv420p\"`**) Encoder pixel format"
+                  }
+                ]
+              },
+              "ffmpeg_options": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html) for more.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ffmpeg_vp9"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "bitrate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoEncoderBitrate",
+                    "description": "Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.\nFor example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s."
+                  }
+                ]
+              },
+              "keyframe_interval_ms": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "format": "double",
+                "description": "(**default=`5000`**) Interval between keyframes, in milliseconds."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vulkan_h264"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "any"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

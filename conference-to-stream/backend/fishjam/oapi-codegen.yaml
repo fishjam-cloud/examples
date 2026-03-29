@@ -1,0 +1,5 @@
+package: fishjamapi
+output: fishjam/generated/fishjam.gen.go
+generate:
+  models: true
+  client: true
