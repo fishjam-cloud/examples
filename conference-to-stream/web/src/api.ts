@@ -3,6 +3,7 @@ const backendUrl = (import.meta.env.VITE_BACKEND_URL as string) || "http://local
 export type JoinRoomResult = {
   roomId: string;
   whepUrl: string;
+  livestreamID: string;
 };
 
 export type JoinPeerResult = {

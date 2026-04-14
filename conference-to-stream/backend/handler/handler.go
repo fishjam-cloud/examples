@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 	"sync"
-
 	"conference-to-stream/composition"
 	"conference-to-stream/fishjam"
 )
@@ -57,6 +57,7 @@ type createRoomRequest struct {
 type createRoomResponse struct {
 	RoomID  string `json:"roomId"`
 	WhepURL string `json:"whepUrl"`
+	LivestreamID string `json:"livestreamID"`
 }
 
 type createPeerRequest struct {
@@ -83,7 +84,7 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	h.mu.Lock()
 	if state, ok := h.rooms[req.RoomName]; ok {
 		h.mu.Unlock()
-		writeJSON(w, createRoomResponse{RoomID: state.RoomID, WhepURL: state.WhepURL})
+		writeJSON(w, createRoomResponse{RoomID: state.RoomID, WhepURL: state.WhepURL, LivestreamID: state.LivestreamID})
 		return
 	}
 	h.mu.Unlock()
@@ -98,6 +99,8 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("created composition: %s", compositionID)
+
+	time.Sleep(1500 * time.Millisecond)
 
 	// Start composition
 	if err := h.compositionClient.Start(apiURL, compositionID); err != nil {
@@ -174,7 +177,7 @@ func (h *Handler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, createRoomResponse{RoomID: roomID, WhepURL: whepURL})
+	writeJSON(w, createRoomResponse{RoomID: roomID, WhepURL: whepURL, LivestreamID: stream.Id})
 }
 
 func (h *Handler) startNotifier(state *RoomState, apiURL, compositionID, roomID string) error {
@@ -295,7 +298,7 @@ func (h *Handler) AttachRoom(w http.ResponseWriter, r *http.Request) {
 	h.mu.Lock()
 	if state, ok := h.roomsByID[req.RoomID]; ok {
 		h.mu.Unlock()
-		writeJSON(w, createRoomResponse{RoomID: state.RoomID, WhepURL: state.WhepURL})
+		writeJSON(w, createRoomResponse{RoomID: state.RoomID, WhepURL: state.WhepURL, LivestreamID: state.LivestreamID})
 		return
 	}
 	h.mu.Unlock()
@@ -335,6 +338,8 @@ func (h *Handler) AttachRoom(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create streamer", http.StatusInternalServerError)
 		return
 	}
+
+	// log.Printf("streamer token: %v", streamerToken);
 
 	// Register WHIP output on composition pointing to Fishjam's WHIP endpoint
 	whipURL := h.fishjamClient.LiveWhipURL()
@@ -377,7 +382,7 @@ func (h *Handler) AttachRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, createRoomResponse{RoomID: roomID, WhepURL: whepURL})
+	writeJSON(w, createRoomResponse{RoomID: roomID, WhepURL: whepURL, LivestreamID: stream.Id})
 }
 
 func (h *Handler) CreatePeer(w http.ResponseWriter, r *http.Request) {

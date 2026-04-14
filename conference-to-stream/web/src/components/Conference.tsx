@@ -3,22 +3,40 @@ import {
   useConnection,
   useMicrophone,
   usePeers,
+  useVAD,
 } from "@fishjam-cloud/react-client";
+import { useEffect, useMemo } from "react";
 import { PeerTile } from "./PeerTile";
 import { WhepPlayer } from "./WhepPlayer";
 
 type Props = {
+  livestreamID: string;
   whepUrl: string;
   roomName: string;
   peerName: string;
   onLeave: () => void;
 };
 
-export function Conference({ whepUrl, roomName, peerName, onLeave }: Props) {
+export function Conference({ whepUrl, livestreamID, roomName, peerName, onLeave }: Props) {
   const { leaveRoom } = useConnection();
   const { isCameraOn, toggleCamera, cameraStream } = useCamera();
   const { isMicrophoneMuted, toggleMicrophoneMute } = useMicrophone();
-  const { localPeer, remotePeers } = usePeers<{ name: string }>();
+  const { remotePeers, localPeer } = usePeers<{ name: string }>();
+
+  const peerIds = useMemo(() => {
+    const ids = remotePeers.map((p) => p.id);
+    if (localPeer) ids.push(localPeer.id);
+    return ids;
+  }, [localPeer, remotePeers]);
+
+  const vadStatuses = useVAD({ peerIds });
+
+  useEffect(() => {
+    if (Object.keys(vadStatuses).length > 0) {
+      console.log("VAD statuses:", vadStatuses);
+    }
+  }, [vadStatuses]);
+
   const whepPlayToken = import.meta.env.VITE_VDO_NINJA_WHEPPLAY_TOKEN as string | undefined;
 
   const vdoNinjaParams = new URLSearchParams({
@@ -95,7 +113,7 @@ export function Conference({ whepUrl, roomName, peerName, onLeave }: Props) {
         {/* WHEP preview */}
         <div className="w-80 flex flex-col gap-3 shrink-0">
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Live Stream Preview</h2>
-          <WhepPlayer url={whepUrl} />
+          <WhepPlayer livestreamID={livestreamID} />
           <a
             href={vdoNinjaUrl}
             target="_blank"

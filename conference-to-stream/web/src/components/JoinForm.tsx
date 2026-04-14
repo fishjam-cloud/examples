@@ -4,7 +4,7 @@ import { createPeer, createRoom } from "../api";
 
 type Props = {
   initialRoomName?: string;
-  onJoined: (result: { whepUrl: string; roomName: string; peerName: string }) => void;
+  onJoined: (result: { roomId: string; whepUrl: string; livestreamID: string; roomName: string; peerName: string }) => void;
 };
 
 export function JoinForm({ initialRoomName, onJoined }: Props) {
@@ -28,10 +28,10 @@ export function JoinForm({ initialRoomName, onJoined }: Props) {
     setError("");
     setLoading(true);
     try {
-      const { roomId, whepUrl } = await createRoom(roomName.trim());
+      const { roomId, whepUrl, livestreamID } = await createRoom(roomName.trim());
       const { peerToken } = await createPeer(roomId, peerName.trim());
       await joinRoom({ peerToken, peerMetadata: { name: peerName.trim() } });
-      onJoined({ whepUrl, roomName: roomName.trim(), peerName: peerName.trim() });
+      onJoined({ roomId, whepUrl, livestreamID, roomName: roomName.trim(), peerName: peerName.trim() });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {

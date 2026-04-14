@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fishjam-cloud/react-client": "^0.25.1",
+    "@fishjam-cloud/react-client": "file:/Users/roznawsk/fjc/web-client-sdk/packages/react-client",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -21,5 +21,10 @@
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^7.1.7"
-  }
+  },
+  "resolutions": {
+    "@fishjam-cloud/ts-client": "file:/Users/roznawsk/fjc/web-client-sdk/packages/ts-client",
+    "@fishjam-cloud/webrtc-client": "file:/Users/roznawsk/fjc/web-client-sdk/packages/webrtc-client"
+  },
+  "packageManager": "yarn@4.13.0"
 }

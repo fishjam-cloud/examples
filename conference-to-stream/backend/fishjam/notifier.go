@@ -24,11 +24,19 @@ type PeerEvent struct {
 	PeerID string
 }
 
+type VadEvent struct {
+	RoomID  string
+	PeerID  string
+	TrackID string
+	Status  pb.ServerMessage_VadNotification_Status
+}
+
 type NotifierCallbacks struct {
 	OnTrackForwarding        func(TrackForwardingEvent)
 	OnTrackForwardingRemoved func(TrackForwardingEvent)
 	OnPeerConnected          func(PeerEvent)
 	OnPeerDisconnected       func(PeerEvent)
+	OnVadNotification        func(VadEvent)
 }
 
 type Notifier struct {
@@ -132,7 +140,7 @@ func (n *Notifier) dispatch(msg *pb.ServerMessage) {
 		log.Println("fishjam notifier: subscribed to notifications")
 	case *pb.ServerMessage_TrackForwarding_:
 		tf := content.TrackForwarding
-		log.Printf("fishjam notifier: track forwarding - room=%s peer=%s input=%s", tf.RoomId, tf.PeerId, tf.InputId)
+		log.Printf("fishjam notifier: track forwarding - peer=%s input=%s", tf.RoomId, tf.PeerId, tf.InputId)
 		if n.callbacks.OnTrackForwarding != nil {
 			n.callbacks.OnTrackForwarding(TrackForwardingEvent{
 				RoomID:         tf.RoomId,
@@ -143,7 +151,7 @@ func (n *Notifier) dispatch(msg *pb.ServerMessage) {
 		}
 	case *pb.ServerMessage_TrackForwardingRemoved_:
 		tf := content.TrackForwardingRemoved
-		log.Printf("fishjam notifier: track forwarding removed - room=%s peer=%s input=%s", tf.RoomId, tf.PeerId, tf.InputId)
+		log.Printf("fishjam notifier: track forwarding removed - peer=%s input=%s", tf.RoomId, tf.PeerId, tf.InputId)
 		if n.callbacks.OnTrackForwardingRemoved != nil {
 			n.callbacks.OnTrackForwardingRemoved(TrackForwardingEvent{
 				RoomID:         tf.RoomId,
@@ -168,6 +176,18 @@ func (n *Notifier) dispatch(msg *pb.ServerMessage) {
 			n.callbacks.OnPeerDisconnected(PeerEvent{
 				RoomID: content.PeerDisconnected.RoomId,
 				PeerID: content.PeerDisconnected.PeerId,
+			})
+		}
+	case *pb.ServerMessage_VadNotification_:
+		vad := content.VadNotification
+		log.Printf("fishjam notifier: VAD notification - room=%s peer=%s track=%s status=%s",
+			vad.RoomId, vad.PeerId, vad.TrackId, vad.Status)
+		if n.callbacks.OnVadNotification != nil {
+			n.callbacks.OnVadNotification(VadEvent{
+				RoomID:  vad.RoomId,
+				PeerID:  vad.PeerId,
+				TrackID: vad.TrackId,
+				Status:  vad.Status,
 			})
 		}
 	default:

@@ -1,38 +1,26 @@
-import { useEffect, useRef, useState } from "react";
-import { initializeWhep } from "../whep";
+import { useEffect, useRef } from "react";
+import { useLivestreamViewer } from "@fishjam-cloud/react-client";
 
 type Props = {
-  url: string;
+  livestreamID: string;
 };
 
-export function WhepPlayer({ url }: Props) {
+export function WhepPlayer({ livestreamID }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [error, setError] = useState("");
+  const { connect, disconnect, stream, error } = useLivestreamViewer();
 
   useEffect(() => {
-    let cancelled = false;
-    let peerConnection: RTCPeerConnection | null = null;
-
-    initializeWhep(url)
-      .then(({ stream, peer }) => {
-        peerConnection = peer;
-        if (!cancelled && videoRef.current) {
-          videoRef.current.srcObject = stream;
-        } else {
-          peer.close();
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "WHEP connection failed");
-        }
-      });
-
+    connect({ streamId: livestreamID });
     return () => {
-      cancelled = true;
-      peerConnection?.close();
+      disconnect();
     };
-  }, [url]);
+  }, [livestreamID, connect, disconnect]);
+
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
 
   if (error) {
     return (

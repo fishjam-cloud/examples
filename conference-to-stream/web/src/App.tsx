@@ -4,7 +4,7 @@ import { JoinForm } from "./components/JoinForm";
 
 type AppState =
   | { status: "idle"; initialRoomName?: string }
-  | { status: "joined"; whepUrl: string; roomName: string; peerName: string };
+  | { status: "joined"; roomId: string; whepUrl: string; livestreamID: string; roomName: string; peerName: string };
 
 function getRoomNameFromURL(): string {
   const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
@@ -34,6 +34,7 @@ export function App() {
     return (
       <Conference
         whepUrl={state.whepUrl}
+        livestreamID={state.livestreamID}
         roomName={state.roomName}
         peerName={state.peerName}
         onLeave={() => {
@@ -47,9 +48,9 @@ export function App() {
   return (
     <JoinForm
       initialRoomName={state.initialRoomName}
-      onJoined={({ whepUrl, roomName, peerName }) => {
+      onJoined={({ roomId, whepUrl, livestreamID, roomName, peerName }) => {
         history.pushState({}, "", `/${roomName}`);
-        setState({ status: "joined", whepUrl, roomName, peerName });
+        setState({ status: "joined", roomId, livestreamID, whepUrl, roomName, peerName });
       }}
     />
   );

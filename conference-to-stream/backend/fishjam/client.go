@@ -131,7 +131,7 @@ func (c *Client) CreateStreamer(streamID string) (string, error) {
 	if resp.JSON201 == nil {
 		return "", fmt.Errorf("create streamer: unexpected status %d: %s", resp.StatusCode(), string(resp.Body))
 	}
-	log.Printf("fishjam: created streamer for stream: id=%s whip=%s", streamID, c.LiveWhipURL())
+	log.Printf("fishjam: created streamer for stream: id=%s whip=%s token=%s", streamID, c.LiveWhipURL(), resp.JSON201.Data.Token)
 	return resp.JSON201.Data.Token, nil
 }
 
