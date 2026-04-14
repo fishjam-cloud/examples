@@ -1,0 +1,30 @@
+{
+  "name": "conference-to-stream-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fishjam-cloud/react-client": "file:/Users/roznawsk/fjc/web-client-sdk/packages/react-client",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.3",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7"
+  },
+  "resolutions": {
+    "@fishjam-cloud/ts-client": "file:/Users/roznawsk/fjc/web-client-sdk/packages/ts-client",
+    "@fishjam-cloud/webrtc-client": "file:/Users/roznawsk/fjc/web-client-sdk/packages/webrtc-client"
+  },
+  "packageManager": "yarn@4.13.0"
+}

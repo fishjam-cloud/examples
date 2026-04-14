@@ -1,0 +1,6 @@
+[submodule "conference-to-stream/backend/oapi-codegen"]
+	path = conference-to-stream/backend/oapi-codegen
+	url = https://github.com/roznawsk/oapi-codegen
+[submodule "conference-to-stream/backend/protos"]
+	path = conference-to-stream/backend/protos
+	url = https://github.com/fishjam-cloud/protos.git
