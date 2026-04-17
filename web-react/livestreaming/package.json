@@ -15,7 +15,7 @@
     "lint:check": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
-    "@fishjam-cloud/react-client": "0.25.1",
+    "@fishjam-cloud/react-client": "0.26.0",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-label": "^2.1.7",

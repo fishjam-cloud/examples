@@ -11,7 +11,7 @@
   "types": "./src/main.ts",
   "dependencies": {
     "@fastify/cors": "^11.1.0",
-    "@fishjam-cloud/js-server-sdk": "^0.25.4",
+    "@fishjam-cloud/js-server-sdk": "^0.26.0",
     "@google/genai": "^1.44.0",
     "@trpc/server": "^11.6.0",
     "dotenv": "^17.2.3",

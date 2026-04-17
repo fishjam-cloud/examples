@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fishjam-cloud/react-client": "^0.22.0",
+    "@fishjam-cloud/react-client": "^0.26.0",
     "@trpc/client": "^11.6.0",
     "@trpc/server": "^11.6.0",
     "gemini-demo-backend": "workspace:*",
