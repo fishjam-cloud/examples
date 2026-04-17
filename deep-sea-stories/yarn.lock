@@ -320,7 +320,7 @@ __metadata:
   dependencies:
     "@deep-sea-stories/common": "workspace:*"
     "@fastify/cors": "npm:^11.1.0"
-    "@fishjam-cloud/js-server-sdk": "npm:^0.22.0"
+    "@fishjam-cloud/js-server-sdk": "npm:^0.26.0"
     "@google/genai": "npm:^1.30.0"
     "@trpc/server": "npm:^11.6.0"
     "@tsconfig/node24": "npm:^24.0.1"
@@ -353,7 +353,7 @@ __metadata:
   dependencies:
     "@deep-sea-stories/backend": "workspace:*"
     "@deep-sea-stories/common": "workspace:*"
-    "@fishjam-cloud/react-client": "npm:^0.22.0"
+    "@fishjam-cloud/react-client": "npm:^0.26.0"
     "@radix-ui/react-dialog": "npm:^1.1.15"
     "@radix-ui/react-label": "npm:^2.1.7"
     "@radix-ui/react-scroll-area": "npm:^1.2.10"
@@ -658,37 +658,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/js-server-sdk@npm:^0.22.0":
-  version: 0.22.1
-  resolution: "@fishjam-cloud/js-server-sdk@npm:0.22.1"
+"@fishjam-cloud/js-server-sdk@npm:^0.26.0":
+  version: 0.26.0
+  resolution: "@fishjam-cloud/js-server-sdk@npm:0.26.0"
   dependencies:
     axios: "npm:^1.7.9"
     uuid: "npm:^11.1.0"
-  checksum: 10c0/a6d005795b820459339787d613422b15c27fbc0c1bc903a33f92bc268af7a2ea762066b4261ab9bd2b545db668e8ea7b490ae73471cb992eeafddb53299a5a2f
+  peerDependencies:
+    "@google/genai": ^1.0.0
+  peerDependenciesMeta:
+    "@google/genai":
+      optional: true
+  checksum: 10c0/9f982e4fc0d5d2f58600f863cd92242f504a0c9201fece55b847ddbfbe433c56d0bff567786fe448147fcd070a02c4b1c99b8226bb28c862d49bd9accdcd6d62
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/react-client@npm:^0.22.0":
-  version: 0.22.0
-  resolution: "@fishjam-cloud/react-client@npm:0.22.0"
+"@fishjam-cloud/react-client@npm:^0.26.0":
+  version: 0.26.0
+  resolution: "@fishjam-cloud/react-client@npm:0.26.0"
   dependencies:
-    "@fishjam-cloud/ts-client": "npm:0.22.0"
+    "@fishjam-cloud/ts-client": "npm:0.26.0"
     events: "npm:3.3.0"
     lodash.isequal: "npm:4.5.0"
-  checksum: 10c0/3f2e0eba7732b37b39c0d57c36f0ede922b1bb7dc7753751caa859f781a6e65dc41ebf5a185abeb3295fc0c812733a008b861d14c4bae3e5482609e6d3b52c49
+  peerDependencies:
+    react: ^19.1.0
+  checksum: 10c0/edfa587eca281c475420798f9c2fea9f1447749515240728343e8aaf253e591e0f2ab7e6c7d570b388964fc63ebedf69c454d4805748f97a36f74a3a7a30e5ed
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/ts-client@npm:0.22.0":
-  version: 0.22.0
-  resolution: "@fishjam-cloud/ts-client@npm:0.22.0"
+"@fishjam-cloud/ts-client@npm:0.26.0":
+  version: 0.26.0
+  resolution: "@fishjam-cloud/ts-client@npm:0.26.0"
   dependencies:
     "@binbat/whip-whep": "npm:^1.1.1-sdp-trickle-throw"
     "@bufbuild/protobuf": "npm:^2.2.3"
     events: "npm:^3.3.0"
     typed-emitter: "npm:^2.1.0"
     uuid: "npm:^11.1.0"
-  checksum: 10c0/62c3a5408a65a5355b26a2227c687f9f8ac07d1f633c4abd0591cbd536beae446a10f3cd6a8c10803790d8a0fd82b8e9c11419c6474cc8b65959702a18636575
+  checksum: 10c0/ef12ba07815d75ec1494456aef532a955834f3133ac79aee61aa55060c74629e33daf5383b2d366d4b3531124de1db228684730af50dd07a9d8cc6ca40284221
   languageName: node
   linkType: hard
 

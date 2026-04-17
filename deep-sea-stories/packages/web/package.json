@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@deep-sea-stories/backend": "workspace:*",
 		"@deep-sea-stories/common": "workspace:*",
-		"@fishjam-cloud/react-client": "^0.22.0",
+		"@fishjam-cloud/react-client": "^0.26.0",
 		"@radix-ui/react-dialog": "^1.1.15",
 		"@radix-ui/react-label": "^2.1.7",
 		"@radix-ui/react-scroll-area": "^1.2.10",

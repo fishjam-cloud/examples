@@ -24,7 +24,7 @@ export const configSchema = z.object({
 	GOOGLE_CLOUD_LOCATION: z.string().optional(),
 });
 
-export const GEMINI_MODEL = 'gemini-3.1-flash-audio-eap';
+export const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
 
 export const stories: Story[] = JSON.parse(
 	fs.readFileSync(join(__dirname, 'prompts', 'stories.json'), 'utf8'),
