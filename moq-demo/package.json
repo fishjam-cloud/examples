@@ -1,18 +1,20 @@
 {
-	"name": "@moq/fishjam-demo",
+	"name": "@moq/moq-demo",
 	"private": true,
 	"type": "module",
 	"version": "0.1.0",
-	"description": "Fishjam MoQ demo — publisher and subscriber",
+	"description": "MoQ demo — publisher and subscriber",
 	"license": "(MIT OR Apache-2.0)",
 	"scripts": {
 		"dev": "vite --open",
 		"build": "vite build",
-		"check": "tsc --noEmit"
+		"check": "tsc --noEmit",
+		"format": "prettier --write \"src/**/*.{ts,tsx}\""
 	},
 	"dependencies": {
+		"@moq/publish": "^0.2.3",
 		"@moq/watch": "^0.2.3",
-		"@moq/publish": "^0.2.3"
+		"@svta/cml-utils": "1.4.0"
 	},
 	"devDependencies": {
 		"@tailwindcss/typography": "^0.5.16",
