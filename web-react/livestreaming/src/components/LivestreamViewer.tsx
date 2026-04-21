@@ -82,6 +82,9 @@ const LivestreamViewer: FC<LivestreamViewerProps> = ({
             )}
           </div>
           <div className="space-y-2">
+            <Label>
+              {stream ? "Livestream" : "Livestream will appear here"}
+            </Label>
             {stream && (
               <VideoPlayer className="h-42 rounded-sm" stream={stream} />
             )}
