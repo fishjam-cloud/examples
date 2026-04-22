@@ -41,6 +41,6 @@
 		"jsxImportSource": "solid-js",
 		"outDir": "dist"
 	},
-	"include": ["src", "worklet.d.ts"],
+	"include": ["src"],
 	"exclude": ["**/node_modules", "**/dist", "**/target"]
 }
