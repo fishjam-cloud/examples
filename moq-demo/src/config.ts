@@ -12,4 +12,4 @@ export const MOQ_BASE_URL =
 
 export const FISHJAM_API_BASE_URL =
   import.meta.env.VITE_FISHJAM_API_BASE_URL ??
-  "https://cloud.fishjam.work/api/v1/connect";
+  "https://cloud.fishjam.io/api/v1/connect";
