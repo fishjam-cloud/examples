@@ -1,5 +1,15 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  readonly VITE_FISHJAM_ID?: string;
+  readonly VITE_MOQ_BASE_URL?: string;
+  readonly VITE_FISHJAM_API_BASE_URL?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 // Declare moq custom elements so SolidJS JSX accepts them without errors.
 declare module "solid-js" {
   namespace JSX {

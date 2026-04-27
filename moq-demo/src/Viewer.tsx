@@ -1,8 +1,7 @@
 import { createSignal, Show } from "solid-js";
 import "@moq/watch/ui";
 import "@moq/watch/element";
-
-const BASE_URL = "https://moq.fishjam.work:443";
+import { MOQ_BASE_URL, FISHJAM_API_BASE_URL } from "./config";
 
 interface Props {
   streamName: string;
@@ -20,11 +19,11 @@ export default function Viewer(props: Props) {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://cloud.fishjam.work/api/v1/connect/${props.fishjamId}/room-manager/moq/${encodeURIComponent(props.streamName)}/subscriber`,
+        `${FISHJAM_API_BASE_URL}/${props.fishjamId}/room-manager/moq/${encodeURIComponent(props.streamName)}/subscriber`,
       );
       if (!res.ok) throw new Error(await res.text());
       const { token } = (await res.json()) as { token: string };
-      const url = `${BASE_URL}/${props.fishjamId}?jwt=${token}`;
+      const url = `${MOQ_BASE_URL}/${props.fishjamId}?jwt=${token}`;
       watchEl.setAttribute("url", url);
       watchEl.setAttribute("name", props.streamName);
       setConnected(true);
