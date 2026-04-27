@@ -1,0 +1,32 @@
+{
+	"name": "@moq/moq-demo",
+	"private": true,
+	"type": "module",
+	"version": "0.1.0",
+	"description": "MoQ demo — publisher and subscriber",
+	"license": "(MIT OR Apache-2.0)",
+	"packageManager": "yarn@4.12.0",
+	"scripts": {
+		"dev": "vite --open",
+		"build": "vite build",
+		"check": "tsc --noEmit",
+		"format": "prettier --write \"src/**/*.{ts,tsx}\""
+	},
+	"dependencies": {
+		"@moq/publish": "^0.2.3",
+		"@moq/watch": "^0.2.3",
+		"@svta/cml-utils": "1.4.0"
+	},
+	"devDependencies": {
+		"@tailwindcss/typography": "^0.5.16",
+		"@tailwindcss/vite": "^4.1.13",
+		"esbuild": "^0.27.0",
+		"prettier": "3.5.3",
+		"solid-element": "^1.9.1",
+		"solid-js": "^1.9.10",
+		"tailwindcss": "^4.1.13",
+		"typescript": "^6.0.0",
+		"vite": "^7.3.1",
+		"vite-plugin-solid": "^2.11.10"
+	}
+}

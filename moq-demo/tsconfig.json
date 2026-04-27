@@ -1,0 +1,46 @@
+{
+	"compilerOptions": {
+		"lib": ["esnext", "dom", "dom.iterable"],
+		"target": "esnext",
+		"rewriteRelativeImportExtensions": true,
+
+		"declaration": true,
+		"declarationMap": true,
+		"isolatedModules": true,
+		"sourceMap": true,
+		"inlineSources": true,
+
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"alwaysStrict": true,
+		"exactOptionalPropertyTypes": false,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noPropertyAccessFromIndexSignature": false,
+		"noUncheckedIndexedAccess": false,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"strict": true,
+		"strictBindCallApply": true,
+		"strictBuiltinIteratorReturn": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"useUnknownInCatchVariables": true,
+
+		"erasableSyntaxOnly": true,
+
+		"skipLibCheck": true,
+
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"jsx": "preserve",
+		"jsxImportSource": "solid-js",
+		"outDir": "dist"
+	},
+	"include": ["src"],
+	"exclude": ["**/node_modules", "**/dist", "**/target"]
+}
