@@ -1,0 +1,3255 @@
+openapi: 3.1.0
+info:
+  description: Real-time video compositing
+  license:
+    name: Apache 2.0
+  title: Composition API
+  version: 0.1.0
+servers:
+- url: https://rtc.fishjam.io
+paths:
+  /api/composition:
+    post:
+      operationId: create_composition
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCompositionRequest"
+        description: Composition creation options.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompositionCreatedResponse"
+          description: Composition created.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - composition
+  /api/composition/{composition_id}:
+    delete:
+      operationId: delete_composition
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Composition deleted.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - composition
+  /api/composition/{composition_id}/start:
+    post:
+      operationId: start
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Composition started.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - control_request
+  /api/composition/{composition_id}/reset:
+    post:
+      operationId: reset
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Composition reset.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - control_request
+  /api/composition/{composition_id}/input/{input_id}/register:
+    post:
+      operationId: register_input
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Input ID.
+        explode: false
+        in: path
+        name: input_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Input registered successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - register_request
+  /api/composition/{composition_id}/output/{output_id}/register:
+    post:
+      operationId: register_output
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Output ID.
+        explode: false
+        in: path
+        name: output_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterOutput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Output registered successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - register_request
+  /api/composition/{composition_id}/image/{image_id}/register:
+    post:
+      operationId: register_image
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Image ID.
+        explode: false
+        in: path
+        name: image_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageSpec"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Image registered successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - register_request
+  /api/composition/{composition_id}/font/register:
+    post:
+      operationId: register_font
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/register_font_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Font registered successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - register_request
+  /api/composition/{composition_id}/input/{input_id}/unregister:
+    post:
+      operationId: unregister_input
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Input ID.
+        explode: false
+        in: path
+        name: input_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnregisterInput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Input unregistered successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Input not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - unregister_request
+  /api/composition/{composition_id}/output/{output_id}/unregister:
+    post:
+      operationId: unregister_output
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Output ID.
+        explode: false
+        in: path
+        name: output_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnregisterOutput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Output unregistered successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Output not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - unregister_request
+  /api/composition/{composition_id}/image/{image_id}/unregister:
+    post:
+      operationId: unregister_image
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Image ID.
+        explode: false
+        in: path
+        name: image_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnregisterRenderer"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Image unregistered successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Image not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - unregister_request
+  /api/composition/{composition_id}/output/{output_id}/update:
+    post:
+      operationId: update_output
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Output ID.
+        explode: false
+        in: path
+        name: output_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOutputRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Output updated successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - update_request
+  /api/composition/{composition_id}/output/{output_id}/request_keyframe:
+    post:
+      operationId: request_keyframe
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Output ID.
+        explode: false
+        in: path
+        name: output_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+          description: Keyframe request successful.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      tags:
+      - update_request
+  /api/composition/{composition_id}/whip/{input_id}:
+    post:
+      operationId: whip_offer
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Input ID.
+        explode: false
+        in: path
+        name: input_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/sdp:
+            schema:
+              type: string
+        description: SDP offer.
+        required: true
+      responses:
+        "201":
+          content:
+            application/sdp:
+              schema:
+                type: string
+          description: Session created.
+          headers:
+            location:
+              description: Session URL.
+              explode: false
+              schema:
+                type: string
+              style: simple
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Unauthorized.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition or input not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      security:
+      - BearerAuth: []
+      tags:
+      - whip_whep
+  /api/composition/{composition_id}/whep/{output_id}:
+    post:
+      operationId: whep_offer
+      parameters:
+      - description: Composition ID.
+        explode: false
+        in: path
+        name: composition_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Output ID.
+        explode: false
+        in: path
+        name: output_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/sdp:
+            schema:
+              type: string
+        description: SDP offer.
+        required: true
+      responses:
+        "201":
+          content:
+            application/sdp:
+              schema:
+                type: string
+          description: Session created.
+          headers:
+            location:
+              description: Session URL.
+              explode: false
+              schema:
+                type: string
+              style: simple
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Bad request.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Unauthorized.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Composition or output not found.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Internal server error.
+      security:
+      - {}
+      - BearerAuth: []
+      tags:
+      - whip_whep
+components:
+  schemas:
+    AacRtpMode:
+      enum:
+      - low_bitrate
+      - high_bitrate
+      type: string
+    ApiError:
+      example:
+        http_status_code: 0
+        message: message
+      properties:
+        message:
+          type: string
+        http_status_code:
+          format: int32
+          minimum: 0
+          type: integer
+      required:
+      - http_status_code
+      - message
+    AspectRatio:
+      type: string
+    AudioChannels:
+      enum:
+      - mono
+      - stereo
+      type: string
+    AudioMixingStrategy:
+      enum:
+      - sum_clip
+      - sum_scale
+      type: string
+    AudioScene:
+      additionalProperties: false
+      properties:
+        inputs:
+          items:
+            $ref: "#/components/schemas/AudioSceneInput"
+          type: array
+      required:
+      - inputs
+    AudioSceneInput:
+      additionalProperties: false
+      properties:
+        input_id:
+          type: string
+        volume:
+          description: "(**default=`1.0`**) float in `[0, 2]` range representing input\
+            \ volume"
+          format: float
+          nullable: true
+          type: number
+      required:
+      - input_id
+    BoxShadow:
+      additionalProperties: false
+      properties:
+        offset_x:
+          format: float
+          nullable: true
+          type: number
+        offset_y:
+          format: float
+          nullable: true
+          type: number
+        color:
+          allOf:
+          - $ref: "#/components/schemas/RGBAColor"
+          nullable: true
+        blur_radius:
+          format: float
+          nullable: true
+          type: number
+    Component:
+      oneOf:
+      - $ref: "#/components/schemas/Component_oneOf"
+      - $ref: "#/components/schemas/Component_oneOf_1"
+      - $ref: "#/components/schemas/Component_oneOf_2"
+      - $ref: "#/components/schemas/Component_oneOf_3"
+      - $ref: "#/components/schemas/Component_oneOf_4"
+    ComponentId:
+      type: string
+    CompositionCreatedResponse:
+      example:
+        api_url: api_url
+        composition_id: composition_id
+      properties:
+        composition_id:
+          type: string
+        api_url:
+          type: string
+      required:
+      - api_url
+      - composition_id
+    CompositionId:
+      type: string
+    CreateCompositionRequest:
+      example:
+        autostart: true
+      properties:
+        autostart:
+          default: true
+          description: |-
+            If true, outputs will immediately start producing audio and video.
+            If false, call `POST /api/composition/{composition_id}/start` to start the composition.
+          type: boolean
+    EasingFunction:
+      description: |-
+        Easing functions are used to interpolate between two values over time.
+
+        Custom easing functions can be implemented with cubic Bézier.
+        The control points are defined with `points` field by providing four numerical values: `x1`, `y1`, `x2` and `y2`. The `x1` and `x2` values have to be in the range `[0; 1]`. The cubic Bézier result is clamped to the range `[0; 1]`.
+        You can find example control point configurations [here](https://easings.net/).
+      oneOf:
+      - $ref: "#/components/schemas/EasingFunction_oneOf"
+      - $ref: "#/components/schemas/EasingFunction_oneOf_1"
+      - $ref: "#/components/schemas/EasingFunction_oneOf_2"
+    FontUpload:
+      properties:
+        font:
+          format: binary
+          type: string
+      required:
+      - font
+    Framerate:
+      oneOf:
+      - type: string
+      - format: int32
+        minimum: 0
+        type: integer
+    H264EncoderPreset:
+      enum:
+      - ultrafast
+      - superfast
+      - veryfast
+      - faster
+      - fast
+      - medium
+      - slow
+      - slower
+      - veryslow
+      - placebo
+      type: string
+    HlsAudioEncoderOptions:
+      properties:
+        sample_rate:
+          description: "(**default=`44100`**) Sample rate. Allowed values: [8000,\
+            \ 16000, 24000, 44100, 48000]."
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        type:
+          enum:
+          - aac
+          type: string
+      required:
+      - type
+    HlsInput:
+      additionalProperties: false
+      description: Parameters for an input stream from HLS source.
+      properties:
+        url:
+          description: URL to HLS playlist
+          type: string
+        required:
+          description: |-
+            (**default=`false`**) If input is required and the stream is not delivered
+            on time, then Smelter will delay producing output frames.
+          nullable: true
+          type: boolean
+        offset_ms:
+          description: |-
+            Offset in milliseconds relative to the pipeline start (start request). If the offset is
+            not defined then the stream will be synchronized based on the delivery time of the initial
+            frames.
+          format: double
+          nullable: true
+          type: number
+      required:
+      - url
+    HlsOutput:
+      additionalProperties: false
+      properties:
+        path:
+          description: Path to output HLS playlist.
+          type: string
+        max_playlist_size:
+          description: |-
+            Number of segments kept in the playlist. When the limit is reached the oldest segment is removed.
+            If not specified, no segments will removed.
+          minimum: 0
+          nullable: true
+          type: integer
+        video:
+          allOf:
+          - $ref: "#/components/schemas/OutputHlsVideoOptions"
+          description: Video track configuration.
+          nullable: true
+        audio:
+          allOf:
+          - $ref: "#/components/schemas/OutputHlsAudioOptions"
+          description: Audio track configuration.
+          nullable: true
+      required:
+      - path
+    HlsVideoDecoderOptions:
+      enum:
+      - ffmpeg_h264
+      - vulkan_h264
+      type: string
+    HlsVideoEncoderOptions:
+      oneOf:
+      - $ref: "#/components/schemas/HlsVideoEncoderOptions_oneOf"
+      - $ref: "#/components/schemas/HlsVideoEncoderOptions_oneOf_1"
+    HorizontalAlign:
+      enum:
+      - left
+      - right
+      - justified
+      - center
+      type: string
+    ImageSpec:
+      oneOf:
+      - $ref: "#/components/schemas/ImageSpec_oneOf"
+      - $ref: "#/components/schemas/ImageSpec_oneOf_1"
+      - $ref: "#/components/schemas/ImageSpec_oneOf_2"
+      - $ref: "#/components/schemas/ImageSpec_oneOf_3"
+      - $ref: "#/components/schemas/ImageSpec_oneOf_4"
+    InputHlsCodec:
+      enum:
+      - h264
+      type: string
+    InputId:
+      type: string
+    InputMp4Codec:
+      enum:
+      - h264
+      type: string
+    InputRtmpCodec:
+      enum:
+      - h264
+      type: string
+    InputRtpAudioOptions:
+      oneOf:
+      - $ref: "#/components/schemas/InputRtpAudioOptions_oneOf"
+      - $ref: "#/components/schemas/InputRtpAudioOptions_oneOf_1"
+    InputRtpVideoOptions:
+      additionalProperties: false
+      properties:
+        decoder:
+          $ref: "#/components/schemas/RtpVideoDecoderOptions"
+      required:
+      - decoder
+    InputStream:
+      additionalProperties: false
+      properties:
+        id:
+          allOf:
+          - $ref: "#/components/schemas/ComponentId"
+          description: Id of a component.
+          nullable: true
+        input_id:
+          allOf:
+          - $ref: "#/components/schemas/InputId"
+          description: "Id of an input. It identifies a stream registered using a\
+            \ [`RegisterInputStream`](../routes.md#register-input) request."
+      required:
+      - input_id
+    InputWhepVideoOptions:
+      additionalProperties: false
+      properties:
+        decoder_preferences:
+          items:
+            $ref: "#/components/schemas/WhepVideoDecoderOptions"
+          nullable: true
+          type: array
+    InputWhipVideoOptions:
+      additionalProperties: false
+      properties:
+        decoder_preferences:
+          items:
+            $ref: "#/components/schemas/WhipVideoDecoderOptions"
+          nullable: true
+          type: array
+    Interpolation:
+      enum:
+      - linear
+      - spring
+      type: string
+    Mp4AudioEncoderOptions:
+      properties:
+        sample_rate:
+          description: "(**default=`44100`**) Sample rate. Allowed values: [8000,\
+            \ 16000, 24000, 44100, 48000]."
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        type:
+          enum:
+          - aac
+          type: string
+      required:
+      - type
+    Mp4Input:
+      additionalProperties: false
+      description: |-
+        Input stream from MP4 file.
+        Exactly one of `url` and `path` has to be defined.
+      properties:
+        url:
+          description: URL of the MP4 file.
+          nullable: true
+          type: string
+        loop:
+          description: (**default=`false`**) If input should be played in the loop.
+            <span class="badge badge--primary">Added in v0.4.0</span>
+          nullable: true
+          type: boolean
+        required:
+          description: |-
+            (**default=`false`**) If input is required and frames are not processed
+            on time, then Smelter will delay producing output frames.
+          nullable: true
+          type: boolean
+        offset_ms:
+          description: |-
+            Offset in milliseconds relative to the pipeline start (start request). If offset is
+            not defined then stream is synchronized based on the first frames delivery time.
+          format: double
+          nullable: true
+          type: number
+    Mp4Output:
+      additionalProperties: false
+      properties:
+        path:
+          description: Path to output MP4 file.
+          type: string
+        video:
+          allOf:
+          - $ref: "#/components/schemas/OutputMp4VideoOptions"
+          description: Video stream configuration.
+          nullable: true
+        audio:
+          allOf:
+          - $ref: "#/components/schemas/OutputMp4AudioOptions"
+          description: Audio stream configuration.
+          nullable: true
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg muxer options. See [docs](https://ffmpeg.org/ffmpeg-formats.html)\
+            \ for more."
+      required:
+      - path
+    Mp4VideoDecoderOptions:
+      enum:
+      - ffmpeg_h264
+      - vulkan_h264
+      type: string
+    Mp4VideoEncoderOptions:
+      oneOf:
+      - $ref: "#/components/schemas/Mp4VideoEncoderOptions_oneOf"
+      - $ref: "#/components/schemas/HlsVideoEncoderOptions_oneOf_1"
+    OpusEncoderPreset:
+      enum:
+      - quality
+      - voip
+      - lowest_latency
+      type: string
+    OutputEndCondition:
+      additionalProperties: false
+      description: |-
+        This type defines when end of an input stream should trigger end of the output stream. Only one of those fields can be set at the time.
+        Unless specified otherwise the input stream is considered finished/ended when:
+        - TCP connection was dropped/closed.
+        - RTCP Goodbye packet (`BYE`) was received.
+        - Mp4 track has ended.
+        - Input was unregistered already (or never registered).
+      properties:
+        any_of:
+          description: Terminate output stream if any of the input streams from the
+            list are finished.
+          items:
+            $ref: "#/components/schemas/InputId"
+          nullable: true
+          type: array
+        all_of:
+          description: Terminate output stream if all the input streams from the list
+            are finished.
+          items:
+            $ref: "#/components/schemas/InputId"
+          nullable: true
+          type: array
+        any_input:
+          description: "Terminate output stream if any of the input streams ends.\
+            \ This includes streams added after the output was registered. In particular,\
+            \ output stream will **not be** terminated if no inputs were ever connected."
+          nullable: true
+          type: boolean
+        all_inputs:
+          description: "Terminate output stream if all the input streams finish. In\
+            \ particular, output stream will **be** terminated if no inputs were ever\
+            \ connected."
+          nullable: true
+          type: boolean
+    OutputHlsAudioOptions:
+      additionalProperties: false
+      properties:
+        mixing_strategy:
+          allOf:
+          - $ref: "#/components/schemas/AudioMixingStrategy"
+          description: (**default="sum_clip"**) Specifies how audio should be mixed.
+          nullable: true
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: Condition for termination of output stream based on the input
+            streams states.
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/HlsAudioEncoderOptions"
+          description: Audio encoder options.
+        channels:
+          allOf:
+          - $ref: "#/components/schemas/AudioChannels"
+          description: Specifies channels configuration.
+          nullable: true
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/AudioScene"
+          description: Initial audio mixer configuration for output.
+      required:
+      - encoder
+      - initial
+    OutputHlsVideoOptions:
+      additionalProperties: false
+      properties:
+        resolution:
+          allOf:
+          - $ref: "#/components/schemas/Resolution"
+          description: Output resolution in pixels.
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: "Condition for termination of the output stream based on the\
+            \ input streams states. If output includes both audio and video streams,\
+            \ then EOS needs to be sent for every type."
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/HlsVideoEncoderOptions"
+          description: Video encoder options.
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/VideoScene"
+          description: "Root of a component tree/scene that should be rendered for\
+            \ the output. Use [`update_output` request](../routes.md#update-output)\
+            \ to update this value after registration. [Learn more](../../concept/component.md)."
+      required:
+      - encoder
+      - initial
+      - resolution
+    OutputId:
+      type: string
+    OutputMp4AudioOptions:
+      additionalProperties: false
+      properties:
+        mixing_strategy:
+          allOf:
+          - $ref: "#/components/schemas/AudioMixingStrategy"
+          description: (**default="sum_clip"**) Specifies how audio should be mixed.
+          nullable: true
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: Condition for termination of output stream based on the input
+            streams states.
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/Mp4AudioEncoderOptions"
+          description: Audio encoder options.
+        channels:
+          allOf:
+          - $ref: "#/components/schemas/AudioChannels"
+          description: Specifies channels configuration.
+          nullable: true
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/AudioScene"
+          description: Initial audio mixer configuration for output.
+      required:
+      - encoder
+      - initial
+    OutputMp4VideoOptions:
+      additionalProperties: false
+      properties:
+        resolution:
+          allOf:
+          - $ref: "#/components/schemas/Resolution"
+          description: Output resolution in pixels.
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: "Condition for termination of the output stream based on the\
+            \ input streams states. If output includes both audio and video streams,\
+            \ then EOS needs to be sent for every type."
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/Mp4VideoEncoderOptions"
+          description: Video encoder options.
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/VideoScene"
+          description: "Root of a component tree/scene that should be rendered for\
+            \ the output. Use [`update_output` request](../routes.md#update-output)\
+            \ to update this value after registration. [Learn more](../../concept/component.md)."
+      required:
+      - encoder
+      - initial
+      - resolution
+    OutputRtmpClientAudioOptions:
+      additionalProperties: false
+      properties:
+        mixing_strategy:
+          allOf:
+          - $ref: "#/components/schemas/AudioMixingStrategy"
+          description: (**default="sum_clip"**) Specifies how audio should be mixed.
+          nullable: true
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: "Condition for termination of the output stream based on the\
+            \ input streams states. If output includes both audio and video streams,\
+            \ then EOS needs to be sent for every type."
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/RtmpClientAudioEncoderOptions"
+          description: Audio encoder options.
+        channels:
+          allOf:
+          - $ref: "#/components/schemas/AudioChannels"
+          description: Channels configuration.
+          nullable: true
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/AudioScene"
+          description: Initial audio mixer configuration for output.
+      required:
+      - encoder
+      - initial
+    OutputRtmpClientVideoOptions:
+      additionalProperties: false
+      properties:
+        resolution:
+          allOf:
+          - $ref: "#/components/schemas/Resolution"
+          description: Output resolution in pixels.
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: "Condition for termination of the output stream based on the\
+            \ input streams states. If output includes both audio and video streams,\
+            \ then EOS needs to be sent for every type."
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/RtmpClientVideoEncoderOptions"
+          description: Video encoder options.
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/VideoScene"
+          description: "Root of a component tree/scene that should be rendered for\
+            \ the output. Use [`update_output` request](../routes.md#update-output)\
+            \ to update this value after registration. [Learn more](../../concept/component.md)."
+      required:
+      - encoder
+      - initial
+      - resolution
+    OutputRtpAudioOptions:
+      additionalProperties: false
+      properties:
+        mixing_strategy:
+          allOf:
+          - $ref: "#/components/schemas/AudioMixingStrategy"
+          description: (**default="sum_clip"**) Specifies how audio should be mixed.
+          nullable: true
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: "Condition for termination of output stream based on the input\
+            \ streams states. If output includes both audio and video streams, then\
+            \ EOS needs to be sent for every type."
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/RtpAudioEncoderOptions"
+          description: Audio encoder options.
+        channels:
+          allOf:
+          - $ref: "#/components/schemas/AudioChannels"
+          description: Channels configuration.
+          nullable: true
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/AudioScene"
+          description: Initial audio mixer configuration for output.
+      required:
+      - encoder
+      - initial
+    OutputRtpVideoOptions:
+      additionalProperties: false
+      properties:
+        resolution:
+          allOf:
+          - $ref: "#/components/schemas/Resolution"
+          description: Output resolution in pixels.
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: "Condition for termination of the output stream based on the\
+            \ input streams states. If output includes both audio and video streams,\
+            \ then EOS needs to be sent for every type."
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/RtpVideoEncoderOptions"
+          description: Video encoder options.
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/VideoScene"
+          description: "Root of a component tree/scene that should be rendered for\
+            \ the output. Use [`update_output` request](../routes.md#update-output)\
+            \ to update this value after registration. [Learn more](../../concept/component.md)."
+      required:
+      - encoder
+      - initial
+      - resolution
+    OutputWhepAudioOptions:
+      additionalProperties: false
+      properties:
+        mixing_strategy:
+          allOf:
+          - $ref: "#/components/schemas/AudioMixingStrategy"
+          description: (**default="sum_clip"**) Specifies how audio should be mixed.
+          nullable: true
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: Condition for termination of output stream based on the input
+            streams states.
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/WhepAudioEncoderOptions"
+          description: Audio encoder options.
+        channels:
+          allOf:
+          - $ref: "#/components/schemas/AudioChannels"
+          description: Specifies channels configuration.
+          nullable: true
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/AudioScene"
+          description: Initial audio mixer configuration for output.
+      required:
+      - encoder
+      - initial
+    OutputWhepVideoOptions:
+      additionalProperties: false
+      properties:
+        resolution:
+          allOf:
+          - $ref: "#/components/schemas/Resolution"
+          description: Output resolution in pixels.
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: "Condition for termination of the output stream based on the\
+            \ input streams states. If output includes both audio and video streams,\
+            \ then EOS needs to be sent for every type."
+          nullable: true
+        encoder:
+          allOf:
+          - $ref: "#/components/schemas/WhepVideoEncoderOptions"
+          description: Video encoder options.
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/VideoScene"
+          description: "Root of a component tree/scene that should be rendered for\
+            \ the output. Use [`update_output` request](../routes.md#update-output)\
+            \ to update this value after registration. [Learn more](../../concept/component.md)."
+      required:
+      - encoder
+      - initial
+      - resolution
+    OutputWhipAudioOptions:
+      additionalProperties: false
+      properties:
+        mixing_strategy:
+          allOf:
+          - $ref: "#/components/schemas/AudioMixingStrategy"
+          description: (**default="sum_clip"**) Specifies how audio should be mixed.
+          nullable: true
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: Condition for termination of output stream based on the input
+            streams states.
+          nullable: true
+        channels:
+          allOf:
+          - $ref: "#/components/schemas/AudioChannels"
+          description: Specifies channels configuration.
+          nullable: true
+        encoder_preferences:
+          description: Codec preferences list.
+          items:
+            $ref: "#/components/schemas/WhipAudioEncoderOptions"
+          nullable: true
+          type: array
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/AudioScene"
+          description: Initial audio mixer configuration for output.
+      required:
+      - initial
+    OutputWhipVideoOptions:
+      additionalProperties: false
+      properties:
+        resolution:
+          allOf:
+          - $ref: "#/components/schemas/Resolution"
+          description: Output resolution in pixels.
+        send_eos_when:
+          allOf:
+          - $ref: "#/components/schemas/OutputEndCondition"
+          description: "Defines when output stream should end if some of the input\
+            \ streams are finished. If output includes both audio and video streams,\
+            \ then EOS needs to be sent on both."
+          nullable: true
+        encoder_preferences:
+          description: Codec preferences list.
+          items:
+            $ref: "#/components/schemas/WhipVideoEncoderOptions"
+          nullable: true
+          type: array
+        initial:
+          allOf:
+          - $ref: "#/components/schemas/VideoScene"
+          description: Root of a component tree/scene that should be rendered for
+            the output.
+      required:
+      - initial
+      - resolution
+    Overflow:
+      enum:
+      - visible
+      - hidden
+      - fit
+      type: string
+    PixelFormat:
+      enum:
+      - yuv420p
+      - yuv422p
+      - yuv444p
+      type: string
+    PortOrPortRange:
+      oneOf:
+      - type: string
+      - format: int32
+        minimum: 0
+        type: integer
+    RGBAColor:
+      type: string
+    RegisterInput:
+      oneOf:
+      - $ref: "#/components/schemas/RegisterInput_oneOf"
+      - $ref: "#/components/schemas/RegisterInput_oneOf_1"
+      - $ref: "#/components/schemas/RegisterInput_oneOf_2"
+      - $ref: "#/components/schemas/RegisterInput_oneOf_3"
+      - $ref: "#/components/schemas/RegisterInput_oneOf_4"
+      - $ref: "#/components/schemas/RegisterInput_oneOf_5"
+    RegisterOutput:
+      oneOf:
+      - $ref: "#/components/schemas/RegisterOutput_oneOf"
+      - $ref: "#/components/schemas/RegisterOutput_oneOf_1"
+      - $ref: "#/components/schemas/RegisterOutput_oneOf_2"
+      - $ref: "#/components/schemas/RegisterOutput_oneOf_3"
+      - $ref: "#/components/schemas/RegisterOutput_oneOf_4"
+      - $ref: "#/components/schemas/RegisterOutput_oneOf_5"
+    RescaleMode:
+      enum:
+      - fit
+      - fill
+      type: string
+    Rescaler:
+      additionalProperties: false
+      properties:
+        id:
+          allOf:
+          - $ref: "#/components/schemas/ComponentId"
+          description: Id of a component.
+          nullable: true
+        child:
+          allOf:
+          - $ref: "#/components/schemas/Component"
+          description: List of component's children.
+        mode:
+          allOf:
+          - $ref: "#/components/schemas/RescaleMode"
+          description: "(**default=`\"fit\"`**) Resize mode:"
+          nullable: true
+        horizontal_align:
+          allOf:
+          - $ref: "#/components/schemas/HorizontalAlign"
+          description: (**default=`"center"`**) Horizontal alignment.
+          nullable: true
+        vertical_align:
+          allOf:
+          - $ref: "#/components/schemas/VerticalAlign"
+          description: (**default=`"center"`**) Vertical alignment.
+          nullable: true
+        width:
+          description: |-
+            Width of a component in pixels (without a border). Exact behavior might be different
+            based on the parent component:
+            - If the parent component is a layout, check sections "Absolute positioning" and "Static
+              positioning" of that component.
+            - If the parent component is not a layout, then this field is required.
+          format: float
+          nullable: true
+          type: number
+        height:
+          description: |-
+            Height of a component in pixels (without a border). Exact behavior might be different
+            based on the parent component:
+            - If the parent component is a layout, check sections "Absolute positioning" and "Static
+              positioning" of that component.
+            - If the parent component is not a layout, then this field is required.
+          format: float
+          nullable: true
+          type: number
+        top:
+          description: |-
+            Distance in pixels between this component's top edge and its parent's top edge (including a border).
+            If this field is defined, then the component will ignore a layout defined by its parent.
+          format: float
+          nullable: true
+          type: number
+        left:
+          description: |-
+            Distance in pixels between this component's left edge and its parent's left edge (including a border).
+            If this field is defined, this element will be absolutely positioned, instead of being
+            laid out by its parent.
+          format: float
+          nullable: true
+          type: number
+        bottom:
+          description: |-
+            Distance in pixels between the bottom edge of this component and the bottom edge of its
+            parent (including a border). If this field is defined, this element will be absolutely
+            positioned, instead of being laid out by its parent.
+          format: float
+          nullable: true
+          type: number
+        right:
+          description: |-
+            Distance in pixels between this component's right edge and its parent's right edge.
+            If this field is defined, this element will be absolutely positioned, instead of being
+            laid out by its parent.
+          format: float
+          nullable: true
+          type: number
+        rotation:
+          description: |-
+            Rotation of a component in degrees. If this field is defined, this element will be
+            absolutely positioned, instead of being laid out by its parent.
+          format: float
+          nullable: true
+          type: number
+        transition:
+          allOf:
+          - $ref: "#/components/schemas/Transition"
+          description: |-
+            Defines how this component will behave during a scene update. This will only have an
+            effect if the previous scene already contained a `Rescaler` component with the same id.
+          nullable: true
+        border_radius:
+          description: (**default=`0.0`**) Radius of a rounded corner.
+          format: float
+          nullable: true
+          type: number
+        border_width:
+          description: (**default=`0.0`**) Border width.
+          format: float
+          nullable: true
+          type: number
+        border_color:
+          allOf:
+          - $ref: "#/components/schemas/RGBAColor"
+          description: (**default=`"#00000000"`**) Border color in a `"#RRGGBBAA"`
+            format.
+          nullable: true
+        box_shadow:
+          description: List of box shadows.
+          items:
+            $ref: "#/components/schemas/BoxShadow"
+          nullable: true
+          type: array
+      required:
+      - child
+    Resolution:
+      properties:
+        width:
+          description: Width in pixels.
+          minimum: 0
+          type: integer
+        height:
+          description: Height in pixels.
+          minimum: 0
+          type: integer
+      required:
+      - height
+      - width
+    Response:
+      oneOf:
+      - $ref: "#/components/schemas/Response_oneOf"
+      - $ref: "#/components/schemas/Response_oneOf_1"
+      - $ref: "#/components/schemas/Response_oneOf_2"
+      - type: object
+    RtmpClientAudioEncoderOptions:
+      properties:
+        sample_rate:
+          description: "(**default=`48000`**) Sample rate. Allowed values: [8000,\
+            \ 16000, 24000, 44100, 48000]."
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        type:
+          enum:
+          - aac
+          type: string
+      required:
+      - type
+    RtmpClientVideoEncoderOptions:
+      oneOf:
+      - $ref: "#/components/schemas/HlsVideoEncoderOptions_oneOf"
+      - $ref: "#/components/schemas/HlsVideoEncoderOptions_oneOf_1"
+    RtmpInput:
+      additionalProperties: false
+      properties:
+        app:
+          description: |-
+            The RTMP application name.
+            This is the first path segment of the RTMP stream URL that Smelter listens on for incoming streams.
+            Format: `rtmp://<ip_address>:<port>/<app>/<stream_key`
+          type: string
+        stream_key:
+          description: |-
+            The RTMP stream key.
+            This is the second path segment of the RTMP stream URL that Smelter listens on for incoming streams.
+            Format: `rtmp://<ip_address>:<port>/<app>/<stream_key`
+          type: string
+        required:
+          description: |-
+            (**default=`false`**) If input is required and the stream is not delivered
+            on time, then Smelter will delay producing output frames.
+          nullable: true
+          type: boolean
+        offset_ms:
+          description: |-
+            Offset in milliseconds relative to the pipeline start (start request). If the offset is
+            not defined then the stream will be synchronized based on the delivery time of the initial
+            frames.
+          format: double
+          nullable: true
+          type: number
+      required:
+      - app
+      - stream_key
+    RtmpOutput:
+      additionalProperties: false
+      properties:
+        url:
+          description: RTMP endpoint url.
+          type: string
+        video:
+          allOf:
+          - $ref: "#/components/schemas/OutputRtmpClientVideoOptions"
+          description: Video stream configuration.
+          nullable: true
+        audio:
+          allOf:
+          - $ref: "#/components/schemas/OutputRtmpClientAudioOptions"
+          description: Audio stream configuration.
+          nullable: true
+      required:
+      - url
+    RtmpVideoDecoderOptions:
+      enum:
+      - ffmpeg_h264
+      - vulkan_h264
+      type: string
+    RtpAudioEncoderOptions:
+      properties:
+        preset:
+          allOf:
+          - $ref: "#/components/schemas/OpusEncoderPreset"
+          description: (**default="voip"**) Audio output encoder preset.
+          nullable: true
+        sample_rate:
+          description: "(**default=`48000`**) Sample rate. Allowed values: [8000,\
+            \ 16000, 24000, 48000]."
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        forward_error_correction:
+          description: (**default=`false`**) Specifies if forward error correction
+            (FEC) should be used.
+          nullable: true
+          type: boolean
+        expected_packet_loss:
+          description: |-
+            (**default=`0`**) Expected packet loss. When `forward_error_correction` is set to `true`,
+            then this value should be greater than `0`. Allowed values: [0, 100];
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        type:
+          enum:
+          - opus
+          type: string
+      required:
+      - type
+    RtpInput:
+      additionalProperties: false
+      description: |-
+        Parameters for an input stream from RTP source.
+        At least one of `video` and `audio` has to be defined.
+      properties:
+        port:
+          allOf:
+          - $ref: "#/components/schemas/PortOrPortRange"
+          description: UDP port or port range on which the compositor should listen
+            for the stream.
+        transport_protocol:
+          allOf:
+          - $ref: "#/components/schemas/TransportProtocol"
+          description: Transport protocol.
+          nullable: true
+        video:
+          allOf:
+          - $ref: "#/components/schemas/InputRtpVideoOptions"
+          description: Parameters of a video source included in the RTP stream.
+          nullable: true
+        audio:
+          allOf:
+          - $ref: "#/components/schemas/InputRtpAudioOptions"
+          description: Parameters of an audio source included in the RTP stream.
+          nullable: true
+        required:
+          description: |-
+            (**default=`false`**) If input is required and the stream is not delivered
+            on time, then Smelter will delay producing output frames.
+          nullable: true
+          type: boolean
+        offset_ms:
+          description: |-
+            Offset in milliseconds relative to the pipeline start (start request). If the offset is
+            not defined then the stream will be synchronized based on the delivery time of the initial
+            frames.
+          format: double
+          nullable: true
+          type: number
+      required:
+      - port
+    RtpOutput:
+      additionalProperties: false
+      properties:
+        port:
+          allOf:
+          - $ref: "#/components/schemas/PortOrPortRange"
+          description: |-
+            Depends on the value of the `transport_protocol` field:
+              - `udp` - An UDP port number that RTP packets will be sent to.
+              - `tcp_server` - A local TCP port number or a port range that Smelter will listen for incoming connections.
+        ip:
+          description: IP address to which RTP packets should be sent. This field
+            is only valid if `transport_protocol` field is set to `udp`.
+          nullable: true
+          type: string
+        transport_protocol:
+          allOf:
+          - $ref: "#/components/schemas/TransportProtocol"
+          description: (**default=`"udp"`**) Transport layer protocol that will be
+            used to send RTP packets.
+          nullable: true
+        video:
+          allOf:
+          - $ref: "#/components/schemas/OutputRtpVideoOptions"
+          description: Parameters of a video included in the RTP stream.
+          nullable: true
+        audio:
+          allOf:
+          - $ref: "#/components/schemas/OutputRtpAudioOptions"
+          description: Parameters of an audio included in the RTP stream.
+          nullable: true
+      required:
+      - port
+    RtpVideoDecoderOptions:
+      enum:
+      - ffmpeg_h264
+      - ffmpeg_vp8
+      - ffmpeg_vp9
+      - vulkan_h264
+      type: string
+    RtpVideoEncoderOptions:
+      oneOf:
+      - $ref: "#/components/schemas/RtpVideoEncoderOptions_oneOf"
+      - $ref: "#/components/schemas/RtpVideoEncoderOptions_oneOf_1"
+      - $ref: "#/components/schemas/RtpVideoEncoderOptions_oneOf_2"
+      - $ref: "#/components/schemas/HlsVideoEncoderOptions_oneOf_1"
+    ShaderParam:
+      oneOf:
+      - $ref: "#/components/schemas/ShaderParam_oneOf"
+      - $ref: "#/components/schemas/ShaderParam_oneOf_1"
+      - $ref: "#/components/schemas/ShaderParam_oneOf_2"
+      - $ref: "#/components/schemas/ShaderParam_oneOf_3"
+      - $ref: "#/components/schemas/ShaderParam_oneOf_4"
+    ShaderParamStructField:
+      allOf:
+      - $ref: "#/components/schemas/ShaderParam"
+      - properties:
+          field_name:
+            type: string
+        required:
+        - field_name
+    ShaderSpec:
+      additionalProperties: {}
+      properties:
+        source:
+          description: "Shader source code. [Learn more.](../../concept/shaders)"
+          type: string
+      required:
+      - source
+    Text:
+      additionalProperties: false
+      properties:
+        id:
+          allOf:
+          - $ref: "#/components/schemas/ComponentId"
+          description: Id of a component.
+          nullable: true
+        text:
+          description: Text that will be rendered.
+          type: string
+        width:
+          description: |-
+            Width of a texture that text will be rendered on. If not provided, the resulting texture
+            will be sized based on the defined text but limited to `max_width` value.
+          format: float
+          nullable: true
+          type: number
+        height:
+          description: |-
+            Height of a texture that text will be rendered on. If not provided, the resulting texture
+            will be sized based on the defined text but limited to `max_height` value.
+            It's an error to provide `height` if `width` is not defined.
+          format: float
+          nullable: true
+          type: number
+        max_width:
+          description: |-
+            (**default=`7682`**) Maximal `width`. Limits the width of the texture that the text will be rendered on.
+            Value is ignored if `width` is defined.
+          format: float
+          nullable: true
+          type: number
+        max_height:
+          description: |-
+            (**default=`4320`**) Maximal `height`. Limits the height of the texture that the text will be rendered on.
+            Value is ignored if height is defined.
+          format: float
+          nullable: true
+          type: number
+        font_size:
+          description: Font size in pixels.
+          format: float
+          type: number
+        line_height:
+          description: Distance between lines in pixels. Defaults to the value of
+            the `font_size` property.
+          format: float
+          nullable: true
+          type: number
+        color:
+          allOf:
+          - $ref: "#/components/schemas/RGBAColor"
+          description: (**default=`"#FFFFFFFF"`**) Font color in `#RRGGBBAA` format.
+          nullable: true
+        background_color:
+          allOf:
+          - $ref: "#/components/schemas/RGBAColor"
+          description: (**default=`"#00000000"`**) Background color in `#RRGGBBAA`
+            format.
+          nullable: true
+        font_family:
+          description: |-
+            (**default=`"Verdana"`**) Font family. Provide [family-name](https://www.w3.org/TR/2018/REC-css-fonts-3-20180920/#family-name-value)
+            for a specific font. "generic-family" values like e.g. "sans-serif" will not work.
+          nullable: true
+          type: string
+        style:
+          allOf:
+          - $ref: "#/components/schemas/TextStyle"
+          description: (**default=`"normal"`**) Font style. The selected font needs
+            to support the specified style.
+          nullable: true
+        align:
+          allOf:
+          - $ref: "#/components/schemas/HorizontalAlign"
+          description: (**default=`"left"`**) Text align.
+          nullable: true
+        wrap:
+          allOf:
+          - $ref: "#/components/schemas/TextWrapMode"
+          description: (**default=`"none"`**) Text wrapping options.
+          nullable: true
+        weight:
+          allOf:
+          - $ref: "#/components/schemas/TextWeight"
+          description: (**default=`"normal"`**) Font weight. The selected font needs
+            to support the specified weight.
+          nullable: true
+      required:
+      - font_size
+      - text
+    TextStyle:
+      enum:
+      - normal
+      - italic
+      - oblique
+      type: string
+    TextWeight:
+      description: "Font weight, based on the [OpenType specification](https://learn.microsoft.com/en-gb/typography/opentype/spec/os2#usweightclass)."
+      enum:
+      - thin
+      - extra_light
+      - light
+      - normal
+      - medium
+      - semi_bold
+      - bold
+      - extra_bold
+      - black
+      type: string
+    TextWrapMode:
+      enum:
+      - none
+      - glyph
+      - word
+      type: string
+    Tiles:
+      additionalProperties: false
+      properties:
+        id:
+          allOf:
+          - $ref: "#/components/schemas/ComponentId"
+          description: Id of a component.
+          nullable: true
+        children:
+          description: List of component's children.
+          items:
+            $ref: "#/components/schemas/Component"
+          nullable: true
+          type: array
+        width:
+          description: |-
+            Width of a component in pixels. Exact behavior might be different based on the parent
+            component:
+            - If the parent component is a layout, check sections "Absolute positioning" and "Static
+              positioning" of that component.
+            - If the parent component is not a layout, then this field is required.
+          format: float
+          nullable: true
+          type: number
+        height:
+          description: |-
+            Height of a component in pixels. Exact behavior might be different based on the parent
+            component:
+            - If the parent component is a layout, check sections "Absolute positioning" and "Static
+              positioning" of that component.
+            - If the parent component is not a layout, then this field is required.
+          format: float
+          nullable: true
+          type: number
+        background_color:
+          allOf:
+          - $ref: "#/components/schemas/RGBAColor"
+          description: (**default=`"#00000000"`**) Background color in a `"#RRGGBBAA"`
+            format.
+          nullable: true
+        tile_aspect_ratio:
+          allOf:
+          - $ref: "#/components/schemas/AspectRatio"
+          description: "(**default=`\"16:9\"`**) Aspect ratio of a tile in `\"W:H\"\
+            ` format, where W and H are integers."
+          nullable: true
+        margin:
+          description: (**default=`0`**) Margin of each tile in pixels.
+          format: float
+          nullable: true
+          type: number
+        padding:
+          description: (**default=`0`**) Padding on each tile in pixels.
+          format: float
+          nullable: true
+          type: number
+        horizontal_align:
+          allOf:
+          - $ref: "#/components/schemas/HorizontalAlign"
+          description: (**default=`"center"`**) Horizontal alignment of tiles.
+          nullable: true
+        vertical_align:
+          allOf:
+          - $ref: "#/components/schemas/VerticalAlign"
+          description: (**default=`"center"`**) Vertical alignment of tiles.
+          nullable: true
+        transition:
+          allOf:
+          - $ref: "#/components/schemas/Transition"
+          description: |-
+            Defines how this component will behave during a scene update. This will only have an
+            effect if the previous scene already contained a `Tiles` component with the same id.
+          nullable: true
+    Transition:
+      properties:
+        duration_ms:
+          description: Duration of a transition in milliseconds.
+          format: double
+          type: number
+        easing_function:
+          allOf:
+          - $ref: "#/components/schemas/EasingFunction"
+          description: (**default=`"linear"`**) Easing function to be used for the
+            transition.
+          nullable: true
+        should_interrupt:
+          description: |-
+            (**default=`false`**) On scene update, if there is already a transition in progress,
+            it will be interrupted and the new transition will start from the current state.
+          nullable: true
+          type: boolean
+      required:
+      - duration_ms
+    TransportProtocol:
+      enum:
+      - udp
+      - tcp_server
+      type: string
+    UnregisterInput:
+      example:
+        schedule_time_ms: 0.8008281904610115
+      properties:
+        schedule_time_ms:
+          description: |-
+            Time in milliseconds when this request should be applied. Value `0` represents
+            time of the start request.
+          format: double
+          nullable: true
+          type: number
+    UnregisterOutput:
+      example:
+        schedule_time_ms: 0.8008281904610115
+      properties:
+        schedule_time_ms:
+          description: |-
+            Time in milliseconds when this request should be applied. Value `0` represents
+            time of the start request.
+          format: double
+          nullable: true
+          type: number
+    UnregisterRenderer:
+      example:
+        schedule_time_ms: 0.8008281904610115
+      properties:
+        schedule_time_ms:
+          description: |-
+            Time in milliseconds when this request should be applied. Value `0` represents
+            time of the start request.
+          format: double
+          nullable: true
+          type: number
+    UpdateOutputRequest:
+      additionalProperties: false
+      example:
+        schedule_time_ms: 0.8008281904610115
+        video: ""
+        audio: ""
+      properties:
+        video:
+          allOf:
+          - $ref: "#/components/schemas/VideoScene"
+          nullable: true
+        audio:
+          allOf:
+          - $ref: "#/components/schemas/AudioScene"
+          nullable: true
+        schedule_time_ms:
+          format: double
+          nullable: true
+          type: number
+    VerticalAlign:
+      enum:
+      - top
+      - center
+      - bottom
+      - justified
+      type: string
+    VideoEncoderBitrate:
+      oneOf:
+      - description: |-
+          Average bitrate measured in bits/second. Encoder will try to keep the bitrate around the provided average,
+          but may temporarily increase it by 25%.
+        format: int64
+        minimum: 0
+        type: integer
+      - $ref: "#/components/schemas/VideoEncoderBitrate_oneOf"
+    VideoScene:
+      additionalProperties: false
+      properties:
+        root:
+          $ref: "#/components/schemas/Component"
+      required:
+      - root
+    View:
+      additionalProperties: false
+      properties:
+        id:
+          allOf:
+          - $ref: "#/components/schemas/ComponentId"
+          description: Id of a component.
+          nullable: true
+        children:
+          description: List of component's children.
+          items:
+            $ref: "#/components/schemas/Component"
+          nullable: true
+          type: array
+        width:
+          description: |-
+            Width of a component in pixels (without a border). Exact behavior might be different
+            based on the parent component:
+            - If the parent component is a layout, check sections "Absolute positioning" and "Static
+              positioning" of that component.
+            - If the parent component is not a layout, then this field is required.
+          format: float
+          nullable: true
+          type: number
+        height:
+          description: |-
+            Height of a component in pixels (without a border). Exact behavior might be different
+            based on the parent component:
+            - If the parent component is a layout, check sections "Absolute positioning" and "Static
+              positioning" of that component.
+            - If the parent component is not a layout, then this field is required.
+          format: float
+          nullable: true
+          type: number
+        direction:
+          allOf:
+          - $ref: "#/components/schemas/ViewDirection"
+          description: Direction defines how static children are positioned inside
+            a View component.
+          nullable: true
+        top:
+          description: |-
+            Distance in pixels between this component's top edge and its parent's top edge (including a border).
+            If this field is defined, then the component will ignore a layout defined by its parent.
+          format: float
+          nullable: true
+          type: number
+        left:
+          description: |-
+            Distance in pixels between this component's left edge and its parent's left edge (including a border).
+            If this field is defined, this element will be absolutely positioned, instead of being
+            laid out by its parent.
+          format: float
+          nullable: true
+          type: number
+        bottom:
+          description: |-
+            Distance in pixels between the bottom edge of this component and the bottom edge of its
+            parent (including a border). If this field is defined, this element will be absolutely
+            positioned, instead of being laid out by its parent.
+          format: float
+          nullable: true
+          type: number
+        right:
+          description: |-
+            Distance in pixels between this component's right edge and its parent's right edge.
+            If this field is defined, this element will be absolutely positioned, instead of being
+            laid out by its parent.
+          format: float
+          nullable: true
+          type: number
+        rotation:
+          description: |-
+            Rotation of a component in degrees. If this field is defined, this element will be
+            absolutely positioned, instead of being laid out by its parent.
+          format: float
+          nullable: true
+          type: number
+        transition:
+          allOf:
+          - $ref: "#/components/schemas/Transition"
+          description: |-
+            Defines how this component will behave during a scene update. This will only have an
+            effect if the previous scene already contained a `View` component with the same id.
+          nullable: true
+        overflow:
+          allOf:
+          - $ref: "#/components/schemas/Overflow"
+          description: (**default=`"hidden"`**) Controls what happens to content that
+            is too big to fit into an area.
+          nullable: true
+        background_color:
+          allOf:
+          - $ref: "#/components/schemas/RGBAColor"
+          description: (**default=`"#00000000"`**) Background color in a `"#RRGGBBAA"`
+            format.
+          nullable: true
+        border_radius:
+          description: (**default=`0.0`**) Radius of a rounded corner.
+          format: float
+          nullable: true
+          type: number
+        border_width:
+          description: (**default=`0.0`**) Border width.
+          format: float
+          nullable: true
+          type: number
+        border_color:
+          allOf:
+          - $ref: "#/components/schemas/RGBAColor"
+          description: (**default=`"#00000000"`**) Border color in a `"#RRGGBBAA"`
+            format.
+          nullable: true
+        box_shadow:
+          description: List of box shadows.
+          items:
+            $ref: "#/components/schemas/BoxShadow"
+          nullable: true
+          type: array
+        padding:
+          description: (**default=`0.0`**) Padding for all sides of the component.
+          format: float
+          nullable: true
+          type: number
+        padding_vertical:
+          description: (**default=`0.0`**) Padding for the top and bottom of the component.
+          format: float
+          nullable: true
+          type: number
+        padding_horizontal:
+          description: (**default=`0.0`**) Padding for the left and right of the component.
+          format: float
+          nullable: true
+          type: number
+        padding_top:
+          description: (**default=`0.0`**) Padding on top side in pixels.
+          format: float
+          nullable: true
+          type: number
+        padding_right:
+          description: (**default=`0.0`**) Padding on right side in pixels.
+          format: float
+          nullable: true
+          type: number
+        padding_bottom:
+          description: (**default=`0.0`**) Padding on bottom side in pixels.
+          format: float
+          nullable: true
+          type: number
+        padding_left:
+          description: (**default=`0.0`**) Padding on left side in pixels.
+          format: float
+          nullable: true
+          type: number
+    ViewDirection:
+      enum:
+      - row
+      - column
+      type: string
+    WhepAudioEncoderOptions:
+      properties:
+        preset:
+          allOf:
+          - $ref: "#/components/schemas/OpusEncoderPreset"
+          description: (**default="voip"**) Specifies preset for audio output encoder.
+          nullable: true
+        sample_rate:
+          description: "(**default=`48000`**) Sample rate. Allowed values: [8000,\
+            \ 16000, 24000, 48000]."
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        forward_error_correction:
+          description: (**default=`false`**) Specifies if forward error correction
+            (FEC) should be used.
+          nullable: true
+          type: boolean
+        expected_packet_loss:
+          description: |-
+            (**default=`0`**) Expected packet loss. When `forward_error_correction` is set to `true`,
+            then this value should be greater than `0`. Allowed values: [0, 100];
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        type:
+          enum:
+          - opus
+          type: string
+      required:
+      - type
+    WhepInput:
+      additionalProperties: false
+      properties:
+        endpoint_url:
+          description: WHEP server endpoint URL
+          type: string
+        bearer_token:
+          description: Optional Bearer token for auth
+          nullable: true
+          type: string
+        video:
+          allOf:
+          - $ref: "#/components/schemas/InputWhepVideoOptions"
+          description: Parameters of a video source included in the RTP stream.
+          nullable: true
+        required:
+          description: |-
+            (**default=`false`**) If input is required and the stream is not delivered
+            on time, then Smelter will delay producing output frames.
+          nullable: true
+          type: boolean
+        offset_ms:
+          description: Offset in milliseconds relative to the pipeline start (start
+            request).
+          format: double
+          nullable: true
+          type: number
+      required:
+      - endpoint_url
+    WhepOutput:
+      additionalProperties: false
+      properties:
+        bearer_token:
+          description: |-
+            Token used for authentication in WHEP protocol.
+            If not provided, the bearer token is not required to establish the session.
+          nullable: true
+          type: string
+        video:
+          allOf:
+          - $ref: "#/components/schemas/OutputWhepVideoOptions"
+          description: Video track configuration.
+          nullable: true
+        audio:
+          allOf:
+          - $ref: "#/components/schemas/OutputWhepAudioOptions"
+          description: Audio track configuration.
+          nullable: true
+    WhepVideoDecoderOptions:
+      enum:
+      - ffmpeg_h264
+      - ffmpeg_vp8
+      - ffmpeg_vp9
+      - vulkan_h264
+      - any
+      type: string
+    WhepVideoEncoderOptions:
+      oneOf:
+      - $ref: "#/components/schemas/RtpVideoEncoderOptions_oneOf"
+      - $ref: "#/components/schemas/RtpVideoEncoderOptions_oneOf_1"
+      - $ref: "#/components/schemas/RtpVideoEncoderOptions_oneOf_2"
+      - $ref: "#/components/schemas/HlsVideoEncoderOptions_oneOf_1"
+    WhipAudioEncoderOptions:
+      oneOf:
+      - $ref: "#/components/schemas/WhipAudioEncoderOptions_oneOf"
+      - $ref: "#/components/schemas/WhipAudioEncoderOptions_oneOf_1"
+    WhipInput:
+      additionalProperties: false
+      description: |-
+        Parameters for an input stream for WHIP server.
+        At least one of `video` and `audio` has to be defined.
+      properties:
+        video:
+          allOf:
+          - $ref: "#/components/schemas/InputWhipVideoOptions"
+          description: Parameters of a video source included in the RTP stream.
+          nullable: true
+        bearer_token:
+          description: |-
+            Token used for authentication in WHIP protocol. If not provided, the random value
+            will be generated and returned in the response.
+          nullable: true
+          type: string
+        endpoint_override:
+          description: |-
+            Internal use only.
+            Overrides whip endpoint id which is used when referencing the input via whip server.
+            If not provided, it defaults to input id.
+          nullable: true
+          type: string
+        required:
+          description: |-
+            (**default=`false`**) If input is required and the stream is not delivered
+            on time, then Smelter will delay producing output frames.
+          nullable: true
+          type: boolean
+        offset_ms:
+          description: |-
+            Offset in milliseconds relative to the pipeline start (start request). If the offset is
+            not defined then the stream will be synchronized based on the delivery time of the initial
+            frames.
+          format: double
+          nullable: true
+          type: number
+    WhipOutput:
+      additionalProperties: false
+      properties:
+        endpoint_url:
+          description: WHIP server endpoint
+          type: string
+        bearer_token:
+          nullable: true
+          type: string
+        video:
+          allOf:
+          - $ref: "#/components/schemas/OutputWhipVideoOptions"
+          description: Video track configuration.
+          nullable: true
+        audio:
+          allOf:
+          - $ref: "#/components/schemas/OutputWhipAudioOptions"
+          description: Audio track configuration.
+          nullable: true
+      required:
+      - endpoint_url
+    WhipVideoDecoderOptions:
+      enum:
+      - ffmpeg_h264
+      - ffmpeg_vp8
+      - ffmpeg_vp9
+      - vulkan_h264
+      - any
+      type: string
+    WhipVideoEncoderOptions:
+      oneOf:
+      - $ref: "#/components/schemas/WhipVideoEncoderOptions_oneOf"
+      - $ref: "#/components/schemas/WhipVideoEncoderOptions_oneOf_1"
+      - $ref: "#/components/schemas/WhipVideoEncoderOptions_oneOf_2"
+      - $ref: "#/components/schemas/HlsVideoEncoderOptions_oneOf_1"
+      - $ref: "#/components/schemas/WhipAudioEncoderOptions_oneOf_1"
+    register_font_request:
+      properties:
+        font:
+          format: binary
+          type: string
+      required:
+      - font
+    Component_oneOf:
+      allOf:
+      - $ref: "#/components/schemas/InputStream"
+      - properties:
+          type:
+            enum:
+            - input_stream
+            type: string
+        required:
+        - type
+    Component_oneOf_1:
+      allOf:
+      - $ref: "#/components/schemas/View"
+      - properties:
+          type:
+            enum:
+            - view
+            type: string
+        required:
+        - type
+    Component_oneOf_2:
+      allOf:
+      - $ref: "#/components/schemas/Text"
+      - properties:
+          type:
+            enum:
+            - text
+            type: string
+        required:
+        - type
+    Component_oneOf_3:
+      allOf:
+      - $ref: "#/components/schemas/Tiles"
+      - properties:
+          type:
+            enum:
+            - tiles
+            type: string
+        required:
+        - type
+    Component_oneOf_4:
+      allOf:
+      - $ref: "#/components/schemas/Rescaler"
+      - properties:
+          type:
+            enum:
+            - rescaler
+            type: string
+        required:
+        - type
+    EasingFunction_oneOf:
+      properties:
+        function_name:
+          enum:
+          - linear
+          type: string
+      required:
+      - function_name
+    EasingFunction_oneOf_1:
+      properties:
+        function_name:
+          enum:
+          - bounce
+          type: string
+      required:
+      - function_name
+    EasingFunction_oneOf_2:
+      properties:
+        points:
+          items:
+            format: double
+            type: number
+          type: array
+        function_name:
+          enum:
+          - cubic_bezier
+          type: string
+      required:
+      - function_name
+      - points
+    HlsVideoEncoderOptions_oneOf:
+      properties:
+        preset:
+          allOf:
+          - $ref: "#/components/schemas/H264EncoderPreset"
+          description: "(**default=`\"fast\"`**) Video output encoder preset. Visit\
+            \ `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to\
+            \ learn more."
+          nullable: true
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: Encoding bitrate. Default value depends on chosen encoder.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Maximal interval between keyframes, in\
+            \ milliseconds."
+          format: double
+          nullable: true
+          type: number
+        pixel_format:
+          allOf:
+          - $ref: "#/components/schemas/PixelFormat"
+          description: (**default=`"yuv420p"`**) Encoder pixel format
+          nullable: true
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html)\
+            \ for more."
+        type:
+          enum:
+          - ffmpeg_h264
+          type: string
+      required:
+      - type
+    HlsVideoEncoderOptions_oneOf_1:
+      properties:
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: |-
+            Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.
+            For example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Interval between keyframes, in milliseconds."
+          format: double
+          nullable: true
+          type: number
+        type:
+          enum:
+          - vulkan_h264
+          type: string
+      required:
+      - type
+    ImageSpec_oneOf:
+      example:
+        asset_type: png
+        url: url
+      properties:
+        url:
+          nullable: true
+          type: string
+        asset_type:
+          enum:
+          - png
+          type: string
+      required:
+      - asset_type
+    ImageSpec_oneOf_1:
+      properties:
+        url:
+          nullable: true
+          type: string
+        asset_type:
+          enum:
+          - jpeg
+          type: string
+      required:
+      - asset_type
+    ImageSpec_oneOf_2:
+      properties:
+        url:
+          nullable: true
+          type: string
+        resolution:
+          allOf:
+          - $ref: "#/components/schemas/Resolution"
+          nullable: true
+        asset_type:
+          enum:
+          - svg
+          type: string
+      required:
+      - asset_type
+    ImageSpec_oneOf_3:
+      properties:
+        url:
+          nullable: true
+          type: string
+        asset_type:
+          enum:
+          - gif
+          type: string
+      required:
+      - asset_type
+    ImageSpec_oneOf_4:
+      properties:
+        url:
+          nullable: true
+          type: string
+        asset_type:
+          enum:
+          - auto
+          type: string
+      required:
+      - asset_type
+    InputRtpAudioOptions_oneOf:
+      properties:
+        decoder:
+          enum:
+          - opus
+          type: string
+      required:
+      - decoder
+    InputRtpAudioOptions_oneOf_1:
+      properties:
+        audio_specific_config:
+          description: |-
+            AudioSpecificConfig as described in MPEG-4 part 3, section 1.6.2.1
+            The config should be encoded as described in [RFC 3640](https://datatracker.ietf.org/doc/html/rfc3640#section-4.1).
+
+            The simplest way to obtain this value when using ffmpeg to stream to the compositor is
+            to pass the additional `-sdp_file FILENAME` option to ffmpeg. This will cause it to
+            write out an sdp file, which will contain this field. Programs which have the ability
+            to stream AAC to the compositor should provide this information.
+
+            In MP4 files, the ASC is embedded inside the esds box (note that it is not the whole
+            box, only a part of it). This also applies to fragmented MP4s downloaded over HLS, if
+            the playlist uses MP4s instead of MPEG Transport Streams
+
+            In FLV files and the RTMP protocol, the ASC can be found in the `AACAUDIODATA` tag.
+          type: string
+        rtp_mode:
+          allOf:
+          - $ref: "#/components/schemas/AacRtpMode"
+          description: |-
+            (**default=`"high_bitrate"`**)
+            Specifies the [RFC 3640 mode](https://datatracker.ietf.org/doc/html/rfc3640#section-3.3.1)
+            that should be used when depacketizing this stream.
+          nullable: true
+        decoder:
+          enum:
+          - aac
+          type: string
+      required:
+      - audio_specific_config
+      - decoder
+    Mp4VideoEncoderOptions_oneOf:
+      properties:
+        preset:
+          allOf:
+          - $ref: "#/components/schemas/H264EncoderPreset"
+          description: "(**default=`\"fast\"`**) Video output encoder preset. Visit\
+            \ `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to\
+            \ learn more."
+          nullable: true
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: Encoding bitrate. Default value depends on chosen encoder.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Maximal interval between keyframes, in\
+            \ milliseconds."
+          format: double
+          nullable: true
+          type: number
+        pixel_format:
+          allOf:
+          - $ref: "#/components/schemas/PixelFormat"
+          description: (**default=`"yuv420p"`**) Encoder pixel format.
+          nullable: true
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html)\
+            \ for more."
+        type:
+          enum:
+          - ffmpeg_h264
+          type: string
+      required:
+      - type
+    RegisterInput_oneOf:
+      allOf:
+      - $ref: "#/components/schemas/RtpInput"
+      - properties:
+          type:
+            enum:
+            - rtp_stream
+            type: string
+        required:
+        - type
+      example:
+        offset_ms: 0.8008281904610115
+        port: ""
+        transport_protocol: ""
+        video: ""
+        audio: ""
+        type: rtp_stream
+        required: true
+    RegisterInput_oneOf_1:
+      allOf:
+      - $ref: "#/components/schemas/RtmpInput"
+      - properties:
+          type:
+            enum:
+            - rtmp_server
+            type: string
+        required:
+        - type
+    RegisterInput_oneOf_2:
+      allOf:
+      - $ref: "#/components/schemas/Mp4Input"
+      - properties:
+          type:
+            enum:
+            - mp4
+            type: string
+        required:
+        - type
+    RegisterInput_oneOf_3:
+      allOf:
+      - $ref: "#/components/schemas/WhipInput"
+      - properties:
+          type:
+            enum:
+            - whip_server
+            type: string
+        required:
+        - type
+    RegisterInput_oneOf_4:
+      allOf:
+      - $ref: "#/components/schemas/WhepInput"
+      - properties:
+          type:
+            enum:
+            - whep_client
+            type: string
+        required:
+        - type
+    RegisterInput_oneOf_5:
+      allOf:
+      - $ref: "#/components/schemas/HlsInput"
+      - properties:
+          type:
+            enum:
+            - hls
+            type: string
+        required:
+        - type
+    RegisterOutput_oneOf:
+      allOf:
+      - $ref: "#/components/schemas/RtpOutput"
+      - properties:
+          type:
+            enum:
+            - rtp_stream
+            type: string
+        required:
+        - type
+      example:
+        port: ""
+        ip: ip
+        transport_protocol: ""
+        video: ""
+        audio: ""
+        type: rtp_stream
+    RegisterOutput_oneOf_1:
+      allOf:
+      - $ref: "#/components/schemas/RtmpOutput"
+      - properties:
+          type:
+            enum:
+            - rtmp_client
+            type: string
+        required:
+        - type
+    RegisterOutput_oneOf_2:
+      allOf:
+      - $ref: "#/components/schemas/Mp4Output"
+      - properties:
+          type:
+            enum:
+            - mp4
+            type: string
+        required:
+        - type
+    RegisterOutput_oneOf_3:
+      allOf:
+      - $ref: "#/components/schemas/WhipOutput"
+      - properties:
+          type:
+            enum:
+            - whip_client
+            type: string
+        required:
+        - type
+    RegisterOutput_oneOf_4:
+      allOf:
+      - $ref: "#/components/schemas/WhepOutput"
+      - properties:
+          type:
+            enum:
+            - whep_server
+            type: string
+        required:
+        - type
+    RegisterOutput_oneOf_5:
+      allOf:
+      - $ref: "#/components/schemas/HlsOutput"
+      - properties:
+          type:
+            enum:
+            - hls
+            type: string
+        required:
+        - type
+    Response_oneOf:
+      example:
+        bearer_token: bearer_token
+      properties:
+        bearer_token:
+          type: string
+      required:
+      - bearer_token
+    Response_oneOf_1:
+      properties:
+        video_duration_ms:
+          format: int64
+          minimum: 0
+          nullable: true
+          type: integer
+        audio_duration_ms:
+          format: int64
+          minimum: 0
+          nullable: true
+          type: integer
+    Response_oneOf_2:
+      properties:
+        port:
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+    RtpVideoEncoderOptions_oneOf:
+      properties:
+        preset:
+          allOf:
+          - $ref: "#/components/schemas/H264EncoderPreset"
+          description: "(**default=`\"fast\"`**) Video output encoder preset. Visit\
+            \ `FFmpeg` [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to\
+            \ learn more."
+          nullable: true
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: Encoding bitrate. Default value depends on chosen encoder.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Maximal interval between keyframes, in\
+            \ milliseconds."
+          format: double
+          nullable: true
+          type: number
+        pixel_format:
+          allOf:
+          - $ref: "#/components/schemas/PixelFormat"
+          description: (**default=`"yuv420p"`**) Encoder pixel format.
+          nullable: true
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html)\
+            \ to learn more."
+        type:
+          enum:
+          - ffmpeg_h264
+          type: string
+      required:
+      - type
+    RtpVideoEncoderOptions_oneOf_1:
+      properties:
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: |-
+            Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.
+            For example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Maximal interval between keyframes, in\
+            \ milliseconds."
+          format: double
+          nullable: true
+          type: number
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html)\
+            \ to learn more."
+        type:
+          enum:
+          - ffmpeg_vp8
+          type: string
+      required:
+      - type
+    RtpVideoEncoderOptions_oneOf_2:
+      properties:
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: |-
+            Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.
+            For example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Maximal interval between keyframes, in\
+            \ milliseconds."
+          format: double
+          nullable: true
+          type: number
+        pixel_format:
+          allOf:
+          - $ref: "#/components/schemas/PixelFormat"
+          description: (**default=`"yuv420p"`**) Encoder pixel format.
+          nullable: true
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg encoder options. Visit [docs](https://ffmpeg.org/ffmpeg-codecs.html)\
+            \ to learn more."
+        type:
+          enum:
+          - ffmpeg_vp9
+          type: string
+      required:
+      - type
+    ShaderParam_oneOf:
+      properties:
+        value:
+          format: float
+          type: number
+        type:
+          enum:
+          - f32
+          type: string
+      required:
+      - type
+      - value
+    ShaderParam_oneOf_1:
+      properties:
+        value:
+          format: int32
+          minimum: 0
+          type: integer
+        type:
+          enum:
+          - u32
+          type: string
+      required:
+      - type
+      - value
+    ShaderParam_oneOf_2:
+      properties:
+        value:
+          format: int32
+          type: integer
+        type:
+          enum:
+          - i32
+          type: string
+      required:
+      - type
+      - value
+    ShaderParam_oneOf_3:
+      properties:
+        value:
+          items:
+            $ref: "#/components/schemas/ShaderParam"
+          type: array
+        type:
+          enum:
+          - list
+          type: string
+      required:
+      - type
+      - value
+    ShaderParam_oneOf_4:
+      properties:
+        value:
+          items:
+            $ref: "#/components/schemas/ShaderParamStructField"
+          type: array
+        type:
+          enum:
+          - struct
+          type: string
+      required:
+      - type
+      - value
+    VideoEncoderBitrate_oneOf:
+      properties:
+        average_bitrate:
+          description: |-
+            Average bitrate measured in bits/second. Encoder will try to keep the bitrate around the provided average,
+            but may temporarily increase it to the provided max bitrate.
+          format: int64
+          minimum: 0
+          type: integer
+        max_bitrate:
+          description: Max bitrate measured in bits/second.
+          format: int64
+          minimum: 0
+          type: integer
+      required:
+      - average_bitrate
+      - max_bitrate
+    WhipAudioEncoderOptions_oneOf:
+      properties:
+        preset:
+          allOf:
+          - $ref: "#/components/schemas/OpusEncoderPreset"
+          description: (**default="voip"**) Specifies preset for audio output encoder.
+          nullable: true
+        sample_rate:
+          description: "(**default=`48000`**) Sample rate. Allowed values: [8000,\
+            \ 16000, 24000, 48000]."
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        forward_error_correction:
+          description: (**default=`false`**) Specifies if forward error correction
+            (FEC) should be used.
+          nullable: true
+          type: boolean
+        type:
+          enum:
+          - opus
+          type: string
+      required:
+      - type
+    WhipAudioEncoderOptions_oneOf_1:
+      properties:
+        type:
+          enum:
+          - any
+          type: string
+      required:
+      - type
+    WhipVideoEncoderOptions_oneOf:
+      properties:
+        preset:
+          allOf:
+          - $ref: "#/components/schemas/H264EncoderPreset"
+          description: "(**default=`\"fast\"`**) Preset for an encoder. See `FFmpeg`\
+            \ [docs](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset) to learn more."
+          nullable: true
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: Encoding bitrate. Default value depends on chosen encoder.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Maximal interval between keyframes, in\
+            \ milliseconds."
+          format: double
+          nullable: true
+          type: number
+        pixel_format:
+          allOf:
+          - $ref: "#/components/schemas/PixelFormat"
+          description: (**default=`"yuv420p"`**) Encoder pixel format
+          nullable: true
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html)\
+            \ for more."
+        type:
+          enum:
+          - ffmpeg_h264
+          type: string
+      required:
+      - type
+    WhipVideoEncoderOptions_oneOf_1:
+      properties:
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: |-
+            Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.
+            For example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Maximal interval between keyframes, in\
+            \ milliseconds."
+          format: double
+          nullable: true
+          type: number
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html)\
+            \ for more."
+        type:
+          enum:
+          - ffmpeg_vp8
+          type: string
+      required:
+      - type
+    WhipVideoEncoderOptions_oneOf_2:
+      properties:
+        bitrate:
+          allOf:
+          - $ref: "#/components/schemas/VideoEncoderBitrate"
+          description: |-
+            Encoding bitrate. If not provided, bitrate is calculated based on resolution and framerate.
+            For example at 1080p 30 FPS the average bitrate is 5000 kbit/s and max bitrate is 6250 kbit/s.
+          nullable: true
+        keyframe_interval_ms:
+          description: "(**default=`5000`**) Maximal interval between keyframes, in\
+            \ milliseconds."
+          format: double
+          nullable: true
+          type: number
+        pixel_format:
+          allOf:
+          - $ref: "#/components/schemas/PixelFormat"
+          description: (**default=`"yuv420p"`**) Encoder pixel format
+          nullable: true
+        ffmpeg_options:
+          additionalProperties:
+            type: string
+          description: "Raw FFmpeg encoder options. See [docs](https://ffmpeg.org/ffmpeg-codecs.html)\
+            \ for more."
+        type:
+          enum:
+          - ffmpeg_vp9
+          type: string
+      required:
+      - type
+  securitySchemes:
+    BearerAuth:
+      scheme: bearer
+      type: http
