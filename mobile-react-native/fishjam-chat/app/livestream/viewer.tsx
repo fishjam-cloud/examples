@@ -16,7 +16,9 @@ export default function LivestreamViewerScreen() {
     roomName: string;
   }>();
 
-  const { getSandboxViewerToken } = useSandbox({});
+  const { getSandboxViewerToken } = useSandbox({
+    configOverride: { sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL },
+  });
 
   const { connect, disconnect, stream, isConnected, error } =
     useLivestreamViewer();

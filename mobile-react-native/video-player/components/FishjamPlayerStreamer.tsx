@@ -10,7 +10,9 @@ import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export const FishjamPlayerStreamer = ({ roomName }: { roomName: string }) => {
-  const { getSandboxLivestream } = useSandbox();
+  const { getSandboxLivestream } = useSandbox({
+    configOverride: { sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL },
+  });
 
   const { toggleCamera, stopCamera, startCamera, isCameraOn, cameraStream } =
     useCamera();
