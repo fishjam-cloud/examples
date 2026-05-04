@@ -20,7 +20,9 @@ export const App = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { joinRoom, leaveRoom, peerStatus } = useConnection();
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    configOverride: { sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL },
+  });
   const {
     publishData,
     subscribeData,

@@ -7,7 +7,9 @@ import { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 export const FishjamPlayerViewer = ({ roomName }: { roomName: string }) => {
-  const { getSandboxViewerToken } = useSandbox();
+  const { getSandboxViewerToken } = useSandbox({
+    configOverride: { sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL },
+  });
   const { connect, disconnect, stream } = useLivestreamViewer();
 
   useEffect(() => {

@@ -53,7 +53,9 @@ const LivestreamStreamer: FC<LivestreamStreamerProps> = ({
 
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const { getSandboxLivestream } = useSandbox();
+  const { getSandboxLivestream } = useSandbox({
+    configOverride: { sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL },
+  });
   const { connect, disconnect, isConnected, error } = useLivestreamStreamer();
 
   const initializeAndReport = useCallback(async () => {

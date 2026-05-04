@@ -8,7 +8,9 @@ import type { RootStackParamList } from '../navigation/RootNavigation';
 export const useConnectFishjam = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { leaveRoom, joinRoom } = useConnection();
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    configOverride: { sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL },
+  });
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
