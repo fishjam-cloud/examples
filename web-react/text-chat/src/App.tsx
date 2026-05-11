@@ -5,6 +5,11 @@ import {
 } from "@fishjam-cloud/react-client";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+const SANDBOX_API_URL =
+  new URLSearchParams(window.location.search).get("sandboxApiUrl") ??
+  import.meta.env.VITE_SANDBOX_API_URL ??
+  "";
+
 type ChatMessage = {
   timestamp: number;
   sender: string;
@@ -20,7 +25,9 @@ export const App = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { joinRoom, leaveRoom, peerStatus } = useConnection();
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
   const {
     publishData,
     subscribeData,

@@ -2,6 +2,11 @@ import { useConnection, useSandbox } from "@fishjam-cloud/react-client";
 import type { FC } from "react";
 import { useCallback } from "react";
 
+const SANDBOX_API_URL =
+  new URLSearchParams(window.location.search).get("sandboxApiUrl") ??
+  import.meta.env.VITE_SANDBOX_API_URL ??
+  "";
+
 export type RoomManagerParams = {
   roomName: string;
   peerName: string;
@@ -13,7 +18,9 @@ type JoinRoomFormProps = {
 
 export const JoinRoomForm: FC<JoinRoomFormProps> = ({ onJoinedRoom }) => {
   const { joinRoom } = useConnection();
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
 
   const onJoinRoom = useCallback(
     async (params: RoomManagerParams) => {

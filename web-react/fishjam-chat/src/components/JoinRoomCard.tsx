@@ -10,7 +10,7 @@ import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { DEFAULT_FISHJAM_ID } from "@/lib/consts";
+import { DEFAULT_FISHJAM_ID, SANDBOX_API_URL } from "@/lib/consts";
 import { getPersistedFormValues, persistFormValues } from "@/lib/utils";
 import type { RoomForm } from "@/types";
 
@@ -65,7 +65,9 @@ export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
     onFishjamIdChange(formFishjamId);
   }, [formFishjamId, onFishjamIdChange]);
 
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
 
   const initializeAndReport = useCallback(async () => {
     const { errors } = await initializeDevices({

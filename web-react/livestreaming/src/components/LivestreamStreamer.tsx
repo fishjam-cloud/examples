@@ -11,6 +11,8 @@ import type { FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { SANDBOX_API_URL } from "@/lib/consts";
+
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
 import {
@@ -53,7 +55,9 @@ const LivestreamStreamer: FC<LivestreamStreamerProps> = ({
 
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const { getSandboxLivestream } = useSandbox();
+  const { getSandboxLivestream } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
   const { connect, disconnect, isConnected, error } = useLivestreamStreamer();
 
   const initializeAndReport = useCallback(async () => {
