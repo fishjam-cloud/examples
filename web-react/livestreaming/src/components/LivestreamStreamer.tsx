@@ -54,7 +54,7 @@ const LivestreamStreamer: FC<LivestreamStreamerProps> = ({
   const [isConnecting, setIsConnecting] = useState(false);
 
   const { getSandboxLivestream } = useSandbox({
-    configOverride: { sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL },
+    sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL,
   });
   const { connect, disconnect, isConnected, error } = useLivestreamStreamer();
 

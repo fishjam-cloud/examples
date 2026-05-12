@@ -17,7 +17,7 @@ export default function LivestreamViewerScreen() {
   }>();
 
   const { getSandboxViewerToken } = useSandbox({
-    configOverride: { sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL },
+    sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL,
   });
 
   const { connect, disconnect, stream, isConnected, error } =

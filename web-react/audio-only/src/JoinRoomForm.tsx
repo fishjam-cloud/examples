@@ -14,7 +14,7 @@ type JoinRoomFormProps = {
 export const JoinRoomForm: FC<JoinRoomFormProps> = ({ onJoinedRoom }) => {
   const { joinRoom } = useConnection();
   const { getSandboxPeerToken } = useSandbox({
-    configOverride: { sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL },
+    sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL,
   });
 
   const onJoinRoom = useCallback(

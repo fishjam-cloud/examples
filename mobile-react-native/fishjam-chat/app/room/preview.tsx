@@ -22,7 +22,7 @@ export default function PreviewScreen() {
   }>();
 
   const { getSandboxPeerToken } = useSandbox({
-    configOverride: { sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL },
+    sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL,
   });
 
   const { initializeDevices } = useInitializeDevices();

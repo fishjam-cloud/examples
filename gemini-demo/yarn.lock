@@ -468,9 +468,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/js-server-sdk@npm:^0.26.0":
-  version: 0.26.0
-  resolution: "@fishjam-cloud/js-server-sdk@npm:0.26.0"
+"@fishjam-cloud/js-server-sdk@npm:^0.27.0-rc.0":
+  version: 0.27.0-rc.1
+  resolution: "@fishjam-cloud/js-server-sdk@npm:0.27.0-rc.1"
   dependencies:
     axios: "npm:^1.7.9"
     uuid: "npm:^11.1.0"
@@ -479,33 +479,33 @@ __metadata:
   peerDependenciesMeta:
     "@google/genai":
       optional: true
-  checksum: 10c0/9f982e4fc0d5d2f58600f863cd92242f504a0c9201fece55b847ddbfbe433c56d0bff567786fe448147fcd070a02c4b1c99b8226bb28c862d49bd9accdcd6d62
+  checksum: 10c0/b97ea37063e9fd6b7ecf890143b5de78c3286c8998f2811c43a678e940f9161e732fe98e3be7275290121cb741a0c31d56849d348b83c11e879bab7ec93a69f6
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/react-client@npm:^0.26.0":
-  version: 0.26.0
-  resolution: "@fishjam-cloud/react-client@npm:0.26.0"
+"@fishjam-cloud/react-client@npm:^0.27.0-rc.0":
+  version: 0.27.0-rc.0
+  resolution: "@fishjam-cloud/react-client@npm:0.27.0-rc.0"
   dependencies:
-    "@fishjam-cloud/ts-client": "npm:0.26.0"
+    "@fishjam-cloud/ts-client": "npm:0.27.0-rc.0"
     events: "npm:3.3.0"
     lodash.isequal: "npm:4.5.0"
   peerDependencies:
     react: ^19.1.0
-  checksum: 10c0/edfa587eca281c475420798f9c2fea9f1447749515240728343e8aaf253e591e0f2ab7e6c7d570b388964fc63ebedf69c454d4805748f97a36f74a3a7a30e5ed
+  checksum: 10c0/b670a8e2ba5f32348505f8ce6361e8e6408e78c36c6a695c0abaa12b92406134a314e0067fa8a124864d2618045736397ed831c7a03ecbbdb7c8c2634616d4c0
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/ts-client@npm:0.26.0":
-  version: 0.26.0
-  resolution: "@fishjam-cloud/ts-client@npm:0.26.0"
+"@fishjam-cloud/ts-client@npm:0.27.0-rc.0":
+  version: 0.27.0-rc.0
+  resolution: "@fishjam-cloud/ts-client@npm:0.27.0-rc.0"
   dependencies:
     "@binbat/whip-whep": "npm:^1.1.1-sdp-trickle-throw"
     "@bufbuild/protobuf": "npm:^2.2.3"
     events: "npm:^3.3.0"
     typed-emitter: "npm:^2.1.0"
     uuid: "npm:^11.1.0"
-  checksum: 10c0/ef12ba07815d75ec1494456aef532a955834f3133ac79aee61aa55060c74629e33daf5383b2d366d4b3531124de1db228684730af50dd07a9d8cc6ca40284221
+  checksum: 10c0/03464af0ccf04f382b70b33aa4105df509b1af9c5c0345c422e1692a04f0a0fe37ea871aef9ffb3c14a370e121fc79bd0d34ee0370007b1db96643abf989e1da
   languageName: node
   linkType: hard
 
@@ -1854,7 +1854,7 @@ __metadata:
   resolution: "gemini-demo-backend@workspace:backend"
   dependencies:
     "@fastify/cors": "npm:^11.1.0"
-    "@fishjam-cloud/js-server-sdk": "npm:^0.26.0"
+    "@fishjam-cloud/js-server-sdk": "npm:^0.27.0-rc.0"
     "@google/genai": "npm:^1.44.0"
     "@trpc/server": "npm:^11.6.0"
     "@tsconfig/node24": "npm:^24.0.1"
@@ -1874,7 +1874,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "gemini-demo-web@workspace:web"
   dependencies:
-    "@fishjam-cloud/react-client": "npm:^0.26.0"
+    "@fishjam-cloud/react-client": "npm:^0.27.0-rc.0"
     "@trpc/client": "npm:^11.6.0"
     "@trpc/server": "npm:^11.6.0"
     "@types/react": "npm:^19.1.13"

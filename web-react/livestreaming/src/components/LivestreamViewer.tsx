@@ -27,7 +27,7 @@ const LivestreamViewer: FC<LivestreamViewerProps> = ({
 }) => {
   const { connect, disconnect, stream, error } = useLivestreamViewer();
   const { getSandboxViewerToken } = useSandbox({
-    configOverride: { sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL },
+    sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL,
   });
   const [nameOverridden, setNameOverridden] = useState(false);
   const [roomName, setRoomName] = useState(streamerRoomName);

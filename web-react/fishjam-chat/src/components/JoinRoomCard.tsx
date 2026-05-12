@@ -66,7 +66,7 @@ export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
   }, [formFishjamId, onFishjamIdChange]);
 
   const { getSandboxPeerToken } = useSandbox({
-    configOverride: { sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL },
+    sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL,
   });
 
   const initializeAndReport = useCallback(async () => {

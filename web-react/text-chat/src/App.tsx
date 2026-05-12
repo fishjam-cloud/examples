@@ -21,7 +21,7 @@ export const App = () => {
 
   const { joinRoom, leaveRoom, peerStatus } = useConnection();
   const { getSandboxPeerToken } = useSandbox({
-    configOverride: { sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL },
+    sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL,
   });
   const {
     publishData,

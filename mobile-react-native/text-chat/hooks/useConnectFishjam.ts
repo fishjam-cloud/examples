@@ -9,7 +9,7 @@ export const useConnectFishjam = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { leaveRoom, joinRoom } = useConnection();
   const { getSandboxPeerToken } = useSandbox({
-    configOverride: { sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL },
+    sandboxApiUrl: process.env.EXPO_PUBLIC_SANDBOX_API_URL,
   });
 
   const [isLoading, setIsLoading] = useState(false);
