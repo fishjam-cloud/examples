@@ -4,6 +4,8 @@ import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { SANDBOX_API_URL } from "@/config";
+
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
 import {
@@ -26,8 +28,9 @@ const LivestreamViewer: FC<LivestreamViewerProps> = ({
   roomName: streamerRoomName,
 }) => {
   const { connect, disconnect, stream, error } = useLivestreamViewer();
+
   const { getSandboxViewerToken } = useSandbox({
-    sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL,
+    sandboxApiUrl: SANDBOX_API_URL,
   });
   const [nameOverridden, setNameOverridden] = useState(false);
   const [roomName, setRoomName] = useState(streamerRoomName);

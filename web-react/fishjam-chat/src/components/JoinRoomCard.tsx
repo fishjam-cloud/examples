@@ -44,6 +44,10 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
   onFishjamIdChange: (fishjamId: string) => void;
 };
 
+const sandboxApiUrl =
+  new URLSearchParams(window.location.search).get("sandboxApiUrl") ??
+  import.meta.env.VITE_SANDBOX_API_URL;
+
 export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
   const { initializeDevices } = useInitializeDevices();
 
@@ -65,9 +69,7 @@ export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
     onFishjamIdChange(formFishjamId);
   }, [formFishjamId, onFishjamIdChange]);
 
-  const { getSandboxPeerToken } = useSandbox({
-    sandboxApiUrl: import.meta.env.VITE_SANDBOX_API_URL,
-  });
+  const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl });
 
   const initializeAndReport = useCallback(async () => {
     const { errors } = await initializeDevices({
