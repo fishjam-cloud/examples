@@ -10,40 +10,56 @@ import { Label } from "./ui/label";
 
 type FormValues = {
   fishjamId: string;
+  sandboxApiUrl: string;
 };
 
 export const ConnectForm = () => {
-  const { fishjamId, setFishjamId } = useFishjamId();
+  const { fishjamId, setFishjamId, sandboxApiUrl, setSandboxApiUrl } =
+    useFishjamId();
   const [isLocked, setIsLocked] = useState(!!fishjamId);
 
   const form = useForm<FormValues>({
     defaultValues: {
       fishjamId: fishjamId,
+      sandboxApiUrl: sandboxApiUrl,
     },
   });
 
   function onSubmit(values: FormValues) {
     setIsLocked(true);
     setFishjamId(values.fishjamId);
+    setSandboxApiUrl(values.sandboxApiUrl);
   }
 
   return (
     <Card className="flex-grow mt-4 w-full max-w-lg">
       <CardContent className="space-y-2">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <Label htmlFor="fishjam-id">
-            Your Fishjam ID
-            <span className="text-muted-foreground">(required)</span>
-          </Label>
-          <div className="flex w-full items-center space-x-2">
-            <Input
-              id="fishjam-id"
-              required
-              {...form.register("fishjamId")}
-              placeholder="Your Fishjam ID"
-              disabled={isLocked}
-            />
-
+          <div className="flex w-full items-end space-x-2">
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor="fishjam-id">
+                Fishjam ID<span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="fishjam-id"
+                required
+                {...form.register("fishjamId")}
+                placeholder="Your Fishjam ID"
+                disabled={isLocked}
+              />
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor="sandbox-api-url">
+                Sandbox API URL<span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="sandbox-api-url"
+                required
+                {...form.register("sandboxApiUrl")}
+                placeholder="Sandbox API URL"
+                disabled={isLocked}
+              />
+            </div>
             {isLocked ? (
               <Button
                 type="button"
@@ -66,7 +82,7 @@ export const ConnectForm = () => {
             </p>
           ) : (
             <p className="text-muted-foreground text-xs">
-              You can find your Fishjam ID in the{" "}
+              You can find both in the{" "}
               <a
                 href="https://fishjam.io/app/"
                 target="_blank"

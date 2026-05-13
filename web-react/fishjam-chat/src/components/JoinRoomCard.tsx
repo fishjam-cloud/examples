@@ -10,7 +10,7 @@ import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { DEFAULT_FISHJAM_ID } from "@/lib/consts";
+import { DEFAULT_FISHJAM_ID, DEFAULT_SANDBOX_API_URL } from "@/lib/consts";
 import { getPersistedFormValues, persistFormValues } from "@/lib/utils";
 import type { RoomForm } from "@/types";
 
@@ -44,10 +44,6 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
   onFishjamIdChange: (fishjamId: string) => void;
 };
 
-const sandboxApiUrl =
-  new URLSearchParams(window.location.search).get("sandboxApiUrl") ??
-  import.meta.env.VITE_SANDBOX_API_URL;
-
 export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
   const { initializeDevices } = useInitializeDevices();
 
@@ -58,6 +54,7 @@ export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
   const defaultValues = {
     ...persistedValues,
     fishjamId: DEFAULT_FISHJAM_ID,
+    sandboxApiUrl: DEFAULT_SANDBOX_API_URL,
   };
 
   const form = useForm<RoomForm>({
@@ -69,7 +66,9 @@ export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
     onFishjamIdChange(formFishjamId);
   }, [formFishjamId, onFishjamIdChange]);
 
-  const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl });
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: form.watch("sandboxApiUrl"),
+  });
 
   const initializeAndReport = useCallback(async () => {
     const { errors } = await initializeDevices({
@@ -97,6 +96,7 @@ export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
     peerName,
     roomType,
     fishjamId,
+    sandboxApiUrl,
   }: RoomForm) => {
     const peerToken = await getSandboxPeerToken(roomName, peerName, roomType);
 
@@ -105,6 +105,7 @@ export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
       peerName,
       roomType,
       fishjamId,
+      sandboxApiUrl,
     });
 
     await joinRoom({
@@ -133,6 +134,16 @@ export const JoinRoomCard: FC<Props> = ({ onFishjamIdChange, ...props }) => {
                 key="fishjamId"
                 {...form.register("fishjamId")}
                 placeholder="Fishjam ID"
+              />
+            </div>
+
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="sandboxApiUrl">Sandbox API URL</Label>
+
+              <Input
+                key="sandboxApiUrl"
+                {...form.register("sandboxApiUrl")}
+                placeholder="https://sandbox.fishjam.io/api/v1"
               />
             </div>
 

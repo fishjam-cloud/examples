@@ -11,7 +11,7 @@ import type { FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { SANDBOX_API_URL } from "@/config";
+import { useFishjamId } from "@/lib/fishjamContext";
 
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
@@ -55,9 +55,8 @@ const LivestreamStreamer: FC<LivestreamStreamerProps> = ({
 
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const { getSandboxLivestream } = useSandbox({
-    sandboxApiUrl: SANDBOX_API_URL,
-  });
+  const { sandboxApiUrl } = useFishjamId();
+  const { getSandboxLivestream } = useSandbox({ sandboxApiUrl });
   const { connect, disconnect, isConnected, error } = useLivestreamStreamer();
 
   const initializeAndReport = useCallback(async () => {
