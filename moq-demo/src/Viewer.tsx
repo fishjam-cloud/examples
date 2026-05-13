@@ -1,11 +1,12 @@
 import { createSignal, Show } from "solid-js";
 import "@moq/watch/ui";
 import "@moq/watch/element";
-import { MOQ_BASE_URL, FISHJAM_API_BASE_URL } from "./config";
+import { MOQ_BASE_URL } from "./config";
 
 interface Props {
   streamName: string;
   fishjamId: string;
+  sandboxApiUrl: string;
 }
 
 export default function Viewer(props: Props) {
@@ -19,7 +20,7 @@ export default function Viewer(props: Props) {
     setLoading(true);
     try {
       const res = await fetch(
-        `${FISHJAM_API_BASE_URL}/${props.fishjamId}/room-manager/moq/${encodeURIComponent(props.streamName)}/subscriber`,
+        `${props.sandboxApiUrl}/moq/${encodeURIComponent(props.streamName)}/subscriber`,
       );
       if (!res.ok) throw new Error(await res.text());
       const { token } = (await res.json()) as { token: string };
