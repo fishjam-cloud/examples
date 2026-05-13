@@ -3,6 +3,8 @@ import React from "react";
 export const FishjamContext = React.createContext<{
   fishjamId: string;
   setFishjamId: (id: string) => void;
+  sandboxApiUrl: string;
+  setSandboxApiUrl: (url: string) => void;
 } | null>(null);
 
 export const useFishjamId = () => {

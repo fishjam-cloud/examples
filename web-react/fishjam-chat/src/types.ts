@@ -5,4 +5,5 @@ export type RoomForm = {
   peerName: string;
   roomType: RoomType;
   fishjamId: string;
+  sandboxApiUrl: string;
 };

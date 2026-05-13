@@ -4,6 +4,8 @@ import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { useFishjamId } from "@/lib/fishjamContext";
+
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
 import {
@@ -26,7 +28,9 @@ const LivestreamViewer: FC<LivestreamViewerProps> = ({
   roomName: streamerRoomName,
 }) => {
   const { connect, disconnect, stream, error } = useLivestreamViewer();
-  const { getSandboxViewerToken } = useSandbox();
+  const { sandboxApiUrl } = useFishjamId();
+
+  const { getSandboxViewerToken } = useSandbox({ sandboxApiUrl });
   const [nameOverridden, setNameOverridden] = useState(false);
   const [roomName, setRoomName] = useState(streamerRoomName);
 

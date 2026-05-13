@@ -15,7 +15,7 @@
     "lint:check": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
-    "@fishjam-cloud/react-client": "0.26.0",
+    "@fishjam-cloud/react-client": "0.27.0-rc.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
