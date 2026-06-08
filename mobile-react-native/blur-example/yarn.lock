@@ -1165,21 +1165,21 @@
     chalk "^4.1.0"
     js-yaml "^4.1.0"
 
-"@fishjam-cloud/react-client@0.27.0-rc.0":
-  version "0.27.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-client/-/react-client-0.27.0-rc.0.tgz#0794231a29b60b62a6739695ad709fc61e0c43a7"
-  integrity sha512-xq6zSqxogqs5x+4vjsoeW7KVFEPcrd6ptuvysiitRzbK0grWe48KjqDmvZf66ivs8XVbSQskBeYLVJCBQPaTmQ==
+"@fishjam-cloud/react-client@0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-client/-/react-client-0.27.0.tgz#424f5960076013a5e4968fb6687f71c0121541ea"
+  integrity sha512-rA0RrW16hqkTaMqRayLwwN9BVu8uFTLVcCWJFPgCsvBc6JD9yYYO2E+tTpVZTtIAC+zeVKpT/PFSuuV6S6khuw==
   dependencies:
-    "@fishjam-cloud/ts-client" "0.27.0-rc.0"
+    "@fishjam-cloud/ts-client" "0.27.0"
     events "3.3.0"
     lodash.isequal "4.5.0"
 
-"@fishjam-cloud/react-native-client@^0.27.0-rc.0":
-  version "0.27.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-client/-/react-native-client-0.27.0-rc.0.tgz#dd6c6537f5540b7e3690b9519ad2c076c71bd997"
-  integrity sha512-dHWdcDZycrlzXXLsANKyXc1itHJUu7Tu2UfdT4nSVq3C8bIOHVaqpLnkyM+WqFqyLtzyxwIbF9ufqrUJyw8sqA==
+"@fishjam-cloud/react-native-client@^0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-client/-/react-native-client-0.27.0.tgz#4d9803fcbb2a3b8a81f42a243f1fa457d9abbba4"
+  integrity sha512-Np41bCPkhpaSGStzITpfshlAsUahFfQAq8ou11ovKLBO2HLsrr0dDMbvUevwkQjQ+YvUbtNtXSCIp3Q+Djuxiw==
   dependencies:
-    "@fishjam-cloud/react-client" "0.27.0-rc.0"
+    "@fishjam-cloud/react-client" "0.27.0"
     "@fishjam-cloud/react-native-webrtc" "0.26.2"
     fast-text-encoding "1.0.6"
     react-native-get-random-values "1.11.0"
@@ -1198,10 +1198,10 @@
     base64-js "1.5.1"
     debug "4.3.4"
 
-"@fishjam-cloud/ts-client@0.27.0-rc.0":
-  version "0.27.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.27.0-rc.0.tgz#79a950e6f56e8df18e89e5c2b45823fde2e2aab1"
-  integrity sha512-OKC6C5Np9sA5X0FN4qf0chXrCPMF2RSjerlr1VxKDYiIU4oCIRRTnCgbA/AayrLor6L32P8fg/1JIKq7CEkt9w==
+"@fishjam-cloud/ts-client@0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.27.0.tgz#209a3710284dff2ba2edad9ad3fd94a2899cbf50"
+  integrity sha512-nloTBzAMe+H7dYHkllikCegZA7BT5vx/KsuuMT8A4+E8jtncisF8HS9on7gHCSbljInIlBSlQnoVMclw2Bz1eA==
   dependencies:
     "@binbat/whip-whep" "^1.1.1-sdp-trickle-throw"
     "@bufbuild/protobuf" "^2.2.3"

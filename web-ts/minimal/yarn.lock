@@ -224,10 +224,10 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
-"@fishjam-cloud/ts-client@0.27.0-rc.0":
-  version "0.27.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.27.0-rc.0.tgz#79a950e6f56e8df18e89e5c2b45823fde2e2aab1"
-  integrity sha512-OKC6C5Np9sA5X0FN4qf0chXrCPMF2RSjerlr1VxKDYiIU4oCIRRTnCgbA/AayrLor6L32P8fg/1JIKq7CEkt9w==
+"@fishjam-cloud/ts-client@0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.27.0.tgz#209a3710284dff2ba2edad9ad3fd94a2899cbf50"
+  integrity sha512-nloTBzAMe+H7dYHkllikCegZA7BT5vx/KsuuMT8A4+E8jtncisF8HS9on7gHCSbljInIlBSlQnoVMclw2Bz1eA==
   dependencies:
     "@binbat/whip-whep" "^1.1.1-sdp-trickle-throw"
     "@bufbuild/protobuf" "^2.2.3"
