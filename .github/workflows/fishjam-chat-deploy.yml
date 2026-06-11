@@ -51,4 +51,4 @@ jobs:
           rm: true
           strip_components: 3
           source: web-react/fishjam-chat/dist/*
-          target: /usr/share/nginx/html
+          target: ${{ secrets.FISHJAM_CHAT_ROOT_DIR }}
