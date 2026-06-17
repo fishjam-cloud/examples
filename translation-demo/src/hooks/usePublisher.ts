@@ -3,9 +3,9 @@ import * as Publish from '@moq/publish';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { adjectives, animals, uniqueNamesGenerator } from 'unique-names-generator';
 
-import type { MoqConnectionStatus } from './types';
-import { useSignalValue } from './useSignalValue';
-import { buildTranslationsConnectionUrl } from './utils';
+import type { MoqConnectionStatus } from '@/utils/types';
+import { useSignalValue } from '@/hooks/useSignalValue';
+import { buildTranslationsConnectionUrl } from '@/utils/translation';
 
 // A friendly, human-shareable stream name (e.g. "brave-otter") used as the broadcast's
 // last path segment. Word-only (no digits) so it stays easy to read off a screen or say aloud.

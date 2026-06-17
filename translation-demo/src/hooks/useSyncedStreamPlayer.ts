@@ -1,8 +1,8 @@
 import * as Watch from '@moq/watch';
 import { useEffect, useState } from 'react';
 
-import type { MoqConnectionSignal, MoqStream, TranslationOption } from './types';
-import { MEDIA_VISIBLE } from './utils';
+import type { MoqConnectionSignal, MoqStream, TranslationOption } from '@/utils/types';
+import { MEDIA_VISIBLE } from '@/utils/translation';
 
 // Fixed end-to-end delay (ms) applied to the whole stream. Translations arrive ~3–4s behind
 // the original, so we delay the picture (and original audio) by the same amount and time every

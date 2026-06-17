@@ -5,13 +5,13 @@ import { BrandHeader } from '@/components/BrandHeader';
 import { StreamToolbar } from '@/components/StreamToolbar';
 import { Button } from '@/components/ui/button';
 import { useWakeLock } from '@/hooks/useWakeLock';
-import { cn } from '@/utils';
+import { cn } from '@/utils/cn';
 
-import type { MoqConnectionSignal, MoqStream } from './types';
-import { ORIGINAL_AUDIO_KEY, useSyncedStreamPlayer } from './useSyncedStreamPlayer';
-import { useTranslationTranscription } from './useTranslationTranscription';
-import { getTranslationTargetId } from './utils';
-import { StreamPlayer } from './StreamPlayer';
+import type { MoqConnectionSignal, MoqStream } from '@/utils/types';
+import { ORIGINAL_AUDIO_KEY, useSyncedStreamPlayer } from '@/hooks/useSyncedStreamPlayer';
+import { useTranslationTranscription } from '@/hooks/useTranslationTranscription';
+import { getTranslationTargetId } from '@/utils/translation';
+import { StreamPlayer } from '@/components/StreamPlayer';
 
 type Props = {
   connection: MoqConnectionSignal;

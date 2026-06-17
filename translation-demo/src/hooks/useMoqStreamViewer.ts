@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-import { useMoqConnection } from './useMoqConnection';
-import { buildStreamConnectionUrl } from './utils';
+import { useMoqConnection } from '@/hooks/useMoqConnection';
+import { buildStreamConnectionUrl } from '@/utils/translation';
 
 // Watches a single published stream (and its translations) by connecting straight to its
 // broadcast path. Connects once `enabled` is true (gated behind a user gesture so the

@@ -1,8 +1,8 @@
 import * as Watch from '@moq/watch';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { TranslationOption } from './types';
-import { getTranslationTargetId } from './utils';
+import type { TranslationOption } from '@/utils/types';
+import { getTranslationTargetId } from '@/utils/translation';
 
 export type TranscriptionState = {
   // Latest caption text, if any.

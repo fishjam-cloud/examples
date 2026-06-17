@@ -3,9 +3,9 @@ import * as Publish from '@moq/publish';
 import * as Watch from '@moq/watch';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { MoqConnectionStatus, MoqStream, TranslationOption } from './types';
-import { GOOGLE_PROVIDER, GOOGLE_TRANSLATION_LANGUAGES } from './googleLanguages';
-import { buildTranslationOption, compareTranslationOptions, parseTranslationPath } from './utils';
+import type { MoqConnectionStatus, MoqStream, TranslationOption } from '@/utils/types';
+import { GOOGLE_PROVIDER, GOOGLE_TRANSLATION_LANGUAGES } from '@/utils/googleLanguages';
+import { buildTranslationOption, compareTranslationOptions, parseTranslationPath } from '@/utils/translation';
 
 type RemoteStream = {
   path: string;

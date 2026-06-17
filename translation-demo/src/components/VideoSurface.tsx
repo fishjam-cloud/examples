@@ -1,6 +1,6 @@
 import { type FC, useEffect, useLayoutEffect, useRef } from 'react';
 
-import type { SyncedStreamPlayer } from './useSyncedStreamPlayer';
+import type { SyncedStreamPlayer } from '@/hooks/useSyncedStreamPlayer';
 
 type Props = {
   className?: string;

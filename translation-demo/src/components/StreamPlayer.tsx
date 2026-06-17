@@ -2,12 +2,12 @@ import { Captions, Check, Languages, Loader2, Plus, Search } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { cn } from '@/utils';
+import { cn } from '@/utils/cn';
 
-import type { MoqStream, TranslationOption } from './types';
-import type { SyncedStreamPlayer } from './useSyncedStreamPlayer';
-import { formatProviderLabel } from './utils';
-import { VideoSurface } from './VideoSurface';
+import type { MoqStream, TranslationOption } from '@/utils/types';
+import type { SyncedStreamPlayer } from '@/hooks/useSyncedStreamPlayer';
+import { formatProviderLabel } from '@/utils/translation';
+import { VideoSurface } from '@/components/VideoSurface';
 
 const EMPTY_TRANSLATIONS: TranslationOption[] = [];
 

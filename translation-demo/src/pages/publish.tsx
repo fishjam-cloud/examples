@@ -1,4 +1,4 @@
-import { PublisherPanel } from '@/components/moq/PublisherPanel';
+import { PublisherPanel } from '@/components/PublisherPanel';
 
 function PublishPage() {
   return <PublisherPanel />;
