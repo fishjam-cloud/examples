@@ -8,6 +8,7 @@ import { useWakeLock } from '@/hooks/useWakeLock';
 import { cn } from '@/utils/cn';
 
 import type { MoqConnectionSignal, MoqStream } from '@/utils/types';
+import { useSignalValue } from '@/hooks/useSignalValue';
 import { ORIGINAL_AUDIO_KEY, useSyncedStreamPlayer } from '@/hooks/useSyncedStreamPlayer';
 import { useTranslationTranscription } from '@/hooks/useTranslationTranscription';
 import { getTranslationTargetId } from '@/utils/translation';
@@ -58,26 +59,9 @@ export const StreamView = ({
     player?.selectAudio(selectedTranslation);
   }, [player, selectedTranslation]);
 
-  // Mirror the player's audible/pending track into React state for the UI and captions.
-  const [audibleKey, setAudibleKey] = useState<string>(ORIGINAL_AUDIO_KEY);
-  const [pendingKey, setPendingKey] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    if (!player) {
-      setAudibleKey(ORIGINAL_AUDIO_KEY);
-      setPendingKey(undefined);
-      return;
-    }
-    const syncAudible = () => setAudibleKey(player.audibleKey.peek());
-    const syncPending = () => setPendingKey(player.pendingKey.peek());
-    syncAudible();
-    syncPending();
-    const disposeAudible = player.audibleKey.subscribe(syncAudible);
-    const disposePending = player.pendingKey.subscribe(syncPending);
-    return () => {
-      disposeAudible();
-      disposePending();
-    };
-  }, [player]);
+  // The player's audible/pending track, mirrored from its signals for the UI and captions.
+  const audibleKey = useSignalValue(player?.audibleKey, (key) => key ?? ORIGINAL_AUDIO_KEY);
+  const pendingKey = useSignalValue(player?.pendingKey);
 
   // Captions follow the track actually being heard (which lags the selection during a warm-up),
   // so they stay in sync with the audio. The player times every track to the video play-head, so
