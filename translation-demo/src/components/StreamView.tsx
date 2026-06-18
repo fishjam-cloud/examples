@@ -17,7 +17,6 @@ import { StreamPlayer } from '@/components/StreamPlayer';
 type Props = {
   connection: MoqConnectionSignal;
   stream?: MoqStream;
-  // Disconnect the stream and return to the pre-play state (the Play button).
   onDisconnect: () => void;
   // Optional overlay rendered on top of the player area only (e.g. a Play gate).
   playOverlay?: ReactNode;

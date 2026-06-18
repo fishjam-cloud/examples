@@ -32,7 +32,6 @@ const MIN_TRANSLATION_LATENCY_MS = 400;
 // Hang's PRIORITY.audio — used for the trigger subscription that requests a dynamic language.
 const AUDIO_PRIORITY = 80;
 
-// Key for the original (untranslated) audio track.
 export const ORIGINAL_AUDIO_KEY = 'original';
 
 // One audio track: its own decoder, clock, and a gain node mixing its output into the speakers.
@@ -123,7 +122,6 @@ export class SyncedStreamPlayer {
     );
   }
 
-  // Render to (or detach from) the given canvas.
   attachCanvas(canvas: HTMLCanvasElement | null): void {
     this.#renderer.canvas.set(canvas ?? undefined);
   }

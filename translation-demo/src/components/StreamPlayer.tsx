@@ -17,7 +17,6 @@ type Props = {
   // The selected translation has no transcription track; the CC toggle is disabled.
   captionsUnavailable?: boolean;
   onCaptionsToggle?: (enabled: boolean) => void;
-  // Latest live transcription text for the selected translation.
   captionText?: string;
   player?: SyncedStreamPlayer | null;
   // A newly selected language is warming up; the previous audio still plays until it's ready.

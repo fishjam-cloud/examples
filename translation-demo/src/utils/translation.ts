@@ -105,8 +105,6 @@ export const compareTranslationOptions = (left: TranslationOption, right: Transl
 
 export const getTranslationTargetId = (path: string, trackName: string) => `${path}#${trackName}`;
 
-// The MoQ relay URL must be supplied via VITE_MOQ_URL (e.g. in a .env file) — there is no
-// built-in default.
 const getMoqUrl = () => {
   const url = import.meta.env.VITE_MOQ_URL;
   if (!url) {

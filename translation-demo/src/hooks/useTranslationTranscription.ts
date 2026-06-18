@@ -5,7 +5,6 @@ import type { TranslationOption } from '@/utils/types';
 import { getTranslationTargetId } from '@/utils/translation';
 
 export type TranscriptionState = {
-  // Latest caption text, if any.
   caption?: string;
   // Translation target whose transcription track turned out to be unavailable
   // (older server); used to disable the CC toggle.
