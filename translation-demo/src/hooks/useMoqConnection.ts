@@ -1,11 +1,22 @@
-import { Signal } from '@moq/signals';
-import * as Publish from '@moq/publish';
-import * as Watch from '@moq/watch';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Signal } from "@moq/signals";
+import * as Publish from "@moq/publish";
+import * as Watch from "@moq/watch";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { MoqConnectionStatus, MoqStream, TranslationOption } from '@/utils/types';
-import { GOOGLE_PROVIDER, GOOGLE_TRANSLATION_LANGUAGES } from '@/utils/googleLanguages';
-import { buildTranslationOption, compareTranslationOptions, parseTranslationPath } from '@/utils/translation';
+import type {
+  MoqConnectionStatus,
+  MoqStream,
+  TranslationOption,
+} from "@/utils/types";
+import {
+  GOOGLE_PROVIDER,
+  GOOGLE_TRANSLATION_LANGUAGES,
+} from "@/utils/googleLanguages";
+import {
+  buildTranslationOption,
+  compareTranslationOptions,
+  parseTranslationPath,
+} from "@/utils/translation";
 
 type RemoteStream = {
   path: string;
@@ -22,22 +33,28 @@ type TranslationProvider = {
 };
 
 /**
- * Core MoQ connection + broadcast discovery for a single stream. The viewer connects
- * straight to one broadcast path, so the relay announces exactly that stream plus its
- * translation broadcasts. Splits the announced paths into the stream broadcast and its
- * translation options, and exposes them as a single `stream`.
+ * Core MoQ connection + broadcast discovery for a single stream. The viewer connects to the
+ * Fishjam root with a subscriber token scoped to one stream name, so the relay announces exactly
+ * that stream plus its translation broadcasts. Splits the announced paths into the stream
+ * broadcast and its translation options, and exposes them as a single `stream`.
  */
 export const useMoqConnection = () => {
-  const [connectionStatus, setConnectionStatus] = useState<MoqConnectionStatus>('disconnected');
+  const [connectionStatus, setConnectionStatus] =
+    useState<MoqConnectionStatus>("disconnected");
   const [hasSession, setHasSession] = useState(false);
   const [stream, setStream] = useState<MoqStream | undefined>(undefined);
 
-  const [connectionSignal] = useState(() => new Signal<Publish.Lite.Connection.Established | undefined>(undefined));
+  const [connectionSignal] = useState(
+    () =>
+      new Signal<Publish.Lite.Connection.Established | undefined>(undefined),
+  );
 
   const reloadRef = useRef<Publish.Lite.Connection.Reload | null>(null);
   const sessionCleanupRef = useRef<(() => void) | null>(null);
   const streamRef = useRef<RemoteStream | null>(null);
-  const translationProvidersRef = useRef(new Map<string, TranslationProvider>());
+  const translationProvidersRef = useRef(
+    new Map<string, TranslationProvider>(),
+  );
 
   const refreshStream = useCallback(() => {
     const current = streamRef.current;
@@ -50,11 +67,16 @@ export const useMoqConnection = () => {
     const translations = new Map<string, TranslationOption>();
 
     for (const provider of translationProvidersRef.current.values()) {
-      if (provider.sourcePath !== current.path || provider.provider.toLowerCase() !== GOOGLE_PROVIDER) {
+      if (
+        provider.sourcePath !== current.path ||
+        provider.provider.toLowerCase() !== GOOGLE_PROVIDER
+      ) {
         continue;
       }
 
-      const activeLanguages = new Set(Object.keys(provider.broadcast.catalog.peek()?.audio?.renditions ?? {}));
+      const activeLanguages = new Set(
+        Object.keys(provider.broadcast.catalog.peek()?.audio?.renditions ?? {}),
+      );
 
       for (const language of activeLanguages) {
         const option = buildTranslationOption({
@@ -62,7 +84,7 @@ export const useMoqConnection = () => {
           language,
           path: provider.path,
           trackName: language,
-          status: 'active',
+          status: "active",
           broadcast: provider.broadcast,
         });
         translations.set(option.key, option);
@@ -78,7 +100,7 @@ export const useMoqConnection = () => {
           language: language.code,
           path: provider.path,
           trackName: language.code,
-          status: 'requestable',
+          status: "requestable",
           broadcast: provider.broadcast,
         });
         translations.set(option.key, option);
@@ -86,7 +108,9 @@ export const useMoqConnection = () => {
     }
 
     const catalog = current.broadcast.catalog.peek();
-    const hasVideo = !!catalog?.video && Object.keys(catalog.video.renditions ?? {}).length > 0;
+    const hasVideo =
+      !!catalog?.video &&
+      Object.keys(catalog.video.renditions ?? {}).length > 0;
 
     setStream({
       path: current.path,
@@ -198,7 +222,7 @@ export const useMoqConnection = () => {
     sessionCleanupRef.current = null;
     reloadRef.current = null;
     connectionSignal.set(undefined);
-    setConnectionStatus('disconnected');
+    setConnectionStatus("disconnected");
     setHasSession(false);
     resetStream();
   }, [connectionSignal, resetStream]);
@@ -208,7 +232,7 @@ export const useMoqConnection = () => {
       disconnect();
 
       setHasSession(true);
-      setConnectionStatus('connecting');
+      setConnectionStatus("connecting");
 
       const reload = new Publish.Lite.Connection.Reload({
         enabled: true,
@@ -227,7 +251,10 @@ export const useMoqConnection = () => {
 
       const syncStream = (announced: Set<Publish.Lite.Path.Valid>) => {
         let streamPath: string | undefined;
-        const providerPaths = new Map<string, { sourcePath: string; provider: string }>();
+        const providerPaths = new Map<
+          string,
+          { sourcePath: string; provider: string }
+        >();
 
         for (const announcedPath of announced) {
           const path = announcedPath.toString();
@@ -235,7 +262,10 @@ export const useMoqConnection = () => {
           const parsed = parseTranslationPath(path);
           if (parsed) {
             if (parsed.provider.toLowerCase() === GOOGLE_PROVIDER) {
-              providerPaths.set(path, { sourcePath: parsed.sourcePath, provider: parsed.provider });
+              providerPaths.set(path, {
+                sourcePath: parsed.sourcePath,
+                provider: parsed.provider,
+              });
             }
             continue;
           }
@@ -278,7 +308,14 @@ export const useMoqConnection = () => {
         reload.close();
       };
     },
-    [connectionSignal, disconnect, ensureStream, ensureTranslationProvider, refreshStream, removeStream],
+    [
+      connectionSignal,
+      disconnect,
+      ensureStream,
+      ensureTranslationProvider,
+      refreshStream,
+      removeStream,
+    ],
   );
 
   useEffect(() => {

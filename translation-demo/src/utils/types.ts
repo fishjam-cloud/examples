@@ -1,10 +1,12 @@
-import type * as Publish from '@moq/publish';
-import type { Signal } from '@moq/signals';
-import type * as Watch from '@moq/watch';
+import type * as Publish from "@moq/publish";
+import type { Signal } from "@moq/signals";
+import type * as Watch from "@moq/watch";
 
-export type MoqConnectionSignal = Signal<Publish.Lite.Connection.Established | undefined>;
+export type MoqConnectionSignal = Signal<
+  Publish.Lite.Connection.Established | undefined
+>;
 
-type TranslationStatus = 'active' | 'requestable';
+type TranslationStatus = "active" | "requestable";
 
 // A translated audio option available for the stream. Translations share a provider broadcast at
 // `<stream>/<provider>/translation` and use `trackName` as the requested language audio rendition.
@@ -30,4 +32,4 @@ export type MoqStream = {
   translations?: TranslationOption[];
 };
 
-export type MoqConnectionStatus = 'disconnected' | 'connecting' | 'connected';
+export type MoqConnectionStatus = "disconnected" | "connecting" | "connected";

@@ -1,7 +1,13 @@
-import type { FC } from 'react';
+import type { FC } from "react";
 
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 type SelectableDevice = {
   deviceId: string;
@@ -15,7 +21,11 @@ type Props = {
   selectedDeviceId?: string;
 };
 
-export const DeviceSelect: FC<Props> = ({ devices, onSelectDevice, selectedDeviceId }) => {
+export const DeviceSelect: FC<Props> = ({
+  devices,
+  onSelectDevice,
+  selectedDeviceId,
+}) => {
   const validDevices = devices.filter((device) => device.deviceId);
 
   if (!validDevices.length) {

@@ -1,4 +1,4 @@
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from "react";
 
 // A @moq Signal/Getter exposes a synchronous peek and a subscribe that fires on change.
 type Subscribable<T> = {
@@ -17,14 +17,25 @@ const identity = <T>(value: T): T => value;
 // value from the signal — return a primitive to collapse a high-frequency signal (e.g. a frame
 // timestamp) into a stable boolean so it only re-renders when that boolean flips.
 export function useSignalValue<T>(signal: Subscribable<T>): T;
-export function useSignalValue<T>(signal: Subscribable<T> | undefined): T | undefined;
-export function useSignalValue<T, S>(signal: Subscribable<T> | undefined, select: (value: T | undefined) => S): S;
+export function useSignalValue<T>(
+  signal: Subscribable<T> | undefined,
+): T | undefined;
+export function useSignalValue<T, S>(
+  signal: Subscribable<T> | undefined,
+  select: (value: T | undefined) => S,
+): S;
 export function useSignalValue<T, S>(
   signal: Subscribable<T> | undefined,
   select: (value: T | undefined) => S = identity as (value: T | undefined) => S,
 ): S {
-  const subscribe = useCallback((onChange: () => void) => signal?.subscribe(onChange) ?? noop, [signal]);
-  const getSnapshot = useCallback(() => select(signal?.peek()), [signal, select]);
+  const subscribe = useCallback(
+    (onChange: () => void) => signal?.subscribe(onChange) ?? noop,
+    [signal],
+  );
+  const getSnapshot = useCallback(
+    () => select(signal?.peek()),
+    [signal, select],
+  );
 
   return useSyncExternalStore(subscribe, getSnapshot);
 }

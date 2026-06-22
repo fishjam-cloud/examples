@@ -1,8 +1,8 @@
-import * as Watch from '@moq/watch';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import * as Watch from "@moq/watch";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { TranslationOption } from '@/utils/types';
-import { getTranslationTargetId } from '@/utils/translation';
+import type { TranslationOption } from "@/utils/types";
+import { getTranslationTargetId } from "@/utils/translation";
 
 export type TranscriptionState = {
   caption?: string;
@@ -13,11 +13,12 @@ export type TranscriptionState = {
 
 // Captions are a text track alongside the requested language audio track inside the provider
 // broadcast: `<trackName>/transcript.json`.
-const TRANSCRIPTION_TRACK_SUFFIX = 'transcript.json';
+const TRANSCRIPTION_TRACK_SUFFIX = "transcript.json";
 // Hang's PRIORITY.chat: above audio (80), below catalog (100).
 const TRANSCRIPTION_PRIORITY = 90;
 
-const getTranscriptionTrackName = (trackName: string) => `${trackName}/${TRANSCRIPTION_TRACK_SUFFIX}`;
+const getTranscriptionTrackName = (trackName: string) =>
+  `${trackName}/${TRANSCRIPTION_TRACK_SUFFIX}`;
 
 // How long a caption (v1) or an individual segment (v2) stays on screen after
 // it first appeared, when no newer text replaces it.
@@ -36,13 +37,13 @@ const trimCaption = (text: string): string => {
   }
 
   const tail = text.slice(-MAX_CAPTION_CHARS);
-  const wordBoundary = tail.indexOf(' ');
+  const wordBoundary = tail.indexOf(" ");
 
   return `…${wordBoundary === -1 ? tail : tail.slice(wordBoundary + 1)}`;
 };
 
 // `Watch.Broadcast.active` exposes the underlying network broadcast.
-type MoqBroadcast = NonNullable<ReturnType<Watch.Broadcast['active']['peek']>>;
+type MoqBroadcast = NonNullable<ReturnType<Watch.Broadcast["active"]["peek"]>>;
 
 // The translation audio playback clock (ms), used to reveal each caption segment only
 // once the heard audio reaches its timestamp.
@@ -72,7 +73,7 @@ type TranscriptionEntry = {
 // v2 sends `{"segments": [{"text", "ts_us", "final"?}]}`; anything else is the
 // v1 plain rolling text. Returning a string means v1.
 const parseUpdate = (raw: string): CaptionSegment[] | string => {
-  if (!raw.trimStart().startsWith('{')) {
+  if (!raw.trimStart().startsWith("{")) {
     return raw;
   }
 
@@ -83,9 +84,9 @@ const parseUpdate = (raw: string): CaptionSegment[] | string => {
       return parsed.segments.flatMap((segment): CaptionSegment[] => {
         if (
           segment &&
-          typeof segment === 'object' &&
-          typeof (segment as { text?: unknown }).text === 'string' &&
-          typeof (segment as { ts_us?: unknown }).ts_us === 'number'
+          typeof segment === "object" &&
+          typeof (segment as { text?: unknown }).text === "string" &&
+          typeof (segment as { ts_us?: unknown }).ts_us === "number"
         ) {
           const { text, ts_us } = segment as { text: string; ts_us: number };
 
@@ -125,7 +126,9 @@ export const useTranslationTranscription = (
 ): TranscriptionState => {
   const entryRef = useRef<TranscriptionEntry | null>(null);
   const [caption, setCaption] = useState<string | undefined>(undefined);
-  const [unavailableTarget, setUnavailableTarget] = useState<string | undefined>(undefined);
+  const [unavailableTarget, setUnavailableTarget] = useState<
+    string | undefined
+  >(undefined);
 
   // Read the audio clock through a ref so `recompute` stays stable and doesn't
   // re-subscribe the transcription when the player appears.
@@ -148,7 +151,7 @@ export const useTranslationTranscription = (
     const text = entry.plain
       ? nowWall - entry.plain.at <= CAPTION_EXPIRY_MS
         ? entry.plain.text
-        : ''
+        : ""
       : captionFromSegments(entry, clockRef.current?.now(), nowWall);
     const trimmed = trimCaption(text) || undefined;
 
@@ -182,10 +185,12 @@ export const useTranslationTranscription = (
     const applyUpdate = (raw: string) => {
       const parsed = parseUpdate(raw);
 
-      if (typeof parsed === 'string') {
+      if (typeof parsed === "string") {
         entry.segments = [];
         entry.visibleSince.clear();
-        entry.plain = parsed ? { text: parsed, at: performance.now() } : undefined;
+        entry.plain = parsed
+          ? { text: parsed, at: performance.now() }
+          : undefined;
       } else {
         entry.plain = undefined;
         entry.segments = parsed;
@@ -214,7 +219,10 @@ export const useTranslationTranscription = (
         return;
       }
 
-      const track = activeBroadcast.subscribe(getTranscriptionTrackName(trackName), TRANSCRIPTION_PRIORITY);
+      const track = activeBroadcast.subscribe(
+        getTranscriptionTrackName(trackName),
+        TRANSCRIPTION_PRIORITY,
+      );
       let cancelled = false;
       entry.closeTrack = () => {
         cancelled = true;
@@ -248,7 +256,9 @@ export const useTranslationTranscription = (
         // The track ended before delivering anything: the publisher doesn't
         // serve a transcription for this translation.
         if (!received) {
-          setUnavailableTarget((current) => (current === targetId ? current : targetId));
+          setUnavailableTarget((current) =>
+            current === targetId ? current : targetId,
+          );
         }
       })();
     };
@@ -278,7 +288,11 @@ export const useTranslationTranscription = (
   return { caption, unavailableTarget };
 };
 
-const captionFromSegments = (entry: TranscriptionEntry, audioNowMs: number | undefined, nowWall: number): string => {
+const captionFromSegments = (
+  entry: TranscriptionEntry,
+  audioNowMs: number | undefined,
+  nowWall: number,
+): string => {
   const parts: string[] = [];
 
   for (const segment of entry.segments) {
@@ -303,5 +317,5 @@ const captionFromSegments = (entry: TranscriptionEntry, audioNowMs: number | und
     parts.push(segment.text);
   }
 
-  return parts.join(' ').replace(/\s+/g, ' ').trim();
+  return parts.join(" ").replace(/\s+/g, " ").trim();
 };

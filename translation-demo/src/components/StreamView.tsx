@@ -1,18 +1,21 @@
-import { Loader2 } from 'lucide-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { Loader2 } from "lucide-react";
+import { type ReactNode, useEffect, useState } from "react";
 
-import { BrandHeader } from '@/components/BrandHeader';
-import { StreamToolbar } from '@/components/StreamToolbar';
-import { Button } from '@/components/ui/button';
-import { useWakeLock } from '@/hooks/useWakeLock';
-import { cn } from '@/utils/cn';
+import { BrandHeader } from "@/components/BrandHeader";
+import { StreamToolbar } from "@/components/StreamToolbar";
+import { Button } from "@/components/ui/button";
+import { useWakeLock } from "@/hooks/useWakeLock";
+import { cn } from "@/utils/cn";
 
-import type { MoqConnectionSignal, MoqStream } from '@/utils/types';
-import { useSignalValue } from '@/hooks/useSignalValue';
-import { ORIGINAL_AUDIO_KEY, useSyncedStreamPlayer } from '@/hooks/useSyncedStreamPlayer';
-import { useTranslationTranscription } from '@/hooks/useTranslationTranscription';
-import { getTranslationTargetId } from '@/utils/translation';
-import { StreamPlayer } from '@/components/StreamPlayer';
+import type { MoqConnectionSignal, MoqStream } from "@/utils/types";
+import { useSignalValue } from "@/hooks/useSignalValue";
+import {
+  ORIGINAL_AUDIO_KEY,
+  useSyncedStreamPlayer,
+} from "@/hooks/useSyncedStreamPlayer";
+import { useTranslationTranscription } from "@/hooks/useTranslationTranscription";
+import { getTranslationTargetId } from "@/utils/translation";
+import { StreamPlayer } from "@/components/StreamPlayer";
 
 type Props = {
   connection: MoqConnectionSignal;
@@ -40,11 +43,15 @@ export const StreamView = ({
 }: Props) => {
   useWakeLock();
 
-  const [selectedTranslationKey, setSelectedTranslationKey] = useState<string | undefined>(undefined);
+  const [selectedTranslationKey, setSelectedTranslationKey] = useState<
+    string | undefined
+  >(undefined);
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
 
   const selectedTranslation = selectedTranslationKey
-    ? stream?.translations?.find((option) => option.key === selectedTranslationKey)
+    ? stream?.translations?.find(
+        (option) => option.key === selectedTranslationKey,
+      )
     : undefined;
 
   // Shared-clock player: original video + selectable audio (original or a translation), all
@@ -59,14 +66,19 @@ export const StreamView = ({
   }, [player, selectedTranslation]);
 
   // The player's audible/pending track, mirrored from its signals for the UI and captions.
-  const audibleKey = useSignalValue(player?.audibleKey, (key) => key ?? ORIGINAL_AUDIO_KEY);
+  const audibleKey = useSignalValue(
+    player?.audibleKey,
+    (key) => key ?? ORIGINAL_AUDIO_KEY,
+  );
   const pendingKey = useSignalValue(player?.pendingKey);
 
   // Captions follow the track actually being heard (which lags the selection during a warm-up),
   // so they stay in sync with the audio. The player times every track to the video play-head, so
   // the shared player clock is the right reference for revealing caption segments.
   const audibleTranslation =
-    audibleKey === ORIGINAL_AUDIO_KEY ? undefined : stream?.translations?.find((option) => option.key === audibleKey);
+    audibleKey === ORIGINAL_AUDIO_KEY
+      ? undefined
+      : stream?.translations?.find((option) => option.key === audibleKey);
   const { caption, unavailableTarget } = useTranslationTranscription(
     captionsEnabled ? audibleTranslation : undefined,
     player?.sync,
@@ -75,9 +87,13 @@ export const StreamView = ({
   // The heard translation has no transcription track: turn captions off and keep the CC toggle
   // disabled while it stays selected.
   const audibleTarget = audibleTranslation
-    ? getTranslationTargetId(audibleTranslation.path, audibleTranslation.trackName)
+    ? getTranslationTargetId(
+        audibleTranslation.path,
+        audibleTranslation.trackName,
+      )
     : undefined;
-  const captionsUnavailable = !!audibleTranslation && unavailableTarget === audibleTarget;
+  const captionsUnavailable =
+    !!audibleTranslation && unavailableTarget === audibleTarget;
   useEffect(() => {
     if (captionsUnavailable) {
       setCaptionsEnabled(false);
@@ -86,7 +102,12 @@ export const StreamView = ({
 
   // Drop the selection if its option is no longer announced (or the stream left).
   useEffect(() => {
-    if (selectedTranslationKey && !stream?.translations?.some((option) => option.key === selectedTranslationKey)) {
+    if (
+      selectedTranslationKey &&
+      !stream?.translations?.some(
+        (option) => option.key === selectedTranslationKey,
+      )
+    ) {
       setSelectedTranslationKey(undefined);
       setCaptionsEnabled(false);
     }
@@ -109,7 +130,10 @@ export const StreamView = ({
 
       <section
         id="moq-stream"
-        className={cn('relative flex max-h-[calc(100%-96px-64px)] w-full justify-between flex-grow flex-nowrap px-8')}>
+        className={cn(
+          "relative flex max-h-[calc(100%-96px-64px)] w-full justify-between flex-grow flex-nowrap px-8",
+        )}
+      >
         {playOverlay}
 
         {/* Fixed-size player frame. The stream player fills the exact same box as the
@@ -120,7 +144,7 @@ export const StreamView = ({
               <StreamPlayer
                 stream={stream}
                 player={player}
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: "100%", height: "100%" }}
                 selectedTranslationKey={selectedTranslationKey}
                 onTranslationChange={handleTranslationChange}
                 captionsEnabled={captionsEnabled}
@@ -132,8 +156,12 @@ export const StreamView = ({
             ) : unavailable ? (
               <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-[#FCF6E7]/70 px-6 text-center backdrop-blur-sm">
                 <div className="flex flex-col gap-1">
-                  <p className="text-lg font-semibold">This stream isn't available</p>
-                  <p className="text-sm text-stone-500">It may have ended or hasn't started yet.</p>
+                  <p className="text-lg font-semibold">
+                    This stream isn't available
+                  </p>
+                  <p className="text-sm text-stone-500">
+                    It may have ended or hasn't started yet.
+                  </p>
                 </div>
                 <Button onClick={onStartOwn}>Start your own one!</Button>
               </div>

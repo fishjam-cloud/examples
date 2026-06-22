@@ -1,10 +1,10 @@
-import { Play } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { Play } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 
-import { StreamView } from '@/components/StreamView';
-import { useMoqStreamViewer } from '@/hooks/useMoqStreamViewer';
-import { Button } from '@/components/ui/button';
+import { StreamView } from "@/components/StreamView";
+import { useMoqStreamViewer } from "@/hooks/useMoqStreamViewer";
+import { Button } from "@/components/ui/button";
 
 function WatchPage() {
   const { name } = useParams<{ name: string }>();
@@ -13,7 +13,10 @@ function WatchPage() {
   // Render the viewer straight away, but don't connect/play until the viewer presses Play.
   // The click is the user gesture browsers require before the audio AudioContext can start.
   const [started, setStarted] = useState(false);
-  const { connection, connectionStatus, stream } = useMoqStreamViewer(name, started);
+  const { connection, connectionStatus, stream } = useMoqStreamViewer(
+    name,
+    started,
+  );
 
   // Track whether a stream has ever appeared (so losing it means it ended). A ref is enough:
   // nothing renders off this directly — it's only read to decide `streamUnavailable`, and the
@@ -40,7 +43,9 @@ function WatchPage() {
 
   // Unavailable if a stream we were watching ended, or none ever showed up after the grace.
   const streamUnavailable =
-    started && !stream && (hasSeenStreamRef.current || (waited && connectionStatus === 'connected'));
+    started &&
+    !stream &&
+    (hasSeenStreamRef.current || (waited && connectionStatus === "connected"));
 
   const disconnect = () => {
     setStarted(false);
@@ -53,7 +58,7 @@ function WatchPage() {
       onDisconnect={disconnect}
       pending={started}
       unavailable={streamUnavailable}
-      onStartOwn={() => navigate('/')}
+      onStartOwn={() => navigate("/")}
       playOverlay={
         started ? undefined : (
           <div className="absolute inset-0 z-40 flex items-center justify-center rounded-lg bg-[#FCF6E7]/70 backdrop-blur-sm">
@@ -62,7 +67,8 @@ function WatchPage() {
               className="h-20 w-20 rounded-full p-0 shadow-lg"
               disabled={!name}
               aria-label="Play"
-              onClick={() => setStarted(true)}>
+              onClick={() => setStarted(true)}
+            >
               <Play size={32} className="translate-x-0.5" />
             </Button>
           </div>

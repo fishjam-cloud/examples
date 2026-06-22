@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  // Required: the MoQ relay URL (no built-in default).
-  readonly VITE_MOQ_URL?: string;
+  readonly VITE_FISHJAM_ID?: string;
+  readonly VITE_SANDBOX_API_URL?: string;
 }
 
 interface ImportMeta {

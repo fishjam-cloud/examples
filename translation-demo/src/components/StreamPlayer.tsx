@@ -1,11 +1,11 @@
-import { Captions, Loader2 } from 'lucide-react';
+import { Captions, Loader2 } from "lucide-react";
 
-import { TranslationMenu } from '@/components/TranslationMenu';
-import { VideoSurface } from '@/components/VideoSurface';
-import { useSignalValue } from '@/hooks/useSignalValue';
-import type { SyncedStreamPlayer } from '@/hooks/useSyncedStreamPlayer';
-import { cn } from '@/utils/cn';
-import type { MoqStream, TranslationOption } from '@/utils/types';
+import { TranslationMenu } from "@/components/TranslationMenu";
+import { VideoSurface } from "@/components/VideoSurface";
+import { useSignalValue } from "@/hooks/useSignalValue";
+import type { SyncedStreamPlayer } from "@/hooks/useSyncedStreamPlayer";
+import { cn } from "@/utils/cn";
+import type { MoqStream, TranslationOption } from "@/utils/types";
 
 const EMPTY_TRANSLATIONS: TranslationOption[] = [];
 
@@ -44,15 +44,21 @@ export const StreamPlayer = ({
   // True once the first video frame has decoded. Collapsed to a boolean so the per-frame
   // timestamp updates only re-render when it actually flips. `shouldShowVideo` also gates on
   // `stream.hasVideo`, so a stream without video never shows the surface.
-  const hasRenderedFrame = useSignalValue(player?.videoTimestamp, (timestamp) => timestamp !== undefined);
+  const hasRenderedFrame = useSignalValue(
+    player?.videoTimestamp,
+    (timestamp) => timestamp !== undefined,
+  );
 
   const shouldShowVideo = stream.hasVideo && hasRenderedFrame;
 
   return (
-    <div className="relative flex items-center justify-center overflow-hidden rounded-lg bg-stone-200" style={style}>
+    <div
+      className="relative flex items-center justify-center overflow-hidden rounded-lg bg-stone-200"
+      style={style}
+    >
       {player && (
         <VideoSurface
-          className={cn('z-20 h-full max-w-full rounded-md object-cover', {
+          className={cn("z-20 h-full max-w-full rounded-md object-cover", {
             invisible: !shouldShowVideo,
           })}
           showVideo={shouldShowVideo}
@@ -88,16 +94,18 @@ export const StreamPlayer = ({
               onClick={() => onCaptionsToggle(!captionsEnabled)}
               title={
                 captionsUnavailable
-                  ? 'Live transcription is not available for this stream'
+                  ? "Live transcription is not available for this stream"
                   : captionsEnabled
-                    ? 'Hide live transcription'
-                    : 'Show live transcription'
+                    ? "Hide live transcription"
+                    : "Show live transcription"
               }
               className={cn(
-                'flex h-7 items-center gap-1 rounded-md bg-black/50 px-2 text-xs font-semibold text-white hover:bg-black/70',
-                !captionsEnabled && 'text-white/60',
-                captionsUnavailable && 'cursor-not-allowed opacity-50 hover:bg-black/50',
-              )}>
+                "flex h-7 items-center gap-1 rounded-md bg-black/50 px-2 text-xs font-semibold text-white hover:bg-black/70",
+                !captionsEnabled && "text-white/60",
+                captionsUnavailable &&
+                  "cursor-not-allowed opacity-50 hover:bg-black/50",
+              )}
+            >
               <Captions size={14} />
               CC
             </button>

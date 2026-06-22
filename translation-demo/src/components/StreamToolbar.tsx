@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
 type Props = {
   onDisconnect: () => void;
@@ -10,7 +10,8 @@ export const StreamToolbar = ({ onDisconnect }: Props) => {
       <Button
         className="rounded-lg text-xs !bg-[#DD6460] hover:!bg-[#DD6460]/90"
         variant="destructive"
-        onClick={onDisconnect}>
+        onClick={onDisconnect}
+      >
         Disconnect
       </Button>
     </footer>

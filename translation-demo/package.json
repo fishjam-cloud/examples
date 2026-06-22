@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fishjam-cloud/react-client": "0.28.1",
     "@moq/publish": "0.2.15",
     "@moq/signals": "0.1.9",
     "@moq/watch": "0.2.17",

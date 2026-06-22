@@ -14,7 +14,7 @@ Configure the MoQ relay (required):
 
 ```bash
 cp .env.example .env
-# then set VITE_MOQ_URL in .env to your MoQ relay URL
+# then set VITE_MOQ_URL and VITE_MOQ_FISHJAM_ID in .env to your MoQ relay URL
 ```
 
 Start the development server:

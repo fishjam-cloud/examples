@@ -1,27 +1,46 @@
-import { Signal } from '@moq/signals';
-import * as Publish from '@moq/publish';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { adjectives, animals, uniqueNamesGenerator } from 'unique-names-generator';
+import { Signal } from "@moq/signals";
+import * as Publish from "@moq/publish";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+import {
+  adjectives,
+  animals,
+  uniqueNamesGenerator,
+} from "unique-names-generator";
 
-import type { MoqConnectionStatus } from '@/utils/types';
-import { useSignalValue } from '@/hooks/useSignalValue';
-import { buildTranslationsConnectionUrl } from '@/utils/translation';
+import type { MoqConnectionStatus } from "@/utils/types";
+import { useSignalValue } from "@/hooks/useSignalValue";
+import { useMoqTokens } from "@/hooks/useMoqTokens";
+import { buildConnectionUrl } from "@/utils/translation";
 
 // A friendly, human-shareable stream name (e.g. "brave-otter") used as the broadcast's
 // last path segment. Word-only (no digits) so it stays easy to read off a screen or say aloud.
 const generateStreamName = () =>
-  uniqueNamesGenerator({ dictionaries: [adjectives, animals], separator: '-', length: 2 });
+  uniqueNamesGenerator({
+    dictionaries: [adjectives, animals],
+    separator: "-",
+    length: 2,
+  });
 
 // Builds the in-app viewer link encoded in the QR code.
-const buildShareUrl = (streamName: string) => `${window.location.origin}/watch/${streamName}`;
+const buildShareUrl = (streamName: string) =>
+  `${window.location.origin}/watch/${streamName}`;
 
 export const usePublisher = () => {
   const [camera] = useState(() => new Publish.Source.Camera({ enabled: true }));
-  const [microphone] = useState(() => new Publish.Source.Microphone({ enabled: true }));
-  const [connectionSignal] = useState(() => new Signal<Publish.Lite.Connection.Established | undefined>(undefined));
+  const [microphone] = useState(
+    () => new Publish.Source.Microphone({ enabled: true }),
+  );
+  const [connectionSignal] = useState(
+    () =>
+      new Signal<Publish.Lite.Connection.Established | undefined>(undefined),
+  );
 
   const [streamName, setStreamName] = useState<string | null>(null);
-  const [connectionStatus, setConnectionStatus] = useState<MoqConnectionStatus>('disconnected');
+  const [connectionStatus, setConnectionStatus] =
+    useState<MoqConnectionStatus>("disconnected");
+
+  const { authorizeConnection } = useMoqTokens();
 
   // Holds the teardown for the active session; its presence also means "already publishing".
   const sessionCleanupRef = useRef<(() => void) | null>(null);
@@ -32,9 +51,15 @@ export const usePublisher = () => {
   const selectedMicrophoneId = useSignalValue(microphone.device.active);
 
   const cameraTrack = useSignalValue(camera.source);
-  const previewStream = useMemo(() => (cameraTrack ? new MediaStream([cameraTrack]) : null), [cameraTrack]);
+  const previewStream = useMemo(
+    () => (cameraTrack ? new MediaStream([cameraTrack]) : null),
+    [cameraTrack],
+  );
 
-  const selectCamera = useCallback((deviceId: string) => camera.device.preferred.set(deviceId), [camera]);
+  const selectCamera = useCallback(
+    (deviceId: string) => camera.device.preferred.set(deviceId),
+    [camera],
+  );
   const selectMicrophone = useCallback(
     (deviceId: string) => microphone.device.preferred.set(deviceId),
     [microphone],
@@ -44,23 +69,54 @@ export const usePublisher = () => {
     sessionCleanupRef.current?.();
     sessionCleanupRef.current = null;
     connectionSignal.set(undefined);
-    setConnectionStatus('disconnected');
+    setConnectionStatus("disconnected");
     setStreamName(null);
   }, [connectionSignal]);
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     if (sessionCleanupRef.current) {
       return;
     }
 
     const name = generateStreamName();
 
+    // Claim the publishing slot synchronously so a second click — or a stop pressed while the
+    // token is still being fetched — is handled correctly. The placeholder is replaced with
+    // the real teardown once the connection is set up.
+    let cancelled = false;
+    sessionCleanupRef.current = () => {
+      cancelled = true;
+    };
+
     setStreamName(name);
-    setConnectionStatus('connecting');
+    setConnectionStatus("connecting");
+
+    let connectionUrl: URL;
+    try {
+      connectionUrl = await authorizeConnection(
+        buildConnectionUrl(),
+        name,
+        "publisher",
+      );
+    } catch (error) {
+      if (!cancelled) {
+        stopPublishing();
+        toast.error(
+          "Could not start the stream — failed to fetch a MoQ token.",
+        );
+      }
+      console.error(error);
+      return;
+    }
+
+    // Stopped while the token was being fetched: abort before opening a connection.
+    if (cancelled) {
+      return;
+    }
 
     const reload = new Publish.Lite.Connection.Reload({
       enabled: true,
-      url: buildTranslationsConnectionUrl(),
+      url: connectionUrl,
     });
 
     const disposeStatus = reload.status.subscribe(setConnectionStatus);
@@ -84,7 +140,11 @@ export const usePublisher = () => {
         // Single 720p rendition; the lower-quality sd encoder stays off.
         hd: {
           enabled: camera.enabled,
-          config: { maxPixels: 1280 * 720, maxBitrate: 1_000_000, frameRate: 30 },
+          config: {
+            maxPixels: 1280 * 720,
+            maxBitrate: 1_000_000,
+            frameRate: 30,
+          },
         },
         sd: { enabled: false },
       },
@@ -96,7 +156,13 @@ export const usePublisher = () => {
       broadcast.close();
       reload.close();
     };
-  }, [camera, connectionSignal, microphone]);
+  }, [
+    authorizeConnection,
+    camera,
+    connectionSignal,
+    microphone,
+    stopPublishing,
+  ]);
 
   // Tear down the broadcast and release the camera/microphone when the panel unmounts.
   useEffect(() => {

@@ -1,8 +1,12 @@
-import * as Watch from '@moq/watch';
-import { useEffect, useState } from 'react';
+import * as Watch from "@moq/watch";
+import { useEffect, useState } from "react";
 
-import type { MoqConnectionSignal, MoqStream, TranslationOption } from '@/utils/types';
-import { MEDIA_VISIBLE } from '@/utils/translation';
+import type {
+  MoqConnectionSignal,
+  MoqStream,
+  TranslationOption,
+} from "@/utils/types";
+import { MEDIA_VISIBLE } from "@/utils/translation";
 
 // Fixed end-to-end delay (ms) applied to the whole stream. Translations arrive ~3–4s behind
 // the original, so we delay the picture (and original audio) by the same amount and time every
@@ -32,7 +36,7 @@ const MIN_TRANSLATION_LATENCY_MS = 400;
 // Hang's PRIORITY.audio — used for the trigger subscription that requests a dynamic language.
 const AUDIO_PRIORITY = 80;
 
-export const ORIGINAL_AUDIO_KEY = 'original';
+export const ORIGINAL_AUDIO_KEY = "original";
 
 // One audio track: its own decoder, clock, and a gain node mixing its output into the speakers.
 // Decoded continuously (even while silent) so it stays warm and in sync; audibility is purely
@@ -83,7 +87,7 @@ type VoiceConfig = {
 export class SyncedStreamPlayer {
   readonly sync: Watch.Sync;
   // Media timestamp of the most recent decoded video frame; undefined until the first frame.
-  readonly videoTimestamp: Watch.Video.Decoder['timestamp'];
+  readonly videoTimestamp: Watch.Video.Decoder["timestamp"];
   // The track currently heard, and the one warming up (if any) — exposed for the UI.
   readonly audibleKey = new Watch.Signals.Signal<string>(ORIGINAL_AUDIO_KEY);
   readonly pendingKey = new Watch.Signals.Signal<string | undefined>(undefined);
@@ -96,7 +100,10 @@ export class SyncedStreamPlayer {
   readonly #voices = new Map<string, AudioVoice>();
   #warmupTimer: number | undefined;
 
-  constructor(originalBroadcast: Watch.Broadcast, connection: MoqConnectionSignal) {
+  constructor(
+    originalBroadcast: Watch.Broadcast,
+    connection: MoqConnectionSignal,
+  ) {
     this.#connection = connection;
 
     this.sync = new Watch.Sync({
@@ -104,9 +111,14 @@ export class SyncedStreamPlayer {
       connection,
     });
 
-    this.#videoSource = new Watch.Video.Source(this.sync, { broadcast: originalBroadcast });
+    this.#videoSource = new Watch.Video.Source(this.sync, {
+      broadcast: originalBroadcast,
+    });
     this.#videoDecoder = new Watch.Video.Decoder(this.#videoSource);
-    this.#renderer = new Watch.Video.Renderer(this.#videoDecoder, { paused: false, visible: MEDIA_VISIBLE });
+    this.#renderer = new Watch.Video.Renderer(this.#videoDecoder, {
+      paused: false,
+      visible: MEDIA_VISIBLE,
+    });
     this.videoTimestamp = this.#videoDecoder.timestamp;
 
     // The original audio is always present, kept warm, and audible by default. It shares the
@@ -145,7 +157,10 @@ export class SyncedStreamPlayer {
     if (this.pendingKey.peek() === key) {
       return;
     }
-    if (this.audibleKey.peek() === key && this.pendingKey.peek() === undefined) {
+    if (
+      this.audibleKey.peek() === key &&
+      this.pendingKey.peek() === undefined
+    ) {
       return;
     }
 
@@ -185,11 +200,20 @@ export class SyncedStreamPlayer {
     });
   }
 
-  #createVoice({ key, broadcast, trackName, desiredGain, useOwnSync }: VoiceConfig): AudioVoice {
+  #createVoice({
+    key,
+    broadcast,
+    trackName,
+    desiredGain,
+    useOwnSync,
+  }: VoiceConfig): AudioVoice {
     // A translation gets its own clock so its jitter buffer (and thus playback delay) can be
     // shortened to compensate for the provider delay; the original shares the player clock.
     const sync = useOwnSync
-      ? new Watch.Sync({ latency: STREAM_DELAY_MS as Watch.Net.Time.Milli, connection: this.#connection })
+      ? new Watch.Sync({
+          latency: STREAM_DELAY_MS as Watch.Net.Time.Milli,
+          connection: this.#connection,
+        })
       : this.sync;
 
     const source = new Watch.Audio.Source(sync, { broadcast });
@@ -224,7 +248,8 @@ export class SyncedStreamPlayer {
           return;
         }
 
-        const renditions = effect.get(broadcast.catalog)?.audio?.renditions ?? {};
+        const renditions =
+          effect.get(broadcast.catalog)?.audio?.renditions ?? {};
         if (renditions[trackName]) {
           source.target.set({ name: trackName });
           return;
@@ -308,7 +333,10 @@ export class SyncedStreamPlayer {
     }
 
     const providerDelay = originalTs - translationTs;
-    const latency = Math.max(MIN_TRANSLATION_LATENCY_MS, STREAM_DELAY_MS - providerDelay);
+    const latency = Math.max(
+      MIN_TRANSLATION_LATENCY_MS,
+      STREAM_DELAY_MS - providerDelay,
+    );
     voice.sync.latency.set(latency as Watch.Net.Time.Milli);
     voice.latencyAdjusted = true;
   }
@@ -363,7 +391,11 @@ export class SyncedStreamPlayer {
 
   // Drop translation voices that are neither audible, warming up, nor the (kept-warm) original.
   #pruneVoices(): void {
-    const keep = new Set([ORIGINAL_AUDIO_KEY, this.audibleKey.peek(), this.pendingKey.peek()]);
+    const keep = new Set([
+      ORIGINAL_AUDIO_KEY,
+      this.audibleKey.peek(),
+      this.pendingKey.peek(),
+    ]);
 
     for (const [key, voice] of this.#voices) {
       if (keep.has(key)) {
@@ -384,7 +416,10 @@ export class SyncedStreamPlayer {
   }
 }
 
-export const useSyncedStreamPlayer = (stream: MoqStream | undefined, connection: MoqConnectionSignal) => {
+export const useSyncedStreamPlayer = (
+  stream: MoqStream | undefined,
+  connection: MoqConnectionSignal,
+) => {
   const [player, setPlayer] = useState<SyncedStreamPlayer | null>(null);
 
   const broadcast = stream?.broadcast;

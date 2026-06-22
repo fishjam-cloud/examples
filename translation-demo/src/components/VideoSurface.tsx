@@ -1,6 +1,6 @@
-import { type FC, useEffect, useLayoutEffect, useRef } from 'react';
+import { type FC, useEffect, useLayoutEffect, useRef } from "react";
 
-import type { SyncedStreamPlayer } from '@/hooks/useSyncedStreamPlayer';
+import type { SyncedStreamPlayer } from "@/hooks/useSyncedStreamPlayer";
 
 type Props = {
   className?: string;
@@ -9,7 +9,13 @@ type Props = {
   player?: SyncedStreamPlayer | null;
 };
 
-export const VideoSurface: FC<Props> = ({ player, className, style, showVideo = true, ...props }) => {
+export const VideoSurface: FC<Props> = ({
+  player,
+  className,
+  style,
+  showVideo = true,
+  ...props
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useLayoutEffect(() => {
@@ -31,7 +37,7 @@ export const VideoSurface: FC<Props> = ({ player, className, style, showVideo = 
       return;
     }
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
     if (!context) {
       return;
     }
@@ -39,5 +45,7 @@ export const VideoSurface: FC<Props> = ({ player, className, style, showVideo = 
     context.clearRect(0, 0, canvas.width, canvas.height);
   }, [showVideo]);
 
-  return <canvas {...props} className={className} ref={canvasRef} style={style} />;
+  return (
+    <canvas {...props} className={className} ref={canvasRef} style={style} />
+  );
 };

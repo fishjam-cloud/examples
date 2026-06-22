@@ -12,6 +12,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@binbat/whip-whep@npm:^1.1.1-sdp-trickle-throw":
+  version: 1.1.1-sdp-trickle-throw
+  resolution: "@binbat/whip-whep@npm:1.1.1-sdp-trickle-throw"
+  checksum: 10c0/073dc456898c51cccfa3bc766741d84b883881bf0dfa9b663bb3e42d5eba3d9843447c85892662d7c98221fdbb4e9d4858b56533241f919c5699b8bb54a059d7
+  languageName: node
+  linkType: hard
+
+"@bufbuild/protobuf@npm:^2.2.3":
+  version: 2.12.0
+  resolution: "@bufbuild/protobuf@npm:2.12.0"
+  checksum: 10c0/28959e371fd2e7c8d67d52af9e3c8f8e6770e2e116dcc5508f469ca736afa6905e216bc76183835898a5f3deb8aa2e7db47d4a0e706fba76115e9a1996893191
+  languageName: node
+  linkType: hard
+
 "@esbuild/aix-ppc64@npm:0.25.1":
   version: 0.25.1
   resolution: "@esbuild/aix-ppc64@npm:0.25.1"
@@ -184,6 +198,32 @@ __metadata:
   version: 0.25.1
   resolution: "@esbuild/win32-x64@npm:0.25.1"
   conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@fishjam-cloud/react-client@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@fishjam-cloud/react-client@npm:0.28.1"
+  dependencies:
+    "@fishjam-cloud/ts-client": "npm:0.28.1"
+    events: "npm:3.3.0"
+    lodash.isequal: "npm:4.5.0"
+  peerDependencies:
+    react: ^19.1.0
+  checksum: 10c0/8a7ebf3c78d8fb687d628b65ce3f4824b2817cb5bba317b5edd74e484012c6eda5eff2ce961029ef5aa9f5307047ed4b5841657a7daec90d5147c4894966b0a4
+  languageName: node
+  linkType: hard
+
+"@fishjam-cloud/ts-client@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@fishjam-cloud/ts-client@npm:0.28.1"
+  dependencies:
+    "@binbat/whip-whep": "npm:^1.1.1-sdp-trickle-throw"
+    "@bufbuild/protobuf": "npm:^2.2.3"
+    events: "npm:^3.3.0"
+    typed-emitter: "npm:^2.1.0"
+    uuid: "npm:^11.1.0"
+  checksum: 10c0/52d83e6e9ec68660c0dd92abdae5296bd23298297c8ce6bb8cab2c2ebf1601fae66e54a17c67454b5794147fd2e210d2ca73a6beb6e9c9f843e1671f41cfca73
   languageName: node
   linkType: hard
 
@@ -414,6 +454,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@moq/translation-demo@workspace:."
   dependencies:
+    "@fishjam-cloud/react-client": "npm:0.28.1"
     "@moq/publish": "npm:0.2.15"
     "@moq/signals": "npm:0.1.9"
     "@moq/watch": "npm:0.2.17"
@@ -2122,6 +2163,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"events@npm:3.3.0, events@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "events@npm:3.3.0"
+  checksum: 10c0/d6b6f2adbccbcda74ddbab52ed07db727ef52e31a61ed26db9feb7dc62af7fc8e060defa65e5f8af9449b86b52cc1a1f6a79f2eafcf4e62add2b7a1fa4a432f6
+  languageName: node
+  linkType: hard
+
 "exponential-backoff@npm:^3.1.1":
   version: 3.1.2
   resolution: "exponential-backoff@npm:3.1.2"
@@ -2424,6 +2472,13 @@ __metadata:
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
   checksum: 10c0/3da6ee62d4cd9f03f5dc90b4df2540fb85b352081bee77fe4bbcd12c9000ead7f35e0a38b8d09a9bb99b13223446dd8689ff3c4959807620726d788701a83d2d
+  languageName: node
+  linkType: hard
+
+"lodash.isequal@npm:4.5.0":
+  version: 4.5.0
+  resolution: "lodash.isequal@npm:4.5.0"
+  checksum: 10c0/dfdb2356db19631a4b445d5f37868a095e2402292d59539a987f134a8778c62a2810c2452d11ae9e6dcac71fc9de40a6fedcb20e2952a15b431ad8b29e50e28f
   languageName: node
   linkType: hard
 
@@ -3110,6 +3165,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rxjs@npm:*":
+  version: 7.8.2
+  resolution: "rxjs@npm:7.8.2"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/1fcd33d2066ada98ba8f21fcbbcaee9f0b271de1d38dc7f4e256bfbc6ffcdde68c8bfb69093de7eeb46f24b1fb820620bf0223706cff26b4ab99a7ff7b2e2c45
+  languageName: node
+  linkType: hard
+
 "safer-buffer@npm:>= 2.1.2 < 3.0.0":
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
@@ -3400,6 +3464,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typed-emitter@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "typed-emitter@npm:2.1.0"
+  dependencies:
+    rxjs: "npm:*"
+  dependenciesMeta:
+    rxjs:
+      optional: true
+  checksum: 10c0/01fc354ba8e87bd39b1bf4fe1c96fe7ecff7fde83161003b0f8c7f4b285a368052e185ba655dd8c102c4445301b7a1e032c8972f181b440fc95bd810450f1314
+  languageName: node
+  linkType: hard
+
 "typescript@npm:^5.7.3":
   version: 5.8.2
   resolution: "typescript@npm:5.8.2"
@@ -3501,6 +3577,15 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 10c0/41a5bdd214df2f6c3ecf8622745e4a366c4adced864bc3c833739791aeeeb1838119af7daed4ba36428114b5c67dcda034a79c882e97e43c03e66a4dd7389942
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^11.1.0":
+  version: 11.1.1
+  resolution: "uuid@npm:11.1.1"
+  bin:
+    uuid: dist/esm/bin/uuid
+  checksum: 10c0/9e3af58eba872ece5a5e76f4773a94fc78a0ef2c2444c38dbe6b42f41dadf76c01850fd783604f27986f6195e6286aef064d45987d401b2a33127b98ddf7c0c5
   languageName: node
   linkType: hard
 

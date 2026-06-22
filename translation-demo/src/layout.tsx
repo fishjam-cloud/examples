@@ -1,5 +1,5 @@
-import type { FC, PropsWithChildren } from 'react';
-import { Toaster } from '@/components/ui/sonner';
+import type { FC, PropsWithChildren } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 const Layout: FC<PropsWithChildren> = (props) => {
   return (

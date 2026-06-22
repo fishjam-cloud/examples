@@ -1,21 +1,28 @@
-import { QRCodeSVG } from 'qrcode.react';
-import { Copy, Loader2, Radio } from 'lucide-react';
-import { toast } from 'sonner';
+import { QRCodeSVG } from "qrcode.react";
+import { Copy, Loader2, Radio } from "lucide-react";
+import { toast } from "sonner";
 
-import { BrandHeader } from '@/components/BrandHeader';
-import { DeviceSelect } from '@/components/DeviceSelect';
-import VideoPlayer from '@/components/VideoPlayer';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+import { BrandHeader } from "@/components/BrandHeader";
+import { DeviceSelect } from "@/components/DeviceSelect";
+import VideoPlayer from "@/components/VideoPlayer";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
-import { usePublisher } from '@/hooks/usePublisher';
+import { usePublisher } from "@/hooks/usePublisher";
 
 const statusLabel = {
-  connected: 'Live',
-  connecting: 'Connecting',
-  disconnected: 'Offline',
+  connected: "Live",
+  connecting: "Connecting",
+  disconnected: "Offline",
 } as const;
 
 export const PublisherPanel = () => {
@@ -48,12 +55,15 @@ export const PublisherPanel = () => {
         <Card className="relative h-fit w-full max-w-lg">
           <Badge
             className="absolute right-6 top-6"
-            variant={connectionStatus === 'connected' ? 'default' : 'outline'}>
+            variant={connectionStatus === "connected" ? "default" : "outline"}
+          >
             {statusLabel[connectionStatus]}
           </Badge>
           <CardHeader>
             <CardTitle>You are live</CardTitle>
-            <CardDescription>Share the QR code or link so others can watch this stream.</CardDescription>
+            <CardDescription>
+              Share the QR code or link so others can watch this stream.
+            </CardDescription>
           </CardHeader>
 
           <CardContent className="flex flex-col items-center gap-6">
@@ -64,22 +74,32 @@ export const PublisherPanel = () => {
             </div>
 
             <div className="flex w-full items-center gap-2">
-              <code className="flex-1 truncate rounded-md bg-stone-100 px-3 py-2 text-xs">{shareUrl}</code>
+              <code className="flex-1 truncate rounded-md bg-stone-100 px-3 py-2 text-xs">
+                {shareUrl}
+              </code>
               <Button
                 variant="outline"
                 size="icon"
                 title="Copy link"
                 onClick={() => {
                   navigator.clipboard.writeText(shareUrl);
-                  toast('Viewer link copied to clipboard', { position: 'top-center', duration: 1500 });
-                }}>
+                  toast("Viewer link copied to clipboard", {
+                    position: "top-center",
+                    duration: 1500,
+                  });
+                }}
+              >
                 <Copy size={16} />
               </Button>
             </div>
           </CardContent>
 
           <CardFooter className="justify-end">
-            <Button variant="destructive" className="!bg-[#DD6460] hover:!bg-[#DD6460]/90" onClick={stop}>
+            <Button
+              variant="destructive"
+              className="!bg-[#DD6460] hover:!bg-[#DD6460]/90"
+              onClick={stop}
+            >
               Stop streaming
             </Button>
           </CardFooter>
@@ -98,7 +118,11 @@ export const PublisherPanel = () => {
 
             <div className="flex flex-col space-y-1.5">
               <Label>Camera</Label>
-              <DeviceSelect devices={cameraDevices} onSelectDevice={selectCamera} selectedDeviceId={selectedCameraId} />
+              <DeviceSelect
+                devices={cameraDevices}
+                onSelectDevice={selectCamera}
+                selectedDeviceId={selectedCameraId}
+              />
             </div>
 
             <div className="flex flex-col space-y-1.5">
@@ -113,7 +137,11 @@ export const PublisherPanel = () => {
 
           <CardFooter className="justify-end">
             <Button className="gap-2" onClick={start} disabled={!previewStream}>
-              {previewStream ? <Radio size={16} /> : <Loader2 className="animate-spin" size={16} />}
+              {previewStream ? (
+                <Radio size={16} />
+              ) : (
+                <Loader2 className="animate-spin" size={16} />
+              )}
               <span>Start streaming</span>
             </Button>
           </CardFooter>
