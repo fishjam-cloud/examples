@@ -1,11 +1,9 @@
 import { createSignal, Show } from "solid-js";
 import "@moq/watch/ui";
 import "@moq/watch/element";
-import { MOQ_BASE_URL } from "./config";
 
 interface Props {
   streamName: string;
-  fishjamId: string;
   sandboxApiUrl: string;
 }
 
@@ -23,9 +21,8 @@ export default function Viewer(props: Props) {
         `${props.sandboxApiUrl}/moq/${encodeURIComponent(props.streamName)}/subscriber`,
       );
       if (!res.ok) throw new Error(await res.text());
-      const { token } = (await res.json()) as { token: string };
-      const url = `${MOQ_BASE_URL}/${props.fishjamId}?jwt=${token}`;
-      watchEl.setAttribute("url", url);
+      const { connection_url } = (await res.json()) as { connection_url: string };
+      watchEl.setAttribute("url", connection_url);
       watchEl.setAttribute("name", props.streamName);
       setConnected(true);
     } catch (e) {
@@ -85,7 +82,7 @@ export default function Viewer(props: Props) {
             <button
               type="button"
               onClick={connect}
-              disabled={!props.streamName || !props.fishjamId || loading()}
+              disabled={!props.streamName || !props.sandboxApiUrl || loading()}
               class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 w-full"
             >
               {loading() ? "Connecting…" : "Connect to Stream"}

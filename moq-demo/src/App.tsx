@@ -1,14 +1,10 @@
 import { createSignal, Show } from "solid-js";
 import Streamer from "./Streamer";
 import Viewer from "./Viewer";
-import {
-  fishjamId as configFishjamId,
-  SANDBOX_API_URL as configSandboxApiUrl,
-} from "./config";
+import { SANDBOX_API_URL as configSandboxApiUrl } from "./config";
 
 export default function App() {
   const [streamName, setStreamName] = createSignal("my-stream");
-  const [fishjamId, setFishjamId] = createSignal(configFishjamId);
   const [sandboxApiUrl, setSandboxApiUrl] = createSignal(configSandboxApiUrl);
 
   return (
@@ -33,21 +29,6 @@ export default function App() {
                 class="border-input bg-input/30 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
               />
             </div>
-            <Show when={!configFishjamId}>
-              <div class="space-y-2">
-                <label class="text-sm font-medium leading-none" for="fishjam-id">
-                  Fishjam ID
-                </label>
-                <input
-                  id="fishjam-id"
-                  type="text"
-                  value={fishjamId()}
-                  onInput={(e) => setFishjamId(e.currentTarget.value)}
-                  placeholder="your-fishjam-id"
-                  class="border-input bg-input/30 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                />
-              </div>
-            </Show>
             <Show when={!configSandboxApiUrl}>
               <div class="space-y-2">
                 <label
@@ -70,16 +51,8 @@ export default function App() {
         </div>
       </div>
       <div class="mx-auto max-w-7xl grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <Streamer
-          streamName={streamName()}
-          fishjamId={fishjamId()}
-          sandboxApiUrl={sandboxApiUrl()}
-        />
-        <Viewer
-          streamName={streamName()}
-          fishjamId={fishjamId()}
-          sandboxApiUrl={sandboxApiUrl()}
-        />
+        <Streamer streamName={streamName()} sandboxApiUrl={sandboxApiUrl()} />
+        <Viewer streamName={streamName()} sandboxApiUrl={sandboxApiUrl()} />
       </div>
     </div>
   );

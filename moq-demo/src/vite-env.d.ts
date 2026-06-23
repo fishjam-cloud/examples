@@ -1,9 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_FISHJAM_ID?: string;
   readonly VITE_SANDBOX_API_URL?: string;
-  readonly VITE_MOQ_BASE_URL?: string;
   readonly VITE_FISHJAM_API_BASE_URL?: string;
 }
 

@@ -3,7 +3,6 @@ import { toast } from "sonner";
 
 import { useMoqConnection } from "@/hooks/useMoqConnection";
 import { useMoqTokens } from "@/hooks/useMoqTokens";
-import { buildConnectionUrl } from "@/utils/translation";
 
 // Watches a single published stream (and its translations). The connection goes to the Fishjam
 // root; the subscriber token is scoped to this stream name, so the relay only announces that
@@ -27,11 +26,7 @@ export const useMoqStreamViewer = (
 
     void (async () => {
       try {
-        const url = await authorizeConnection(
-          buildConnectionUrl(),
-          streamName,
-          "subscriber",
-        );
+        const url = await authorizeConnection(streamName, "subscriber");
         if (!cancelled) {
           connect(url);
         }

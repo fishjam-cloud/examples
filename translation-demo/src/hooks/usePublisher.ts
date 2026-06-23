@@ -11,7 +11,6 @@ import {
 import type { MoqConnectionStatus } from "@/utils/types";
 import { useSignalValue } from "@/hooks/useSignalValue";
 import { useMoqTokens } from "@/hooks/useMoqTokens";
-import { buildConnectionUrl } from "@/utils/translation";
 
 // A friendly, human-shareable stream name (e.g. "brave-otter") used as the broadcast's
 // last path segment. Word-only (no digits) so it stays easy to read off a screen or say aloud.
@@ -93,11 +92,7 @@ export const usePublisher = () => {
 
     let connectionUrl: URL;
     try {
-      connectionUrl = await authorizeConnection(
-        buildConnectionUrl(),
-        name,
-        "publisher",
-      );
+      connectionUrl = await authorizeConnection(name, "publisher");
     } catch (error) {
       if (!cancelled) {
         stopPublishing();

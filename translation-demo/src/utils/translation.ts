@@ -1,6 +1,5 @@
 import type * as Watch from "@moq/watch";
 
-import { FISHJAM_ID } from "@/config";
 import {
   compareGoogleLanguageCodes,
   formatGoogleLanguage,
@@ -119,28 +118,3 @@ export const compareTranslationOptions = (
 
 export const getTranslationTargetId = (path: string, trackName: string) =>
   `${path}#${trackName}`;
-
-// The Fishjam MoQ relay. All connections go here.
-const RELAY_URL = "https://relay.fishjam.io";
-
-const getFishjamId = () => {
-  if (!FISHJAM_ID) {
-    throw new Error(
-      "VITE_FISHJAM_ID is not set — provide your Fishjam ID (see .env.example).",
-    );
-  }
-  return FISHJAM_ID;
-};
-
-// Every connection goes to `<relay>/<fishjam-id>`: the Fishjam ID is the root namespace, and
-// streams are published and discovered relative to it. Both publisher and viewer connect here;
-// what they may do is decided by the MoQ token, not the URL path. A token for stream `<name>`
-// authorises the path `<fishjam-id>/<name>` — the Fishjam ID is prepended server-side, so it is
-// never part of the stream name we request a token for. The publisher then announces the stream
-// as the single-segment broadcast `<name>`, with its translation tracks alongside at
-// `<name>/<provider>/translation/<lang>`.
-export const buildConnectionUrl = () => {
-  const url = new URL(RELAY_URL);
-  url.pathname = `/${getFishjamId()}`;
-  return url;
-};
