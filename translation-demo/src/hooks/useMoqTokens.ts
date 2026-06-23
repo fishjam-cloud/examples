@@ -24,12 +24,12 @@ export const useMoqTokens = () => {
         );
       }
 
-      const { connection_url } =
+      const { connectionUrl } =
         role === "publisher"
           ? await getSandboxMoqPublisherAccess(tokenStreamName(streamName))
           : await getSandboxMoqSubscriberAccess(tokenStreamName(streamName));
 
-      return new URL(connection_url);
+      return new URL(connectionUrl);
     },
     [getSandboxMoqPublisherAccess, getSandboxMoqSubscriberAccess],
   );

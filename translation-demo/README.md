@@ -10,11 +10,11 @@ Install dependencies:
 yarn
 ```
 
-Configure the MoQ relay (required):
+Configure the sandbox API URL (required):
 
 ```bash
 cp .env.example .env
-# then set VITE_MOQ_URL and VITE_MOQ_FISHJAM_ID in .env to your MoQ relay URL
+# then set VITE_SANDBOX_API_URL in .env to your Fishjam sandbox API URL
 ```
 
 Start the development server:
@@ -25,4 +25,4 @@ yarn dev
 
 ## Environment Variables
 
-- `VITE_MOQ_URL` (required) — URL of the MoQ relay to connect to. The app has no built-in default and will not connect until this is set.
+- `VITE_SANDBOX_API_URL` (required) — Fishjam sandbox API URL used to fetch a MoQ relay connection URL. Get it at https://fishjam.io/app/sandbox.
