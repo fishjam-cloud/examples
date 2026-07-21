@@ -1,0 +1,30 @@
+[project]
+name = "moq-live-translation"
+version = "0.1.0"
+description = "Lazy AI MoQ audio translation service"
+readme = "README.md"
+authors = [
+    { name = "Jakub Perżyło", email = "perzylo.jakub@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "av>=17.0.1",
+    "fishjam-server-sdk>=0.28.1",
+    "moq-net>=0.1.0",
+    "websockets>=15.0",
+]
+
+[tool.uv]
+# fishjam-server-sdk pins the pre-release betterproto==2.0.0b6
+prerelease = "allow"
+
+[project.scripts]
+translator = "translator.cli:main"
+
+[tool.uv.build-backend]
+module-name = "translator"
+module-root = ""
+
+[build-system]
+requires = ["uv_build>=0.9.27,<0.10.0"]
+build-backend = "uv_build"
