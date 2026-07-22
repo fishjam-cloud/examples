@@ -13,7 +13,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@fishjam-cloud/react-client": "0.28.3",
+    "@fishjam-cloud/react-client": "0.29.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },

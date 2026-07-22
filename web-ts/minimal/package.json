@@ -28,7 +28,7 @@
     "eslint-plugin-prettier": "^5.5.1"
   },
   "dependencies": {
-    "@fishjam-cloud/ts-client": "0.28.3"
+    "@fishjam-cloud/ts-client": "0.29.0"
   },
   "lint-staged": {
     "*": [
