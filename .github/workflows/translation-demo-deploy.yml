@@ -85,16 +85,16 @@ jobs:
           username: ${{ secrets.TRANSLATION_DEMO_USERNAME }}
           key: ${{ secrets.TRANSLATION_DEMO_PRIVATE_KEY }}
           script_stop: true
-          envs: SERVICE_DIR,FISHJAM_ID,FISHJAM_MANAGEMENT_TOKEN,GEMINI_API_KEY
+          envs: SERVICE_DIR,FISHJAM_ID,FISHJAM_MANAGEMENT_TOKEN,GOOGLE_API_KEY
           script: |
             cd "$SERVICE_DIR"
             umask 077
-            printf 'FISHJAM_ID=%s\nFISHJAM_MANAGEMENT_TOKEN=%s\nGEMINI_API_KEY=%s\n' \
-              "$FISHJAM_ID" "$FISHJAM_MANAGEMENT_TOKEN" "$GEMINI_API_KEY" > .env
+            printf 'FISHJAM_ID=%s\nFISHJAM_MANAGEMENT_TOKEN=%s\nGOOGLE_API_KEY=%s\n' \
+              "$FISHJAM_ID" "$FISHJAM_MANAGEMENT_TOKEN" "$GOOGLE_API_KEY" > .env
             uv sync
             systemctl --user restart translator
         env:
           SERVICE_DIR: ${{ secrets.TRANSLATOR_SERVICE_DIR }}
           FISHJAM_ID: ${{ secrets.FISHJAM_ID }}
           FISHJAM_MANAGEMENT_TOKEN: ${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
