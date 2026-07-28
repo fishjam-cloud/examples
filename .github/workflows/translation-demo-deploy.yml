@@ -2,7 +2,7 @@ name: Deploy Translation Demo as static page
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "fce-3482/translation-backend"]
     paths:
       - "translation-demo/**"
       - "!translation-demo/service/**"
