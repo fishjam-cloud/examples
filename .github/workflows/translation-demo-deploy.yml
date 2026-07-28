@@ -46,7 +46,7 @@ jobs:
       - name: Build project
         run: yarn build
         env:
-          VITE_SANDBOX_API_URL: ${{ vars.VITE_SANDBOX_API_URL }}
+          VITE_SANDBOX_API_URL: ${{ secrets.VITE_SANDBOX_API_URL }}
 
       - name: Copy files to deployment server
         uses: appleboy/scp-action@v0.1.7
