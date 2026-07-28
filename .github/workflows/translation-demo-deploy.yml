@@ -1,8 +1,8 @@
-name: Deploy Translation Demo as static page
+name: Deploy translation-demo
 
 on:
   push:
-    branches: ["main", "fce-3482/translation-backend"]
+    branches: ["main"]
     paths:
       - "translation-demo/**"
       - ".github/workflows/translation-demo-deploy.yml"
@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-deploy:
+  deploy-frontend:
     if: github.actor != 'dependabot[bot]'
     environment:
       name: translation-demo
