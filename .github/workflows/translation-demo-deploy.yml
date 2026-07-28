@@ -95,6 +95,6 @@ jobs:
             systemctl --user restart translator
         env:
           SERVICE_DIR: ${{ secrets.TRANSLATOR_SERVICE_DIR }}
-          FISHJAM_ID: ${{ secrets.FISHJAM_ID }}
-          FISHJAM_MANAGEMENT_TOKEN: ${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}
+          FISHJAM_ID: ${{ secrets.TRANSLATION_FISHJAM_ID }}
+          FISHJAM_MANAGEMENT_TOKEN: ${{ secrets.TRANSLATION_FISHJAM_MANAGEMENT_TOKEN }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
