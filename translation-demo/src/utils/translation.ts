@@ -15,7 +15,6 @@ export const MEDIA_VISIBLE: Watch.Video.Visible = "always";
 const TRANSLATION_SEGMENT = "translation";
 
 const PROVIDER_LABELS: Record<string, string> = {
-  openai: "OpenAI",
   google: "Google",
 };
 

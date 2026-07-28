@@ -1,28 +1,57 @@
 # Translation Demo
 
-An example React app that streams over the MoQ protocol with Fishjam, with live audio translation and captions for the viewer.
+Live MoQ streaming with real-time AI audio translation and captions, built on
+Fishjam. The demo has two parts:
 
-## Getting Started
+- **Web app** — a React app for publishing a stream and
+  watching it, with a translation menu and live captions on the watch page.
+- **Translation service** (`service/`) — a Python service that subscribes to
+  every stream and announces AI-translated audio and caption tracks
+  which the web app picks up.
 
-Install dependencies:
+Both are needed for translations: the watch page's translation menu only shows
+languages while the service is running.
 
-```bash
-yarn
-```
+## Prerequisites
 
-Configure the sandbox API URL (required):
+- A Fishjam account (https://fishjam.io/app) — you'll need the sandbox API URL,
+  your Fishjam ID, and a management token.
+- A Gemini API key for the translation provider.
+- Node.js with Yarn, Python 3.11+, and [uv](https://docs.astral.sh/uv/).
+
+## Setup
+
+Configure credentials once for both parts:
 
 ```bash
 cp .env.example .env
-# then set VITE_SANDBOX_API_URL in .env to your Fishjam sandbox API URL
+# fill in VITE_SANDBOX_API_URL, FISHJAM_ID, FISHJAM_MANAGEMENT_TOKEN,
+# and GEMINI_API_KEY
 ```
 
-Start the development server:
+## Run the translation service
 
 ```bash
+cd service
+uv sync
+uv run --env-file ../.env translator
+```
+
+Translation is powered by Google Gemini Live. See `service/README.md` for details.
+
+## Run the web app
+
+```bash
+yarn
 yarn dev
 ```
 
+Open the printed URL and publish a stream, then open the viewer link shown in
+the publisher panel (the watch page) in another tab and pick a translation
+language.
+
 ## Environment Variables
 
-- `VITE_SANDBOX_API_URL` (required) — Fishjam sandbox API URL used to fetch a MoQ relay connection URL. Get it at https://fishjam.io/app/sandbox.
+- `VITE_SANDBOX_API_URL` (web app) — Fishjam sandbox API URL used to fetch a MoQ relay connection URL. Get it at https://fishjam.io/app/sandbox.
+- `FISHJAM_ID`, `FISHJAM_MANAGEMENT_TOKEN` (translation service) — Fishjam credentials used to mint MoQ tokens. Get them at https://fishjam.io/app.
+- `GEMINI_API_KEY` (translation service) — Google Gemini API key used for translation.

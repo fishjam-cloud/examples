@@ -1,0 +1,100 @@
+name: Deploy translation-demo
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "translation-demo/**"
+      - ".github/workflows/translation-demo-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "translation-demo"
+  cancel-in-progress: false
+
+jobs:
+  deploy-frontend:
+    if: github.actor != 'dependabot[bot]'
+    environment:
+      name: translation-demo
+      url: ${{ vars.TRANSLATION_DEMO_URL }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: translation-demo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "yarn"
+          cache-dependency-path: ./translation-demo/yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build project
+        run: yarn build
+        env:
+          VITE_SANDBOX_API_URL: ${{ secrets.VITE_SANDBOX_API_URL }}
+
+      - name: Copy files to deployment server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.TRANSLATION_DEMO_HOST }}
+          username: ${{ secrets.TRANSLATION_DEMO_USERNAME }}
+          key: ${{ secrets.TRANSLATION_DEMO_PRIVATE_KEY }}
+          rm: true
+          strip_components: 2
+          source: translation-demo/dist/*
+          target: ${{ secrets.TRANSLATION_DEMO_ROOT_DIR }}
+
+  deploy-translator:
+    if: github.actor != 'dependabot[bot]'
+    environment:
+      name: translation-demo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Copy service to deployment server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.TRANSLATION_DEMO_HOST }}
+          username: ${{ secrets.TRANSLATION_DEMO_USERNAME }}
+          key: ${{ secrets.TRANSLATION_DEMO_PRIVATE_KEY }}
+          rm: true
+          strip_components: 2
+          source: translation-demo/service/*
+          target: ${{ secrets.TRANSLATOR_SERVICE_DIR }}
+
+      - name: Install dependencies and restart translator
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ vars.TRANSLATION_DEMO_HOST }}
+          username: ${{ secrets.TRANSLATION_DEMO_USERNAME }}
+          key: ${{ secrets.TRANSLATION_DEMO_PRIVATE_KEY }}
+          script_stop: true
+          envs: SERVICE_DIR,FISHJAM_ID,FISHJAM_MANAGEMENT_TOKEN,GOOGLE_API_KEY
+          script: |
+            cd "$SERVICE_DIR"
+            umask 077
+            printf 'FISHJAM_ID=%s\nFISHJAM_MANAGEMENT_TOKEN=%s\nGOOGLE_API_KEY=%s\n' \
+              "$FISHJAM_ID" "$FISHJAM_MANAGEMENT_TOKEN" "$GOOGLE_API_KEY" > .env
+            uv sync
+            systemctl --user restart translator
+        env:
+          SERVICE_DIR: ${{ secrets.TRANSLATOR_SERVICE_DIR }}
+          FISHJAM_ID: ${{ secrets.TRANSLATION_FISHJAM_ID }}
+          FISHJAM_MANAGEMENT_TOKEN: ${{ secrets.TRANSLATION_FISHJAM_MANAGEMENT_TOKEN }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
