@@ -5,7 +5,6 @@ on:
     branches: ["main", "fce-3482/translation-backend"]
     paths:
       - "translation-demo/**"
-      - "!translation-demo/service/**"
       - ".github/workflows/translation-demo-deploy.yml"
   workflow_dispatch:
 
@@ -58,3 +57,44 @@ jobs:
           strip_components: 2
           source: translation-demo/dist/*
           target: ${{ secrets.TRANSLATION_DEMO_ROOT_DIR }}
+
+  deploy-translator:
+    if: github.actor != 'dependabot[bot]'
+    environment:
+      name: translation-demo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Copy service to deployment server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.TRANSLATION_DEMO_HOST }}
+          username: ${{ secrets.TRANSLATION_DEMO_USERNAME }}
+          key: ${{ secrets.TRANSLATION_DEMO_PRIVATE_KEY }}
+          rm: true
+          strip_components: 2
+          source: translation-demo/service/*
+          target: ${{ secrets.TRANSLATOR_SERVICE_DIR }}
+
+      - name: Install dependencies and restart translator
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ vars.TRANSLATION_DEMO_HOST }}
+          username: ${{ secrets.TRANSLATION_DEMO_USERNAME }}
+          key: ${{ secrets.TRANSLATION_DEMO_PRIVATE_KEY }}
+          script_stop: true
+          envs: SERVICE_DIR,FISHJAM_ID,FISHJAM_MANAGEMENT_TOKEN,GEMINI_API_KEY
+          script: |
+            cd "$SERVICE_DIR"
+            umask 077
+            printf 'FISHJAM_ID=%s\nFISHJAM_MANAGEMENT_TOKEN=%s\nGEMINI_API_KEY=%s\n' \
+              "$FISHJAM_ID" "$FISHJAM_MANAGEMENT_TOKEN" "$GEMINI_API_KEY" > .env
+            uv sync
+            systemctl --user restart translator
+        env:
+          SERVICE_DIR: ${{ secrets.TRANSLATOR_SERVICE_DIR }}
+          FISHJAM_ID: ${{ secrets.FISHJAM_ID }}
+          FISHJAM_MANAGEMENT_TOKEN: ${{ secrets.FISHJAM_MANAGEMENT_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
