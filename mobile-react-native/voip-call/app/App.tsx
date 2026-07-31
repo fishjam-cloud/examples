@@ -1,4 +1,3 @@
-import type { VoIPIncomingPayload } from '@fishjam-cloud/react-native-client';
 import {
   FishjamProvider,
   useVoIP,
@@ -9,9 +8,10 @@ import { useCallback, useEffect, useRef } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import type { VoIPIncomingPayload } from '@fishjam-cloud/react-native-client';
 import {
-  type SendSignalRef,
   useCallSignaling,
+  type SendSignalRef,
 } from './src/hooks/useCallSignaling';
 import { useDeviceRegistration } from './src/hooks/useDeviceRegistration';
 import { useRecentsRedial } from './src/hooks/useRecentsRedial';
@@ -34,7 +34,7 @@ function Main({ sendSignalRef }: { sendSignalRef: SendSignalRef }) {
 
   useEffect(() => {
     if (!lastEndedReason) return;
-    console.debug(
+    console.log(
       `On user: ${username}, [VoIP] Call ended — reason: ${lastEndedReason}`,
     );
   }, [lastEndedReason, username]);

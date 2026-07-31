@@ -5,16 +5,16 @@ import {
   useMicrophone,
   usePeers,
   useVAD,
-  useVoIP,
 } from '@fishjam-cloud/react-native-client';
-import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar, InCallButton, VideoCallView } from '../components';
 import { AdditionalColors, BrandColors, TextColors } from '../theme/colors';
 import { useUser } from '../user/UserContext';
+import { useVoIP } from '@fishjam-cloud/react-native-client';
 
 type PeerMeta = { displayName?: string };
 

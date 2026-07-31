@@ -1,9 +1,10 @@
+import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
+
 import {
-  type CurrentCall,
   useVoIP,
+  type CurrentCall,
   type VoIPCallStatus,
 } from '@fishjam-cloud/react-native-client';
-import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
 
 import { useUser } from '../user/UserContext';
 
@@ -56,20 +57,19 @@ export function useCallSignaling(sendSignalRef: SendSignalRef): void {
         return;
       }
 
-      const { endCall: latestEndCall, currentCall: latestCall } =
-        handlersRef.current;
-      if (!latestCall || latestCall.startedAt !== null) return;
-      if (latestCall.roomName !== msg.roomName) return;
+      const { endCall, currentCall } = handlersRef.current;
+      if (!currentCall || currentCall.startedAt !== null) return;
+      if (currentCall.roomName !== msg.roomName) return;
 
       // The caller cancelled while we (the callee) are still ringing — from
       // our side this incoming call rang and was never answered.
-      if (msg.type === 'call-cancelled' && !latestCall.isOutgoing) {
-        void latestEndCall('missed');
+      if (msg.type === 'call-cancelled' && !currentCall.isOutgoing) {
+        void endCall('missed');
       }
       // The callee rejected while we (the caller) are still ringing out — the
       // other party declined, not just hung up.
-      else if (msg.type === 'call-rejected' && latestCall.isOutgoing) {
-        void latestEndCall('rejected');
+      else if (msg.type === 'call-rejected' && currentCall.isOutgoing) {
+        void endCall('rejected');
       }
     };
 

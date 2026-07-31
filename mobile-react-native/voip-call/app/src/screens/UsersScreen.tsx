@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useVoIP } from '@fishjam-cloud/react-native-client';
 import { useEffect } from 'react';
 import {
   ActivityIndicator,
@@ -13,9 +12,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '../components';
-import { usePlaceCall } from '../hooks/usePlaceCall';
 import { AdditionalColors, BrandColors, TextColors } from '../theme/colors';
 import { useUser } from '../user/UserContext';
+import { useVoIP } from '@fishjam-cloud/react-native-client';
+import { usePlaceCall } from '../hooks/usePlaceCall';
 
 export function UsersScreen() {
   const { username, users, refreshUsers, logout } = useUser();
