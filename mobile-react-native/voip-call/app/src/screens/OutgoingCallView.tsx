@@ -1,3 +1,4 @@
+import { useVoIP } from '@fishjam-cloud/react-native-client';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -12,11 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar, InCallButton } from '../components';
 import { BrandColors, TextColors } from '../theme/colors';
 import { useUser } from '../user/UserContext';
-import { useVoip } from '@fishjam-cloud/react-native-client';
 
 /** Ringing UI while an outgoing call waits for the other side. Rendered by `CallScreen`. */
 export function OutgoingCallView() {
-  const { currentCall, endCall } = useVoip();
+  const { currentCall, endCall } = useVoIP();
   const { avatarUrlFor } = useUser();
   const scale = useSharedValue(1);
 

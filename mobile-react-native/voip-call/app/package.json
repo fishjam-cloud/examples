@@ -1,7 +1,7 @@
 {
   "name": "voip-call",
   "main": "index.js",
-  "version": "0.27.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "expo start",
@@ -12,9 +12,9 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@fishjam-cloud/ios-expo-voip": "link:../../../../web-client-sdk/packages/ios-expo-voip",
-    "@fishjam-cloud/react-native-client": "link:../../../../web-client-sdk/packages/mobile-client",
-    "@fishjam-cloud/react-native-webrtc": "link:../../../../web-client-sdk/packages/react-native-webrtc",
+    "@fishjam-cloud/ios-expo-voip": "0.29.0",
+    "@fishjam-cloud/react-native-client": "0.30.0-rc.0",
+    "@fishjam-cloud/react-native-webrtc": "0.30.0-rc.0",
     "@react-native-async-storage/async-storage": "^3.1.1",
     "expo": "~54.0.30",
     "expo-splash-screen": "~31.0.13",
@@ -24,19 +24,20 @@
     "react-native-get-random-values": "1.11.0",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",
-    "react-native-worklets": "~0.5.1"
+    "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
+    "@eslint/js": "^9.24.0",
     "@types/react": "~19.1.0",
-    "eslint": "^8.57.1",
-    "eslint-config-expo": "~8.0.1",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.5.1",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-simple-import-sort": "^12.1.0",
     "prettier": "^3.6.2",
-    "typescript": "~5.9.2"
-  },
-  "resolutions": {
-    "**/@fishjam-cloud/react-client": "0.29.0",
-    "**/@fishjam-cloud/react-native-webrtc": "0.29.0",
-    "**/@fishjam-cloud/ts-client": "0.29.0"
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.29.1"
   }
 }

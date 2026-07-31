@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
-
 import {
-  useVoip,
   type CurrentCall,
-  type VoipCallStatus,
+  useVoIP,
+  type VoIPCallStatus,
 } from '@fishjam-cloud/react-native-client';
+import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
 
 import { useUser } from '../user/UserContext';
 
@@ -13,11 +12,11 @@ const SERVER_URL =
 
 export type SendSignal = (msg: Record<string, unknown>) => void;
 
-/** Filled by {@link useCallSignaling} so App can wire `VoipProvider.onWaitingCallDeclined`. */
+/** Filled by {@link useCallSignaling} so App can wire `VoIPProvider.onWaitingCallDeclined`. */
 export type SendSignalRef = MutableRefObject<SendSignal | undefined>;
 
 export function useCallSignaling(sendSignalRef: SendSignalRef): void {
-  const { endCall, currentCall, status, lastEndedReason } = useVoip();
+  const { endCall, currentCall, status, lastEndedReason } = useVoIP();
   const { username } = useUser();
 
   const socketRef = useRef<WebSocket | null>(null);
@@ -57,19 +56,20 @@ export function useCallSignaling(sendSignalRef: SendSignalRef): void {
         return;
       }
 
-      const { endCall, currentCall } = handlersRef.current;
-      if (!currentCall || currentCall.startedAt !== null) return;
-      if (currentCall.roomName !== msg.roomName) return;
+      const { endCall: latestEndCall, currentCall: latestCall } =
+        handlersRef.current;
+      if (!latestCall || latestCall.startedAt !== null) return;
+      if (latestCall.roomName !== msg.roomName) return;
 
       // The caller cancelled while we (the callee) are still ringing — from
       // our side this incoming call rang and was never answered.
-      if (msg.type === 'call-cancelled' && !currentCall.isOutgoing) {
-        void endCall('missed');
+      if (msg.type === 'call-cancelled' && !latestCall.isOutgoing) {
+        void latestEndCall('missed');
       }
       // The callee rejected while we (the caller) are still ringing out — the
       // other party declined, not just hung up.
-      else if (msg.type === 'call-rejected' && currentCall.isOutgoing) {
-        void endCall('rejected');
+      else if (msg.type === 'call-rejected' && latestCall.isOutgoing) {
+        void latestEndCall('rejected');
       }
     };
 
@@ -82,7 +82,7 @@ export function useCallSignaling(sendSignalRef: SendSignalRef): void {
   // Detect the local user ending a call before it connected, and notify the
   // other party so their ringing UI can be dismissed.
 
-  const prevRef = useRef<{ status: VoipCallStatus; call: CurrentCall | null }>({
+  const prevRef = useRef<{ status: VoIPCallStatus; call: CurrentCall | null }>({
     status,
     call: currentCall,
   });

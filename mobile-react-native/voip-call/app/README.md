@@ -10,7 +10,6 @@ the [VoIP calls guide](https://documentation.fishjam.io/docs/how-to/client/voip-
 With the [server](../server/README.md) running and `.env` filled in:
 
 ```bash
-yarn
 yarn ios       # or: yarn android
 ```
 
@@ -19,9 +18,8 @@ Google Play services.
 
 ## iOS native registration
 
-On Expo, the app depends on `@fishjam-cloud/ios-expo-voip` (not on npm yet —
-resolved through a `link:` to a local checkout, see the
-[example README](../README.md#local-sdk-checkout)),
+On Expo, the app depends on
+[`@fishjam-cloud/ios-expo-voip`](https://www.npmjs.com/package/@fishjam-cloud/ios-expo-voip),
 which registers the native subscriptions the SDK needs at launch: PushKit and
 the Recents redial intent forwarding. Without the PushKit registration the app
 never receives `didReceiveIncomingPush`, so VoIP pushes don't work at all, and
