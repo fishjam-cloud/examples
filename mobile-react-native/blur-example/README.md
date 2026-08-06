@@ -21,16 +21,15 @@ A mobile video chat demo showcasing **real-time camera background blur** using t
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/fishjam-cloud/web-client-sdk.git
-   cd web-client-sdk
+   git clone https://github.com/fishjam-cloud/examples.git
+   cd examples/mobile-react-native/blur-example
    ```
-2. **Install dependencies and build project:**
+2. **Install dependencies:**
    ```sh
    yarn
-   yarn build
    ```
 3. **Set up environment variables:**
-   - Create a `.env` file in the `examples/mobile-client/blur-example` directory:
+   - Create a `.env` file in this directory:
      ```sh
      cp .env.example .env
      ```
@@ -41,7 +40,6 @@ A mobile video chat demo showcasing **real-time camera background blur** using t
 
 4. **Prebuild native files:**
    ```sh
-   cd examples/mobile-client/blur-example
    npx expo prebuild --clean
    ```
    > [!NOTE]
@@ -84,7 +82,7 @@ A mobile video chat demo showcasing **real-time camera background blur** using t
 
 ## License
 
-This example is provided under the Apache License 2.0. See [LICENSE](../../../LICENSE) for details.
+This example is provided under the Apache License 2.0.
 
 ---
 
