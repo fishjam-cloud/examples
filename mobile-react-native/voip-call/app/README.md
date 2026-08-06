@@ -13,8 +13,8 @@ With the [server](../server/README.md) running and `.env` filled in:
 yarn ios       # or: yarn android
 ```
 
-Real devices only: VoIP pushes never reach the iOS Simulator, and FCM needs
-Google Play services.
+iOS needs a real device: CallKit's incoming call screen doesn't work on the
+Simulator. Android runs on an emulator with Google Play services.
 
 ## iOS native registration
 

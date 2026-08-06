@@ -47,12 +47,13 @@ devices, FCM to call Android devices, or both to call between them.
      above. Not `localhost` when running on a physical phone; use your
      machine's LAN address.
 
-4. **Run on real devices.** VoIP pushes never reach the iOS Simulator, and FCM
-   needs Google Play services. Install dependencies from the repo root
-   (`yarn`), then:
+4. **Run the app.** iOS needs a real device — CallKit's incoming call screen
+   doesn't work on the Simulator. Android runs on an emulator with Google Play
+   services. Install dependencies, then:
 
    ```bash
    cd app
+   yarn
    yarn ios       # or: yarn android
    ```
 
