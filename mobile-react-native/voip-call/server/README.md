@@ -9,9 +9,8 @@ deno task start   # listens on :4400
 ## Credentials
 
 Both services are optional — configure APNs to call iOS devices, FCM to call
-Android devices, or both to call between them. On startup the server prints which
-services are enabled, and `/call` answers `503` when the callee's platform has no
-credentials.
+Android devices, or both to call between them. `/call` answers `502` when the
+callee's platform has no credentials.
 
 ## APNs certificate
 
@@ -21,7 +20,7 @@ Apple Developer account. See Apple's guide:
 
 Drop the VoIP push certificate **and its private key, combined into one PEM**, at
 `./apns.pem` — it's presented to APNs as a TLS client certificate. The bundle id and
-sandbox host are set at the top of `main.ts`.
+sandbox host are constants in `main.ts`.
 
 ```bash
 # combine an exported cert + key into one PEM
