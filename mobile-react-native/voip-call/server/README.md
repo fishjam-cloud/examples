@@ -6,6 +6,29 @@
 deno task start   # listens on :4400
 ```
 
+## Layout
+
+```
+avatars/        the bundled avatar images
+src/
+  main.ts       route table — matches method + path, delegates to a handler
+  db.ts         SQLite handle and the users table
+  avatars.ts    the avatar pool: assignment, URLs, and serving the PNGs
+  push/
+    mod.ts          DevicePlatform + the sendPush map that picks the transport
+    apns.ts         iOS — certificate-based VoIP push
+    fcm.ts          Android — FCM HTTP v1 data message
+    credentials.ts  reads an optional credentials file
+  routes/
+    register.ts   POST /register
+    users.ts      GET  /users
+    call.ts       POST /call
+    signaling.ts  GET  /ws — the username -> WebSocket relay
+```
+
+Paths like `voip.db`, `./apns.pem`, and `./avatars/` resolve against the working
+directory, so run the server from this folder — `deno task start` does that.
+
 ## Credentials
 
 Both services are optional — configure APNs to call iOS devices, FCM to call
@@ -20,7 +43,7 @@ Apple Developer account. See Apple's guide:
 
 Drop the VoIP push certificate **and its private key, combined into one PEM**, at
 `./apns.pem` — it's presented to APNs as a TLS client certificate. The bundle id and
-sandbox host are constants in `main.ts`.
+sandbox host are constants in `src/push/apns.ts`.
 
 ```bash
 # combine an exported cert + key into one PEM
