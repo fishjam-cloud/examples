@@ -1,7 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -12,27 +11,49 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '../components';
-import { AdditionalColors, BrandColors, TextColors } from '../theme/colors';
-import { useUser } from '../user/UserContext';
-import { useVoIP } from '@fishjam-cloud/react-native-client';
 import { usePlaceCall } from '../hooks/usePlaceCall';
+import { AdditionalColors, BrandColors, TextColors } from '../theme/colors';
+import { useUser, type UserSummary } from '../user/UserContext';
+
+type UserRowProps = {
+  user: UserSummary;
+  onCall: (username: string) => void;
+};
+
+function UserRow({ user, onCall }: UserRowProps) {
+  return (
+    <TouchableOpacity
+      style={styles.row}
+      onPress={() => onCall(user.username)}
+      activeOpacity={0.7}>
+      <Avatar name={user.username} avatarUrl={user.avatarUrl} size={44} />
+      <Text style={styles.name}>{user.username}</Text>
+      <MaterialCommunityIcons
+        name="phone"
+        size={22}
+        color={BrandColors.seaBlue100}
+      />
+    </TouchableOpacity>
+  );
+}
 
 export function UsersScreen() {
   const { username, users, refreshUsers, logout } = useUser();
-  const { callStatus } = useVoIP();
   const placeCall = usePlaceCall();
-  const isCalling = callStatus === 'connecting' || callStatus === 'active';
 
   useEffect(() => {
     refreshUsers();
   }, [refreshUsers]);
 
-  const handleCall = async (to: string) => {
-    try {
-      await placeCall(to);
-    } catch (err) {
-      console.error('Failed to start call:', err);
-    }
+  const callInFlight = useRef(false);
+  const handleCall = (to: string) => {
+    if (callInFlight.current) return;
+    callInFlight.current = true;
+    placeCall(to)
+      .catch((err) => console.error('Failed to start call:', err))
+      .finally(() => {
+        callInFlight.current = false;
+      });
   };
 
   return (
@@ -76,25 +97,7 @@ export function UsersScreen() {
             <Text style={styles.emptyText}>No other users online yet.</Text>
           </View>
         }
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[styles.row, isCalling && styles.rowDisabled]}
-            onPress={() => handleCall(item.username)}
-            disabled={isCalling}
-            activeOpacity={0.7}>
-            <Avatar name={item.username} avatarUrl={item.avatarUrl} size={44} />
-            <Text style={styles.name}>{item.username}</Text>
-            {isCalling ? (
-              <ActivityIndicator size="small" color={BrandColors.darkBlue80} />
-            ) : (
-              <MaterialCommunityIcons
-                name="phone"
-                size={22}
-                color={BrandColors.seaBlue100}
-              />
-            )}
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => <UserRow user={item} onCall={handleCall} />}
       />
     </SafeAreaView>
   );
@@ -136,7 +139,6 @@ const styles = StyleSheet.create({
     backgroundColor: AdditionalColors.white,
     gap: 12,
   },
-  rowDisabled: { opacity: 0.5 },
   name: {
     flex: 1,
     fontSize: 16,
@@ -145,5 +147,4 @@ const styles = StyleSheet.create({
   },
   empty: { paddingTop: 64, alignItems: 'center', gap: 10 },
   emptyText: { fontSize: 16, fontWeight: '600', color: BrandColors.darkBlue80 },
-  emptyHint: { fontSize: 14, color: AdditionalColors.grey80 },
 });

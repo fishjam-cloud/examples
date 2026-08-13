@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { BrandColors, TextColors } from '../theme/colors';
@@ -18,9 +18,14 @@ export function Avatar({
   speaking = false,
 }: AvatarProps) {
   const initial = name.trim()[0]?.toUpperCase() ?? '?';
+
   const [failed, setFailed] = useState(false);
-  // Reset the error state if the URL changes (e.g. list refresh).
-  useEffect(() => setFailed(false), [avatarUrl]);
+  const [renderedUrl, setRenderedUrl] = useState(avatarUrl);
+  if (renderedUrl !== avatarUrl) {
+    setRenderedUrl(avatarUrl);
+    setFailed(false);
+  }
+
   const showImage = Boolean(avatarUrl) && !failed;
   return (
     <View
@@ -33,7 +38,6 @@ export function Avatar({
           borderWidth: speaking ? 3 : 0,
         },
       ]}>
-      {/* Initials sit underneath as the fallback while the image loads or if it fails. */}
       <Text style={[styles.text, { fontSize: size * 0.4 }]}>{initial}</Text>
       {showImage && (
         <Image
