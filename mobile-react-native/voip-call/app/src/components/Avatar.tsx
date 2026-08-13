@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { BrandColors, TextColors } from '../theme/colors';
 
@@ -17,16 +16,6 @@ export function Avatar({
   size = 96,
   speaking = false,
 }: AvatarProps) {
-  const initial = name.trim()[0]?.toUpperCase() ?? '?';
-
-  const [failed, setFailed] = useState(false);
-  const [renderedUrl, setRenderedUrl] = useState(avatarUrl);
-  if (renderedUrl !== avatarUrl) {
-    setRenderedUrl(avatarUrl);
-    setFailed(false);
-  }
-
-  const showImage = Boolean(avatarUrl) && !failed;
   return (
     <View
       style={[
@@ -38,12 +27,10 @@ export function Avatar({
           borderWidth: speaking ? 3 : 0,
         },
       ]}>
-      <Text style={[styles.text, { fontSize: size * 0.4 }]}>{initial}</Text>
-      {showImage && (
+      {Boolean(avatarUrl) && (
         <Image
           source={{ uri: avatarUrl! }}
           style={[StyleSheet.absoluteFill, { borderRadius: size / 2 }]}
-          onError={() => setFailed(true)}
           accessibilityIgnoresInvertColors
         />
       )}
