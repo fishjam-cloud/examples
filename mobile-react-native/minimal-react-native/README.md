@@ -20,23 +20,23 @@ A fully functional video room demo built with [Fishjam Cloud](https://fishjam.io
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/fishjam-cloud/web-client-sdk.git
-   cd web-client-sdk
+   git clone https://github.com/fishjam-cloud/examples.git
+   cd examples
    ```
-2. **Install dependencies and build project:**
+2. **Install dependencies in the example directory:**
    ```sh
+   cd mobile-react-native/minimal-react-native
    yarn
-   yarn build
    ```
 3. **Set up environment variables:**
-   - Create a `.env` file in the `examples/mobile-client/minimal-react-native` directory:
+   - Create a `.env` file in the `mobile-react-native/minimal-react-native` directory:
      ```sh
      cp .env.example .env
      ```
    - Fill in your Fishjam ID. _You can obtain it at [https://fishjam.io/app/](https://fishjam.io/app/)._
+   - Fill in your Sandbox API URL (`EXPO_PUBLIC_SANDBOX_API_URL`). _Copy it from the sandbox dashboard at [https://fishjam.io/app/sandbox](https://fishjam.io/app/sandbox)._
 4. **Prebuild native files:**
    ```sh
-   cd examples/mobile-client/minimal-react-native
    npx expo prebuild --clean
    ```
    > [!NOTE]

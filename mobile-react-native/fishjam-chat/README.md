@@ -2,11 +2,12 @@
 
 ## Prerequisites
 
-Copy `.env.example` to `.env` in the `examples/mobile-client/fishjam-chat` directory and fill in the required value:
+Copy `.env.example` to `.env` in the `mobile-react-native/fishjam-chat` directory and fill in the required values:
 
 - `EXPO_PUBLIC_FISHJAM_ID` - Fishjam ID for production environment
+- `EXPO_PUBLIC_SANDBOX_API_URL` - Sandbox API URL used to generate peer tokens
 
-You can find the value for this variable by creating an account on [fishjam.io](https://fishjam.io) and copying it from the sandbox dashboard.
+You can find the values for these variables by creating an account on [fishjam.io](https://fishjam.io) and copying them from the sandbox dashboard at [https://fishjam.io/app/sandbox](https://fishjam.io/app/sandbox).
 
 There also exists this additional environment variable, which is used for internal testing purposes:
 
@@ -25,15 +26,15 @@ The app has 2 tabs showing different ways to connect to Fishjam video calls:
 1. Clone the repository:
 
 ```
-git clone https://github.com/fishjam-cloud/web-client-sdk.git
-cd web-client-sdk
+git clone https://github.com/fishjam-cloud/examples.git
+cd examples
 ```
 
-2. Install dependencies and build project:
+2. Install dependencies in the example directory:
 
 ```sh
+cd mobile-react-native/fishjam-chat
 yarn
-yarn build
 ```
 
 > [!IMPORTANT]
@@ -48,10 +49,9 @@ yarn build
 > - ScreenBroadcastExtension: `com.yourcompany.yourapp.ScreenBroadcastExtension`
 > - App group: `group.com.yourcompany.yourapp`
 
-3. Prebuild native files in example directory:
+3. Prebuild native files:
 
 ```sh
-cd examples/mobile-client/fishjam-chat
 npx expo prebuild --clean
 ```
 
@@ -67,13 +67,7 @@ yarn android
 
 ## Development
 
-1. Whenever you make changes in the `packages` directory, make sure to build the app in the root directory (not in `examples/mobile-client/fishjam-chat`). This ensures that all related workspaces are also built:
-
-```sh
-yarn build
-```
-
-2. Linter (run in the root directory):
+Linter:
 
 ```sh
 yarn lint
