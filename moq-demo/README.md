@@ -18,9 +18,10 @@ yarn dev
 
 3. Open the URL printed by Vite (e.g. `http://localhost:5173`).
 
-4. Provide the **Sandbox API URL** (the relay connection URL, including the Fishjam ID, is returned by the sandbox):
+4. Provide the **Sandbox API URL** (the relay connection URL, including the Fishjam ID, is returned by the sandbox) — copy it from the sandbox dashboard at [https://fishjam.io/app/sandbox](https://fishjam.io/app/sandbox):
 
-   - Pass it as a query parameter: `http://localhost:5173?sandboxApiUrl=https://fishjam.io/api/v1/connect/<your-key>/room-manager`
+   - Copy it into a `.env` file: `VITE_SANDBOX_API_URL=https://fishjam.io/api/v1/connect/<your-key>/room-manager`
+   - Or pass it as a query parameter: `http://localhost:5173?sandboxApiUrl=https://fishjam.io/api/v1/connect/<your-key>/room-manager`
    - Or enter it in the UI at runtime.
 
 5. Enter a stream name and click **Start Streaming** to publish, or **Connect to Stream** to watch.

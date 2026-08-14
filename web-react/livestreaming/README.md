@@ -15,13 +15,21 @@ This is a demo application that showcases both broadcasting and viewing live str
    yarn install
    ```
 
-2. Start the development server:
+2. Set up environment variables:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Fill in the values; copy the Sandbox API URL (`VITE_SANDBOX_API_URL`) from the sandbox dashboard at [https://fishjam.io/app/sandbox](https://fishjam.io/app/sandbox).
+
+3. Start the development server:
 
    ```bash
    yarn dev
    ```
 
-3. Open your browser and navigate to the URL shown in the terminal (usually `http://localhost:5173`)
+4. Open your browser and navigate to the URL shown in the terminal (usually `http://localhost:5173`)
 
 ## How to Use
 
