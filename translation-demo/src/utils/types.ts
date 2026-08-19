@@ -3,7 +3,7 @@ import type { Signal } from "@moq/signals";
 import type * as Watch from "@moq/watch";
 
 export type MoqConnectionSignal = Signal<
-  Publish.Lite.Connection.Established | undefined
+  Publish.Net.Connection.Established | undefined
 >;
 
 type TranslationStatus = "active" | "requestable";

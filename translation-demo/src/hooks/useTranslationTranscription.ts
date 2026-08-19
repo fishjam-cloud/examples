@@ -42,8 +42,10 @@ const trimCaption = (text: string): string => {
   return `…${wordBoundary === -1 ? tail : tail.slice(wordBoundary + 1)}`;
 };
 
-// `Watch.Broadcast.active` exposes the underlying network broadcast.
-type MoqBroadcast = NonNullable<ReturnType<Watch.Broadcast["active"]["peek"]>>;
+// `Watch.Broadcast.out.active` exposes the underlying network broadcast.
+type MoqBroadcast = NonNullable<
+  ReturnType<Watch.Broadcast["out"]["active"]["peek"]>
+>;
 
 // The translation audio playback clock (ms), used to reveal each caption segment only
 // once the heard audio reaches its timestamp.
@@ -221,7 +223,7 @@ export const useTranslationTranscription = (
 
       const track = activeBroadcast.subscribe(
         getTranscriptionTrackName(trackName),
-        TRANSCRIPTION_PRIORITY,
+        { priority: TRANSCRIPTION_PRIORITY },
       );
       let cancelled = false;
       entry.closeTrack = () => {
@@ -264,8 +266,8 @@ export const useTranslationTranscription = (
     };
 
     entryRef.current = entry;
-    watchActive(broadcast.active.peek());
-    entry.dispose = broadcast.active.changed(watchActive);
+    watchActive(broadcast.out.active.peek());
+    entry.dispose = broadcast.out.active.changed(watchActive);
     recompute();
 
     return () => {

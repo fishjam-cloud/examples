@@ -48,14 +48,9 @@ export const ORIGINAL_AUDIO_KEY = "original";
 // (STREAM_DELAY_MS − providerDelay) — that lands it on the exact same play-head as the video.
 type AudioVoice = {
   key: string;
-  // The original stream broadcast or a shared translation provider broadcast — both owned by the
-  // connection, so a voice never closes its broadcast.
-  broadcast: Watch.Broadcast;
-  // Language rendition to select for a translation; undefined uses the default (original) track.
-  trackName?: string;
   sync: Watch.Sync;
-  // True for a translation's dedicated clock (which we created and must close).
-  ownsSync: boolean;
+  // Present only for a translation's dedicated clock, which we created and must close.
+  latency?: Watch.Signals.Signal<Watch.Latency>;
   source: Watch.Audio.Source;
   decoder: Watch.Audio.Decoder;
   signals: Watch.Signals.Effect;
@@ -72,6 +67,7 @@ type VoiceConfig = {
   trackName?: string;
   desiredGain: number;
   useOwnSync: boolean;
+  source?: Watch.Audio.Source;
 };
 
 /**
@@ -87,7 +83,7 @@ type VoiceConfig = {
 export class SyncedStreamPlayer {
   readonly sync: Watch.Sync;
   // Media timestamp of the most recent decoded video frame; undefined until the first frame.
-  readonly videoTimestamp: Watch.Video.Decoder["timestamp"];
+  readonly videoTimestamp: Watch.Video.Decoder["out"]["timestamp"];
   // The track currently heard, and the one warming up (if any) — exposed for the UI.
   readonly audibleKey = new Watch.Signals.Signal<string>(ORIGINAL_AUDIO_KEY);
   readonly pendingKey = new Watch.Signals.Signal<string | undefined>(undefined);
@@ -96,6 +92,9 @@ export class SyncedStreamPlayer {
   readonly #videoSource: Watch.Video.Source;
   readonly #videoDecoder: Watch.Video.Decoder;
   readonly #renderer: Watch.Video.Renderer;
+  readonly #canvas = new Watch.Signals.Signal<
+    HTMLCanvasElement | undefined
+  >(undefined);
 
   readonly #voices = new Map<string, AudioVoice>();
   #warmupTimer: number | undefined;
@@ -106,20 +105,32 @@ export class SyncedStreamPlayer {
   ) {
     this.#connection = connection;
 
+    this.#videoSource = new Watch.Video.Source({
+      broadcast: originalBroadcast,
+      supported: Watch.Video.Decoder.supported,
+    });
+    const originalAudioSource = new Watch.Audio.Source({
+      broadcast: originalBroadcast,
+      supported: Watch.Audio.Decoder.supported,
+    });
+
     this.sync = new Watch.Sync({
       latency: STREAM_DELAY_MS as Watch.Net.Time.Milli,
       connection,
+      video: this.#videoSource.out.jitter,
+      audio: originalAudioSource.out.jitter,
     });
 
-    this.#videoSource = new Watch.Video.Source(this.sync, {
-      broadcast: originalBroadcast,
-    });
-    this.#videoDecoder = new Watch.Video.Decoder(this.#videoSource);
+    this.#videoDecoder = new Watch.Video.Decoder(
+      this.#videoSource,
+      this.sync,
+      { enabled: true },
+    );
     this.#renderer = new Watch.Video.Renderer(this.#videoDecoder, {
-      paused: false,
+      canvas: this.#canvas,
       visible: MEDIA_VISIBLE,
     });
-    this.videoTimestamp = this.#videoDecoder.timestamp;
+    this.videoTimestamp = this.#videoDecoder.out.timestamp;
 
     // The original audio is always present, kept warm, and audible by default. It shares the
     // player clock (it plays at the same delay as the video).
@@ -130,12 +141,13 @@ export class SyncedStreamPlayer {
         broadcast: originalBroadcast,
         desiredGain: 1,
         useOwnSync: false,
+        source: originalAudioSource,
       }),
     );
   }
 
   attachCanvas(canvas: HTMLCanvasElement | null): void {
-    this.#renderer.canvas.set(canvas ?? undefined);
+    this.#canvas.set(canvas ?? undefined);
   }
 
   /**
@@ -206,29 +218,43 @@ export class SyncedStreamPlayer {
     trackName,
     desiredGain,
     useOwnSync,
+    source: providedSource,
   }: VoiceConfig): AudioVoice {
+    const target = new Watch.Signals.Signal<Watch.Audio.Target | undefined>(
+      undefined,
+    );
+    const source =
+      providedSource ??
+      new Watch.Audio.Source({
+        broadcast,
+        target,
+        supported: Watch.Audio.Decoder.supported,
+      });
+    const latency = useOwnSync
+      ? new Watch.Signals.Signal<Watch.Latency>(
+          STREAM_DELAY_MS as Watch.Net.Time.Milli,
+        )
+      : undefined;
+
     // A translation gets its own clock so its jitter buffer (and thus playback delay) can be
     // shortened to compensate for the provider delay; the original shares the player clock.
-    const sync = useOwnSync
+    const sync = latency
       ? new Watch.Sync({
-          latency: STREAM_DELAY_MS as Watch.Net.Time.Milli,
+          latency,
           connection: this.#connection,
+          audio: source.out.jitter,
         })
       : this.sync;
 
-    const source = new Watch.Audio.Source(sync, { broadcast });
-    const decoder = new Watch.Audio.Decoder(source);
     // Download & decode immediately so the track warms up (and stays ready) while silent.
-    decoder.enabled.set(true);
+    const decoder = new Watch.Audio.Decoder(source, sync, { enabled: true });
 
     const gain = new Watch.Signals.Signal<GainNode | undefined>(undefined);
     const signals = new Watch.Signals.Effect();
     const voice: AudioVoice = {
       key,
-      broadcast,
-      trackName,
       sync,
-      ownsSync: useOwnSync,
+      latency,
       source,
       decoder,
       signals,
@@ -243,20 +269,22 @@ export class SyncedStreamPlayer {
     // rendition so the decoder subscribes (never two subscriptions to the track at once).
     if (trackName) {
       signals.run((effect) => {
-        const active = effect.get(broadcast.active);
+        const active = effect.get(broadcast.out.active);
         if (!active) {
           return;
         }
 
         const renditions =
-          effect.get(broadcast.catalog)?.audio?.renditions ?? {};
+          effect.get(broadcast.out.catalog)?.audio?.renditions ?? {};
         if (renditions[trackName]) {
-          source.target.set({ name: trackName });
+          target.set({ name: trackName });
           return;
         }
 
-        source.target.set(undefined);
-        const trigger = active.subscribe(trackName, AUDIO_PRIORITY);
+        target.set(undefined);
+        const trigger = active.subscribe(trackName, {
+          priority: AUDIO_PRIORITY,
+        });
         effect.cleanup(() => trigger.close());
       });
     }
@@ -265,8 +293,8 @@ export class SyncedStreamPlayer {
     // gain 0 the node stays in the graph, so the worklet keeps draining in sync — crossfading is
     // then just a gain ramp on an already time-aligned track.
     signals.run((effect) => {
-      const context = effect.get(decoder.context);
-      const root = effect.get(decoder.root);
+      const context = effect.get(decoder.out.context);
+      const root = effect.get(decoder.out.root);
       if (!context || !root) {
         return;
       }
@@ -322,12 +350,12 @@ export class SyncedStreamPlayer {
   // same media position as the video instead of `providerDelay` behind it. Done once, while the
   // ring is still filling. providerDelay = (latest original ts) − (latest translation ts).
   #compensateProviderDelay(voice: AudioVoice): void {
-    if (!voice.ownsSync || voice.latencyAdjusted) {
+    if (!voice.latency || voice.latencyAdjusted) {
       return;
     }
 
-    const originalTs = this.sync.timestamp.peek();
-    const translationTs = voice.sync.timestamp.peek();
+    const originalTs = this.sync.out.timestamp.peek();
+    const translationTs = voice.sync.out.timestamp.peek();
     if (originalTs === undefined || translationTs === undefined) {
       return;
     }
@@ -337,7 +365,7 @@ export class SyncedStreamPlayer {
       MIN_TRANSLATION_LATENCY_MS,
       STREAM_DELAY_MS - providerDelay,
     );
-    voice.sync.latency.set(latency as Watch.Net.Time.Milli);
+    voice.latency.set(latency as Watch.Net.Time.Milli);
     voice.latencyAdjusted = true;
   }
 
@@ -353,7 +381,7 @@ export class SyncedStreamPlayer {
   // The ring un-stalls when the play-head reaches buffered audio, so this is the moment the new
   // track can take over without a silent gap.
   #isEmitting(voice: AudioVoice): boolean {
-    return voice.decoder.stalled.peek() === false;
+    return voice.decoder.out.stalled.peek() === false;
   }
 
   #crossfadeTo(key: string): void {
@@ -410,7 +438,7 @@ export class SyncedStreamPlayer {
     voice.signals.close();
     voice.decoder.close();
     voice.source.close();
-    if (voice.ownsSync) {
+    if (voice.latency) {
       voice.sync.close();
     }
   }
