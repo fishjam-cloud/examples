@@ -84,7 +84,7 @@ A mobile video chat demo showcasing **real-time camera background blur** using t
 
 ## License
 
-This example is provided under the Apache License 2.0. See [LICENSE](../../../LICENSE) for details.
+This example is provided under the Apache License 2.0.
 
 ---
 

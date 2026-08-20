@@ -20,3 +20,8 @@
 
 - [Video Player](./video-player/) - minimal livestreaming viewer
   - joining an existing livestream as a viewer
+
+- [VoIP Call](./voip-call/) - two-user calling app with native call UI
+  - ringing through CallKit on iOS and Telecom on Android
+  - receiving calls while the app is backgrounded or killed
+  - APNs / FCM push signaling via a small Deno server

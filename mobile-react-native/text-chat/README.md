@@ -116,7 +116,7 @@ yarn lint
 
 ## License
 
-This example is provided under the Apache License 2.0. See [LICENSE](../../../LICENSE) for details.
+This example is provided under the Apache License 2.0.
 
 ---
 
