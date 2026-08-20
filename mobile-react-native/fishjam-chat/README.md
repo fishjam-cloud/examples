@@ -2,11 +2,12 @@
 
 ## Prerequisites
 
-Copy `.env.example` to `.env` in this directory and fill in the required value:
+Copy `.env.example` to `.env` in the `mobile-react-native/fishjam-chat` directory and fill in the required values:
 
 - `EXPO_PUBLIC_FISHJAM_ID` - Fishjam ID for production environment
+- `EXPO_PUBLIC_SANDBOX_API_URL` - Sandbox API URL used to generate peer tokens
 
-You can find the value for this variable by creating an account on [fishjam.io](https://fishjam.io) and copying it from the sandbox dashboard.
+You can find the values for these variables by creating an account on [fishjam.io](https://fishjam.io) and copying them from the sandbox dashboard at [https://fishjam.io/app/sandbox](https://fishjam.io/app/sandbox).
 
 There also exists this additional environment variable, which is used for internal testing purposes:
 
@@ -26,12 +27,13 @@ The app has 2 tabs showing different ways to connect to Fishjam video calls:
 
 ```
 git clone https://github.com/fishjam-cloud/examples.git
-cd examples/mobile-react-native/fishjam-chat
+cd examples
 ```
 
-2. Install dependencies:
+2. Install dependencies in the example directory:
 
 ```sh
+cd mobile-react-native/fishjam-chat
 yarn
 ```
 
@@ -61,4 +63,12 @@ npx expo prebuild --clean
 ```
 yarn ios
 yarn android
+```
+
+## Development
+
+Linter:
+
+```sh
+yarn lint
 ```

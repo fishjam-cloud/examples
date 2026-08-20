@@ -22,18 +22,20 @@ A mobile video chat demo showcasing **real-time camera background blur** using t
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/fishjam-cloud/examples.git
-   cd examples/mobile-react-native/blur-example
+   cd examples
    ```
-2. **Install dependencies:**
+2. **Install dependencies in the example directory:**
    ```sh
+   cd mobile-react-native/blur-example
    yarn
    ```
 3. **Set up environment variables:**
-   - Create a `.env` file in this directory:
+   - Create a `.env` file in the `mobile-react-native/blur-example` directory:
      ```sh
      cp .env.example .env
      ```
    - Fill in your Fishjam ID. _You can find the value for this variable by creating an account on [fishjam.io](https://fishjam.io) and copying it from the sandbox dashboard._
+   - Fill in your Sandbox API URL (`EXPO_PUBLIC_SANDBOX_API_URL`). _Copy it from the sandbox dashboard at [https://fishjam.io/app/sandbox](https://fishjam.io/app/sandbox)._
 
    There also exists this additional environment variable, which is used for internal testing purposes:
    - `EXPO_PUBLIC_FISHJAM_URL` - Sandbox URL for custom Fishjam environment

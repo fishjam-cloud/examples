@@ -9,6 +9,10 @@ dist-ssr
 # Env
 .env
 
+# Python (translation service)
+service/.venv
+__pycache__/
+
 # Yarn (Berry)
 .yarn/*
 !.yarn/patches

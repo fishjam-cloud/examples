@@ -10,12 +10,13 @@ This example provides a minimal, working livestreaming app using Fishjam.
 
     ```bash
     git clone https://github.com/fishjam-cloud/examples.git
-    cd examples/mobile-react-native/video-player
+    cd examples
     ```
 
-2.  Install dependencies:
+2.  Install dependencies in the example directory:
 
     ```bash
+    cd mobile-react-native/video-player
     yarn
     ```
 
@@ -28,12 +29,13 @@ This example provides a minimal, working livestreaming app using Fishjam.
     > [!NOTE]
     > Be sure to run `npx expo prebuild` and not `yarn prebuild` as there's an issue with path generation for the `ios/.xcode.env.local` file
 
-4.  **Create a `.env` file** in this directory.
+4.  **Create a `.env` file** in the `mobile-react-native/video-player` directory.
 
-Add your fishjam ID:
+Add your fishjam ID and Sandbox API URL (copy both from the sandbox dashboard at [https://fishjam.io/app/sandbox](https://fishjam.io/app/sandbox)):
 
 ```bash
 EXPO_PUBLIC_FISHJAM_ID=<your_fishjam_ID>
+EXPO_PUBLIC_SANDBOX_API_URL=<your_sandbox_api_url>
 ```
 
 5.  Build app:

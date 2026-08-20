@@ -23,22 +23,24 @@ A React Native mobile app demonstrating real-time text messaging using [Fishjam 
 
    ```sh
    git clone https://github.com/fishjam-cloud/examples.git
-   cd examples/mobile-react-native/text-chat
+   cd examples
    ```
 
-2. **Install dependencies:**
+2. **Install dependencies in the example directory:**
 
    ```sh
+   cd mobile-react-native/text-chat
    yarn
    ```
 
 3. **Set up environment variables:**
 
-   - Create a `.env` file in this directory:
+   - Create a `.env` file in the `mobile-react-native/text-chat` directory:
      ```sh
      cp .env.example .env
      ```
    - Fill in your Fishjam ID. _You can obtain it at [https://fishjam.io/app/](https://fishjam.io/app/)._
+   - Fill in your Sandbox API URL (`EXPO_PUBLIC_SANDBOX_API_URL`). _Copy it from the sandbox dashboard at [https://fishjam.io/app/sandbox](https://fishjam.io/app/sandbox)._
 
 4. **Prebuild native files:**
    ```sh
@@ -103,6 +105,14 @@ This example demonstrates how to use Fishjam Cloud's data channel functionality 
   - Ensure you're using a recent version of the Fishjam SDK
   - Check that both peers support data channels (most modern devices do)
   - Review error messages in the app's status display
+
+## Development
+
+Linter:
+
+```sh
+yarn lint
+```
 
 ## License
 
