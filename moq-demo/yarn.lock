@@ -487,46 +487,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@libav.js/variant-opus-af@npm:^6.8.8":
-  version: 6.8.8
-  resolution: "@libav.js/variant-opus-af@npm:6.8.8"
-  checksum: 10c0/733e6c4c0b31d288235bf543fdcf8f85505f0d2d4e90d153418737d6dd8b312f392d4c2532296a5db0c9eff1415c6b39a475c0353c312d267e342e72583a1342
+"@libav.js/variant-opus-af@npm:^6.9.8":
+  version: 6.10.9
+  resolution: "@libav.js/variant-opus-af@npm:6.10.9"
+  checksum: 10c0/419b47fcd0d65c47d021076b83833407bb2522a8f1aa5a286dda1023e8c8093b08a21cf115375af82d30c9847d6caa90d4f34040e0991ffddeda82162eb3a8eb
   languageName: node
   linkType: hard
 
-"@moq/hang@npm:^0.2.7":
-  version: 0.2.7
-  resolution: "@moq/hang@npm:0.2.7"
+"@moq/flate@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@moq/flate@npm:0.1.2"
+  dependencies:
+    pako: "npm:^3.0.1"
+  checksum: 10c0/0c5ef11cae7f3f2403dbb21a2d173b12538c945df139daf53a8374d0abd751ee8da897152ea884d434340bba2db63009607759e1114b644fd9ece2eaf708cd15
+  languageName: node
+  linkType: hard
+
+"@moq/hang@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@moq/hang@npm:0.4.2"
   dependencies:
     "@kixelated/libavjs-webcodecs-polyfill": "npm:^0.5.5"
-    "@libav.js/variant-opus-af": "npm:^6.8.8"
-    "@moq/loc": "npm:^0.1.0"
-    "@moq/net": "npm:^0.1.2"
-    "@moq/signals": "npm:^0.1.7"
-    "@svta/cml-iso-bmff": "npm:^1.0.0-alpha.9"
-    zod: "npm:^4.1.5"
-  checksum: 10c0/3afb9f8469b061bf4fa635d6b1b10b042cf9aecde0c360c31848f21876b9380d49c10ce5531da78fa66de1f1961ff78cb092784be74ad0f0e7b7a0b900ccf072
+    "@libav.js/variant-opus-af": "npm:^6.9.8"
+    "@moq/json": "npm:^0.3.2"
+    "@moq/loc": "npm:^0.2.2"
+    "@moq/net": "npm:^0.3.3"
+    "@moq/signals": "npm:^0.2.2"
+    "@svta/cml-iso-bmff": "npm:^1.0.4"
+    "@svta/cml-utils": "npm:1.6.0"
+    zod: "npm:^4.4.3"
+  checksum: 10c0/7b71ae457e6a33a93997dcd9e60977104ca0ef3ca839144d4469c12cc031605beb5dde57d2c5b32924bba51bd21b57df32d615e6a3c4854382d5316268384a36
   languageName: node
   linkType: hard
 
-"@moq/json@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "@moq/json@npm:0.0.1"
+"@moq/json@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "@moq/json@npm:0.3.2"
   dependencies:
-    "@moq/net": "npm:^0.1.2"
-    "@moq/signals": "npm:^0.1.7"
+    "@moq/flate": "npm:^0.1.2"
+    "@moq/net": "npm:^0.3.2"
+    "@moq/signals": "npm:^0.2.2"
   peerDependencies:
     zod: ^4.0.0
-  checksum: 10c0/9a83870a0f31e00233225777f6466efcb42d4afae6d093b33cb92f60cd57e348ae24665523ef57ea953838c4e181816ff649f28f9aa8683a2d6026ee17717543
+  checksum: 10c0/7502579ba1fd5f0d5e8f77e06054eea76678144bbe67249f2db611bcaeb194fede0bb5d5e05c81567ed65f203a4320994b8e62b7c82fe1c96444e329048e6ccc
   languageName: node
   linkType: hard
 
-"@moq/loc@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "@moq/loc@npm:0.1.0"
+"@moq/loc@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@moq/loc@npm:0.2.2"
   dependencies:
-    "@moq/net": "npm:^0.1.1"
-  checksum: 10c0/c0e552429f858f5f0acc151eabf08bb94984a5fa7dc109139482e7159eee2bf601ae17ea65a79d3bb701fd22325db138eb6757de44748c9b280c0e4c28a6262c
+    "@moq/net": "npm:^0.3.2"
+  checksum: 10c0/a8c370aae1bababf3fa67055024890cf531a6da6ea23a9b792dc08c8ac3eb56769af4eaecddd9188f8b61c75d36ff02d6b2f3e53fbf74b06d9263af0deb51897
   languageName: node
   linkType: hard
 
@@ -534,8 +546,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@moq/moq-demo@workspace:."
   dependencies:
-    "@moq/publish": "npm:^0.2.11"
-    "@moq/watch": "npm:^0.2.14"
+    "@moq/publish": "npm:^0.4.5"
+    "@moq/watch": "npm:^0.5.2"
     "@svta/cml-utils": "npm:1.4.0"
     "@tailwindcss/typography": "npm:^0.5.16"
     "@tailwindcss/vite": "npm:^4.1.13"
@@ -551,55 +563,57 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@moq/msf@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "@moq/msf@npm:0.1.1"
+"@moq/msf@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@moq/msf@npm:0.2.1"
   dependencies:
-    "@moq/net": "npm:^0.1.2"
-    zod: "npm:^4.1.5"
-  checksum: 10c0/0fa06ac543c162b5d2d2ad725a3b377573d8b994ae64bbe1983e19f5f2b3448bc09b0c36e2c500d9317e402d5b8c612fa29590e43d0ce9902cedefafd5c493fa
+    "@moq/net": "npm:^0.3.2"
+    zod: "npm:^4.4.3"
+  checksum: 10c0/83e98b654fd06073195c42006095e835a6c4ecb632ff9a4eb96f651b31e56852af15ab3c7f840ef893fd4ad2b40cbe50bae86109b365a9d91eee9743746b7ffc
   languageName: node
   linkType: hard
 
-"@moq/net@npm:^0.1.1, @moq/net@npm:^0.1.2":
-  version: 0.1.2
-  resolution: "@moq/net@npm:0.1.2"
+"@moq/net@npm:^0.3.2, @moq/net@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "@moq/net@npm:0.3.3"
   dependencies:
-    "@moq/qmux": "npm:^0.0.6"
-    "@moq/signals": "npm:^0.1.7"
+    "@moq/qmux": "npm:^0.3.3"
+    "@moq/signals": "npm:^0.2.2"
     async-mutex: "npm:^0.5.0"
+    bowser: "npm:^2.14.1"
   peerDependencies:
     zod: ^4.0.0
-  checksum: 10c0/bfc3648e1fb29c9bc44584b4a0108883abbe9c916fbc5bbb48166827603aef9f0a008f0fa8f1e570e656aec663e789653bb1641a947e8c94c4974cbb507bbd02
+  checksum: 10c0/4b8caaa71f40d4579097751f38ab55a37bbc7f6b499b362ec26d988af89f54501f119011caa6414a35518ca620117d46670388d28a365de34ee37d401c667e78
   languageName: node
   linkType: hard
 
-"@moq/publish@npm:^0.2.11":
-  version: 0.2.11
-  resolution: "@moq/publish@npm:0.2.11"
+"@moq/publish@npm:^0.4.5":
+  version: 0.4.5
+  resolution: "@moq/publish@npm:0.4.5"
   dependencies:
-    "@moq/hang": "npm:^0.2.7"
-    "@moq/json": "npm:^0.0.1"
-    "@moq/net": "npm:^0.1.2"
-    "@moq/signals": "npm:^0.1.7"
-  checksum: 10c0/5d0e6f31d2845c2a921bff3e3a1dd4ba636de85aa541d03306ba67acc900865ef74527e106d3e2693bc9940e38f06452fea477e7a905913cd1f4068fd0b0998b
+    "@moq/hang": "npm:^0.4.2"
+    "@moq/net": "npm:^0.3.3"
+    "@moq/signals": "npm:^0.2.2"
+  checksum: 10c0/80522c04e0b01953991d7c0b43b6a93568c1139cc5aed2767037a546313fe573e04bf60be21f44721a523a5c5a4d4d27187a18ad046bf88323e2d99b1e11ba2b
   languageName: node
   linkType: hard
 
-"@moq/qmux@npm:^0.0.6":
-  version: 0.0.6
-  resolution: "@moq/qmux@npm:0.0.6"
-  checksum: 10c0/f37838fc6f519ff5d2d3243b9e11a13009ab64e7f1d70d42245633a6d4eca6b6a0265cfc352fa2b944fbc21b19abe752e0ffa24f9518975e5f7122d674538fcd
+"@moq/qmux@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "@moq/qmux@npm:0.3.3"
+  dependencies:
+    "@moq/web-socket-stream": "npm:^0.1.1"
+  checksum: 10c0/bd9b8d0ed54ca3bb7e53324352d1f4e17f427a9de0c32268eaeea28ad8ec35d327de1014a0d9f7927c92b76a2dc5a193985b31b786c1104579365b0a1996c729
   languageName: node
   linkType: hard
 
-"@moq/signals@npm:^0.1.7":
-  version: 0.1.7
-  resolution: "@moq/signals@npm:0.1.7"
+"@moq/signals@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@moq/signals@npm:0.2.2"
   peerDependencies:
-    "@types/react": ^19.1.8
-    react: ^19.0.0
-    solid-js: ^1.9.7
+    "@types/react": ^19.2.17
+    react: ^19.2.8
+    solid-js: ^1.9.14
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -607,19 +621,26 @@ __metadata:
       optional: true
     solid-js:
       optional: true
-  checksum: 10c0/1e7e9695298523391c086d3b817f8cf4a909866d32bc6718d7707a78bdca8c31184aa89b937ca75fb29c3092c813a10db88a1f1d3bca3d0d3e70fa1f2cffbe35
+  checksum: 10c0/339ae549abe5cf5faab7f9f58a4670fac514f67c6abebc97ffd9ab4bb0e28db73cf7f55857677612a1f927499c438222f7b7efdf9e43ce7df04ab95fe7d49e3f
   languageName: node
   linkType: hard
 
-"@moq/watch@npm:^0.2.14":
-  version: 0.2.14
-  resolution: "@moq/watch@npm:0.2.14"
+"@moq/watch@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@moq/watch@npm:0.5.2"
   dependencies:
-    "@moq/hang": "npm:^0.2.7"
-    "@moq/msf": "npm:^0.1.1"
-    "@moq/net": "npm:^0.1.2"
-    "@moq/signals": "npm:^0.1.7"
-  checksum: 10c0/420119b526849e88b98642d5f693e509ceb3b967703749bb8789481ee5389dd26b3b4c13686ce26ba499088d5ee1303b916d1322e105c7bf4d8316f5976492fe
+    "@moq/hang": "npm:^0.4.2"
+    "@moq/msf": "npm:^0.2.1"
+    "@moq/net": "npm:^0.3.3"
+    "@moq/signals": "npm:^0.2.2"
+  checksum: 10c0/be0387c02b6ca4d45445b36db18ea14c5049fc971fd22b1898806a7036ad2476715cf1bc3c5b847620f21ecf47610c9acc1d5740a79a8ee0412c80d9d3fac9ee
+  languageName: node
+  linkType: hard
+
+"@moq/web-socket-stream@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@moq/web-socket-stream@npm:0.1.1"
+  checksum: 10c0/96cc69f0eed4009f7c29961dec0e41674b115dac3ec676d7fa7ad370734e477db8b2a9edee264d1d14df9fd320093f5dd30a3472ec8347b6da9f31dcbe343df3
   languageName: node
   linkType: hard
 
@@ -810,12 +831,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svta/cml-iso-bmff@npm:^1.0.0-alpha.9":
-  version: 1.0.1
-  resolution: "@svta/cml-iso-bmff@npm:1.0.1"
+"@svta/cml-iso-bmff@npm:^1.0.4":
+  version: 1.0.5
+  resolution: "@svta/cml-iso-bmff@npm:1.0.5"
   peerDependencies:
-    "@svta/cml-utils": 1.4.0
-  checksum: 10c0/ca8ef43fba9b7ed84ab2c91560b082bbd0c1f82dd8d99cb80e46d0132cd76dd5a668d0ac0781c1ae9163ce0c70f60daf4a50d7625a057cfddb66cb7d020ff6a4
+    "@svta/cml-utils": 1.6.0
+  checksum: 10c0/415d9fb6a3145400447a390e4960bccfc907288262ebade60f571526799513d29095374b114b69d71ecaac8ae54dc9c8dd9b236a7c0ffa7a1ebe8eabd9336a34
   languageName: node
   linkType: hard
 
@@ -823,6 +844,13 @@ __metadata:
   version: 1.4.0
   resolution: "@svta/cml-utils@npm:1.4.0"
   checksum: 10c0/f7d35a5d6e6aadb68b7079c4e9b5f665ce3d06de7b8c5ea617f359fa0fc28997a7b891c5c92594e3fdef20b33f71cd40ab5f3b8878a8245a2342023ef0add9f1
+  languageName: node
+  linkType: hard
+
+"@svta/cml-utils@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@svta/cml-utils@npm:1.6.0"
+  checksum: 10c0/8937660dd552ba0ff29756220f43db1897e03a646c696a390cd21ff73a6c5fcba10f2523daf260ec3ca6535d97b3d511b98a7c8643b6c6ed0ef85386a70e8d6a
   languageName: node
   linkType: hard
 
@@ -1117,6 +1145,13 @@ __metadata:
   bin:
     baseline-browser-mapping: dist/cli.cjs
   checksum: 10c0/3d60c9656c4c4673593aa8d0ae9aa6b69b4e018c2f585874a0e8a40cb28d0559f57ee1b2e7e44cb1e7f6aac66f658a4a3c1285901b8836d8ae31e189e30aa816
+  languageName: node
+  linkType: hard
+
+"bowser@npm:^2.14.1":
+  version: 2.14.1
+  resolution: "bowser@npm:2.14.1"
+  checksum: 10c0/bb69b55ba7f0456e3dc07d0cfd9467f985581f640ba8fd426b08754a6737ee0d6cf3b50607941e5255f04c83075b952ece0599f978dd4d20f1e95461104c5ffd
   languageName: node
   linkType: hard
 
@@ -1649,6 +1684,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pako@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "pako@npm:3.0.1"
+  checksum: 10c0/1292b2ffcbdf42f95be5519ffc11c4cb8daf065f7681936a5b0fe2028753396fbaea0c22cb22e54a4f12bb0c3217513f6b2261fa77e4dbf8c9bd76efe3eca2cc
+  languageName: node
+  linkType: hard
+
 "parse5@npm:^7.1.2":
   version: 7.3.0
   resolution: "parse5@npm:7.3.0"
@@ -2080,16 +2122,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^4.0.0":
+"zod@npm:^4.0.0, zod@npm:^4.4.3":
   version: 4.4.3
   resolution: "zod@npm:4.4.3"
   checksum: 10c0/7ea31b558e88f9faf44f31dd185e2e1cbf51fed3081787fb96cc2534749b50c0acfc6da7f0922a7353ed092dd358c7d50c28ea96c94d04af64191bd33152eca3
-  languageName: node
-  linkType: hard
-
-"zod@npm:^4.1.5":
-  version: 4.3.6
-  resolution: "zod@npm:4.3.6"
-  checksum: 10c0/860d25a81ab41d33aa25f8d0d07b091a04acb426e605f396227a796e9e800c44723ed96d0f53a512b57be3d1520f45bf69c0cb3b378a232a00787a2609625307
   languageName: node
   linkType: hard

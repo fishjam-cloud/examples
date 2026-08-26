@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+import "solid-js";
+
 interface ImportMetaEnv {
   readonly VITE_SANDBOX_API_URL?: string;
   readonly VITE_FISHJAM_API_BASE_URL?: string;
