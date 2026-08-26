@@ -46,10 +46,9 @@ export const useMoqConnection = () => {
 
   const [connectionSignal] = useState(
     () =>
-      new Signal<Publish.Lite.Connection.Established | undefined>(undefined),
+      new Signal<Publish.Net.Connection.Established | undefined>(undefined),
   );
 
-  const reloadRef = useRef<Publish.Lite.Connection.Reload | null>(null);
   const sessionCleanupRef = useRef<(() => void) | null>(null);
   const streamRef = useRef<RemoteStream | null>(null);
   const translationProvidersRef = useRef(
@@ -75,7 +74,9 @@ export const useMoqConnection = () => {
       }
 
       const activeLanguages = new Set(
-        Object.keys(provider.broadcast.catalog.peek()?.audio?.renditions ?? {}),
+        Object.keys(
+          provider.broadcast.out.catalog.peek()?.audio?.renditions ?? {},
+        ),
       );
 
       for (const language of activeLanguages) {
@@ -107,7 +108,7 @@ export const useMoqConnection = () => {
       }
     }
 
-    const catalog = current.broadcast.catalog.peek();
+    const catalog = current.broadcast.out.catalog.peek();
     const hasVideo =
       !!catalog?.video &&
       Object.keys(catalog.video.renditions ?? {}).length > 0;
@@ -154,15 +155,15 @@ export const useMoqConnection = () => {
       const broadcast = new Watch.Broadcast({
         connection: connectionSignal,
         enabled: true,
-        name: Publish.Lite.Path.from(path),
+        name: Publish.Net.Path.from(path),
       });
 
       const sync = () => {
         refreshStream();
       };
 
-      const disposeCatalog = broadcast.catalog.subscribe(sync);
-      const disposeStatus = broadcast.status.subscribe(sync);
+      const disposeCatalog = broadcast.out.catalog.subscribe(sync);
+      const disposeStatus = broadcast.out.status.subscribe(sync);
 
       streamRef.current = {
         path,
@@ -187,9 +188,8 @@ export const useMoqConnection = () => {
 
       const broadcast = new Watch.Broadcast({
         connection: connectionSignal,
-        announced: reloadRef.current?.announced,
         enabled: true,
-        name: Publish.Lite.Path.from(path),
+        name: Publish.Net.Path.from(path),
         reload: true,
       });
 
@@ -197,8 +197,8 @@ export const useMoqConnection = () => {
         refreshStream();
       };
 
-      const disposeCatalog = broadcast.catalog.subscribe(sync);
-      const disposeStatus = broadcast.status.subscribe(sync);
+      const disposeCatalog = broadcast.out.catalog.subscribe(sync);
+      const disposeStatus = broadcast.out.status.subscribe(sync);
 
       translationProvidersRef.current.set(path, {
         path,
@@ -220,7 +220,6 @@ export const useMoqConnection = () => {
   const disconnect = useCallback(() => {
     sessionCleanupRef.current?.();
     sessionCleanupRef.current = null;
-    reloadRef.current = null;
     connectionSignal.set(undefined);
     setConnectionStatus("disconnected");
     setHasSession(false);
@@ -234,12 +233,10 @@ export const useMoqConnection = () => {
       setHasSession(true);
       setConnectionStatus("connecting");
 
-      const reload = new Publish.Lite.Connection.Reload({
+      const reload = new Publish.Net.Connection.Reload({
         enabled: true,
         url: connectionUrl,
       });
-
-      reloadRef.current = reload;
 
       const disposeStatus = reload.status.subscribe((value) => {
         setConnectionStatus(value);
@@ -249,7 +246,7 @@ export const useMoqConnection = () => {
         connectionSignal.set(connection);
       });
 
-      const syncStream = (announced: Set<Publish.Lite.Path.Valid>) => {
+      const syncStream = (announced: Iterable<Publish.Net.Path.Valid>) => {
         let streamPath: string | undefined;
         const providerPaths = new Map<
           string,
@@ -295,14 +292,38 @@ export const useMoqConnection = () => {
         refreshStream();
       };
 
-      const disposeDiscovery = reload.announced.subscribe((announced) => {
-        syncStream(announced);
-      });
+      const announcements = reload.announced();
+      const announced = new Map<string, Publish.Net.Path.Valid>();
+      let discoveryCancelled = false;
 
-      syncStream(reload.announced.peek());
+      void (async () => {
+        try {
+          for (;;) {
+            const event = await announcements.next();
+            if (!event || discoveryCancelled) {
+              break;
+            }
+
+            const path = event.path.toString();
+            if (event.active) {
+              announced.set(path, event.path);
+            } else {
+              announced.delete(path);
+            }
+            syncStream(announced.values());
+          }
+        } catch (error) {
+          if (!discoveryCancelled) {
+            console.error("MoQ broadcast discovery failed", error);
+          }
+        }
+      })();
+
+      syncStream([]);
 
       sessionCleanupRef.current = () => {
-        disposeDiscovery();
+        discoveryCancelled = true;
+        announcements.close();
         disposeEstablished();
         disposeStatus();
         reload.close();

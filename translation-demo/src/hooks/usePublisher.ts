@@ -32,7 +32,7 @@ export const usePublisher = () => {
   );
   const [connectionSignal] = useState(
     () =>
-      new Signal<Publish.Lite.Connection.Established | undefined>(undefined),
+      new Signal<Publish.Net.Connection.Established | undefined>(undefined),
   );
 
   const [streamName, setStreamName] = useState<string | null>(null);
@@ -44,12 +44,13 @@ export const usePublisher = () => {
   // Holds the teardown for the active session; its presence also means "already publishing".
   const sessionCleanupRef = useRef<(() => void) | null>(null);
 
-  const cameraDevices = useSignalValue(camera.device.available) ?? [];
-  const microphoneDevices = useSignalValue(microphone.device.available) ?? [];
-  const selectedCameraId = useSignalValue(camera.device.active);
-  const selectedMicrophoneId = useSignalValue(microphone.device.active);
+  const cameraDevices = useSignalValue(camera.device.out.available) ?? [];
+  const microphoneDevices =
+    useSignalValue(microphone.device.out.available) ?? [];
+  const selectedCameraId = useSignalValue(camera.device.out.active);
+  const selectedMicrophoneId = useSignalValue(microphone.device.out.active);
 
-  const cameraTrack = useSignalValue(camera.source);
+  const cameraTrack = useSignalValue(camera.out.source);
   const previewStream = useMemo(
     () => (cameraTrack ? new MediaStream([cameraTrack]) : null),
     [cameraTrack],
@@ -109,7 +110,7 @@ export const usePublisher = () => {
       return;
     }
 
-    const reload = new Publish.Lite.Connection.Reload({
+    const reload = new Publish.Net.Connection.Reload({
       enabled: true,
       url: connectionUrl,
     });
@@ -120,35 +121,42 @@ export const usePublisher = () => {
     });
 
     // Single-segment broadcast leaf; the `translations` namespace is in the connection URL.
-    // The hd/sd video and audio encoders must be explicitly enabled (with a config),
+    // The video and audio encoders must be explicitly enabled (with a config),
     // otherwise the catalog publishes with no active tracks and the relay aborts it.
+    const capture = new Publish.Video.Capture({ source: camera.out.source });
     const broadcast = new Publish.Broadcast({
       connection: connectionSignal,
       enabled: true,
-      name: Publish.Lite.Path.from(name),
-      audio: {
-        enabled: microphone.enabled,
-        source: microphone.source,
+      name: Publish.Net.Path.from(name),
+      display: capture.out.display,
+    });
+    const video = new Publish.Video.Encoder("video/hd", {
+      broadcast,
+      capture,
+      enabled: true,
+      config: {
+        maxPixels: 1280 * 720,
+        maxBitrate: 1_000_000,
+        frameRate: 30,
       },
-      video: {
-        source: camera.source,
-        // Single 720p rendition; the lower-quality sd encoder stays off.
-        hd: {
-          enabled: camera.enabled,
-          config: {
-            maxPixels: 1280 * 720,
-            maxBitrate: 1_000_000,
-            frameRate: 30,
-          },
-        },
-        sd: { enabled: false },
+    });
+    const audio = new Publish.Audio.Encoder("audio", {
+      broadcast,
+      codec: {
+        mime: "opus",
+        usedtx: false,
       },
+      enabled: true,
+      source: microphone.out.source,
     });
 
     sessionCleanupRef.current = () => {
       disposeEstablished();
       disposeStatus();
+      audio.close();
+      video.close();
       broadcast.close();
+      capture.close();
       reload.close();
     };
   }, [
