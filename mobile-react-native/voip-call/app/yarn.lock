@@ -1239,43 +1239,43 @@
     chalk "^4.1.0"
     js-yaml "^4.1.0"
 
-"@fishjam-cloud/ios-expo-voip@0.29.0":
-  version "0.29.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ios-expo-voip/-/ios-expo-voip-0.29.0.tgz#0a662b26ab9356e17363ea6a99efc412f4a237b6"
-  integrity sha512-QIcyc/ni3HO2oS3F4+AUVue442vbNNqmYCjnbdev9P9yjv9UePbTFoByRigrvKzL7BxyaAYIs9QQTZw3HeYoDQ==
+"@fishjam-cloud/ios-expo-voip@0.30.0":
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ios-expo-voip/-/ios-expo-voip-0.30.0.tgz#d473b8a47322ba9eec0bb58686a5def3b9dc8397"
+  integrity sha512-qKmNADgTk7HC8wNgwVxx1Ma9voS4Hhw0SmmvI9ZgFdmRkLzT118cF8pzGUXnmjKbUB7U8VuwOrHH0hzUm5iL9Q==
 
-"@fishjam-cloud/react-client@0.30.0-rc.1":
-  version "0.30.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-client/-/react-client-0.30.0-rc.1.tgz#1a23d9b50cf9fa8c480d36857d5bbf54c62ce799"
-  integrity sha512-Dau21NUyIgG5v3Jz1SEvSlJ21NGKtBHF8ymbF3fkEy3jljYb0nfNR8mXvMzCLUfC/zb/ACCCKBn9v421K9LWkw==
+"@fishjam-cloud/react-client@0.30.0":
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-client/-/react-client-0.30.0.tgz#05394dc6bcbeefed4e24fed38a886a4648742b31"
+  integrity sha512-wrCJmgbHm2V3KOvwTiJOxZl+CMHDTeqL6ZNTcWoTNeZESPmw3SJnR5ulkWrndxgMXbG8F2Pdz2GOc4Yb+UVHWA==
   dependencies:
-    "@fishjam-cloud/ts-client" "0.30.0-rc.1"
+    "@fishjam-cloud/ts-client" "0.30.0"
     events "3.3.0"
     lodash.isequal "4.5.0"
 
-"@fishjam-cloud/react-native-client@0.30.0-rc.1":
-  version "0.30.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-client/-/react-native-client-0.30.0-rc.1.tgz#ea7074507e75b1cd0d4ae838191c89f2d5b7b3f3"
-  integrity sha512-F73gd/yGwPrunY7HKUnv06SwHPaXUCNVlb5Czr8Cp9cevdtNNRCf+FQQ6DvaeJj987l8fXmulWgZf6Wez2GXIA==
+"@fishjam-cloud/react-native-client@0.30.0":
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-client/-/react-native-client-0.30.0.tgz#1193e157b7e12814e4ec8f427acb9cd57b0995ca"
+  integrity sha512-2vDXN3iqkr18HOCyaNrQ7JVbm8d4ZPPlEEtP86dHXyZHb8J8Wo3G7CPn3U9ALnXnqyb2hyQGSz+7IC5QzXEV0g==
   dependencies:
-    "@fishjam-cloud/react-client" "0.30.0-rc.1"
-    "@fishjam-cloud/react-native-webrtc" "0.30.0-rc.0"
+    "@fishjam-cloud/react-client" "0.30.0"
+    "@fishjam-cloud/react-native-webrtc" "0.30.0"
     fast-text-encoding "1.0.6"
     react-native-get-random-values "1.11.0"
     react-native-url-polyfill "3.0.0"
 
-"@fishjam-cloud/react-native-webrtc@0.30.0-rc.0":
-  version "0.30.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-webrtc/-/react-native-webrtc-0.30.0-rc.0.tgz#213f3215eef4b7b353ef58acdc446def65b6fdc4"
-  integrity sha512-z/ca94dIaYqoSRnEVoAyF7FXCo4symilzoSeZ4e1dlRthIftGbUi7o9ywez7O62VrR9L4UJSOKcrn/QvtpYMAw==
+"@fishjam-cloud/react-native-webrtc@0.30.0":
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-native-webrtc/-/react-native-webrtc-0.30.0.tgz#c4016aa94caa9a17ce28844800fa836faeb7d997"
+  integrity sha512-ITJ0s5YD1aN0oCxdLYPHBiP1EyXJbraNXolAdfn82aCHhObOth0BQfXg+RkemIyyDUsm/4Z+BnNSXEr1s0SY5Q==
   dependencies:
     base64-js "1.5.1"
     debug "4.3.4"
 
-"@fishjam-cloud/ts-client@0.30.0-rc.1":
-  version "0.30.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.30.0-rc.1.tgz#35995832397fcdac54e405ee1551e042735f66db"
-  integrity sha512-haSP4YJ+VnenyGw1Lz+POOWoYy5AIoEINXTl+KI6y6pC3CI/jbZqBEGFv8aqKkGpKe/dEQ8RyL8loAn53Hy9dw==
+"@fishjam-cloud/ts-client@0.30.0":
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.30.0.tgz#f409bdf210fd9e798e6a075a71ff624bc93f2c2c"
+  integrity sha512-eHVBWLg7OFu35URXLkCsZgnzquDcQxf9ire4wajW7JUiRwIVhX8na7oTXBJdkNLNMWWdLhQSfufPM4RxysD+DA==
   dependencies:
     "@binbat/whip-whep" "^1.1.1-sdp-trickle-throw"
     "@bufbuild/protobuf" "^2.2.3"
