@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
-    "@fishjam-cloud/ios-expo-voip": "0.29.0",
-    "@fishjam-cloud/react-native-client": "0.30.0-rc.1",
+    "@fishjam-cloud/ios-expo-voip": "0.30.0",
+    "@fishjam-cloud/react-native-client": "0.30.0",
     "@react-native-async-storage/async-storage": "^3.1.1",
     "expo": "~54.0.30",
     "expo-splash-screen": "~31.0.13",
