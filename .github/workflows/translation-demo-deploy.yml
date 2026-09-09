@@ -92,7 +92,10 @@ jobs:
             printf 'FISHJAM_ID=%s\nFISHJAM_MANAGEMENT_TOKEN=%s\nGOOGLE_API_KEY=%s\n' \
               "$FISHJAM_ID" "$FISHJAM_MANAGEMENT_TOKEN" "$GOOGLE_API_KEY" > .env
             uv sync
-            systemctl --user restart translator
+            install -m 644 deploy/translator.service /etc/systemd/system/translator.service
+            systemctl daemon-reload
+            systemctl enable translator
+            systemctl restart translator
         env:
           SERVICE_DIR: ${{ secrets.TRANSLATOR_SERVICE_DIR }}
           FISHJAM_ID: ${{ secrets.TRANSLATION_FISHJAM_ID }}

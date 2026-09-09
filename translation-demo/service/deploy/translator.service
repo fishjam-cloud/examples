@@ -1,0 +1,17 @@
+# Installed to /etc/systemd/system/translator.service by
+# .github/workflows/translation-demo-deploy.yml. A system unit (not a
+# `systemctl --user` one) so the service survives SSH logouts and reboots.
+[Unit]
+Description=MoQ live translation service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=root
+WorkingDirectory=/home/translator-service
+ExecStart=/root/.local/bin/uv run --env-file .env translator
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
