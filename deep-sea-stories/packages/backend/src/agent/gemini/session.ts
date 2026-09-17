@@ -1,4 +1,5 @@
 import {
+	Behavior,
 	type GoogleGenAI,
 	type LiveConnectParameters,
 	type LiveServerMessage,
@@ -98,13 +99,11 @@ export class GeminiSession implements VoiceAgentSession {
 				systemInstruction: getInstructionsForStory(this.config.story),
 				outputAudioTranscription: {},
 				temperature: 0.5,
-				thinkingConfig: {
-					thinkingBudget: -1,
-				},
 				tools: [
 					{
 						functionDeclarations: [
 							{
+								behavior: Behavior.BLOCKING,
 								name: 'endGame',
 								description:
 									'Call this function to end the game session. You MUST call this when: 1) The players have correctly solved the riddle, 2) The game time has expired, 3) You are saying goodbye or ending the conversation. Always call this function after delivering your final message to players.',
@@ -112,9 +111,6 @@ export class GeminiSession implements VoiceAgentSession {
 						],
 					},
 				],
-				proactivity: {
-					proactiveAudio: true,
-				},
 				sessionResumption: { handle: this.previousHandle },
 			},
 			callbacks: {
