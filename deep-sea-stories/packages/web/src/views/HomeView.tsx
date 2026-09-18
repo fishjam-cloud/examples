@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { AnnouncementBanner } from '@/components/AnnouncementBanner';
 import Footer from '@/components/Footer';
 import TitleBar from '@/components/TitleBar';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,18 @@ export default function HomeView() {
 
 	return (
 		<section className="h-full w-full flex justify-between flex-col py-16 px-4 lg:px-16">
+			<AnnouncementBanner>
+				Deep Sea Stories is now powered by{' '}
+				<a
+					href="https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live"
+					target="_blank"
+					rel="noreferrer"
+					className="font-semibold underline decoration-white/70 underline-offset-2 transition-colors hover:decoration-white"
+				>
+					Gemini 3.8 Live
+				</a>
+				.
+			</AnnouncementBanner>
 			<TitleBar />
 			<section className="flex-1 py-16 grid place-items-center">
 				<Button

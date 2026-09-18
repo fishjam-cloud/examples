@@ -49,7 +49,6 @@ export class GameRoom {
 			vertexai: CONFIG.GOOGLE_GENAI_USE_VERTEXAI,
 			project: CONFIG.GOOGLE_CLOUD_PROJECT,
 			location: CONFIG.GOOGLE_CLOUD_LOCATION,
-			httpOptions: { apiVersion: 'v1alpha' },
 		});
 	}
 
