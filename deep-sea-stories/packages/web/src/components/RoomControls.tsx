@@ -70,13 +70,13 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 	};
 
 	return (
-		<div className="flex flex-col h-full py-2 md:py-2 lg:py-3 gap-2 md:gap-2 lg:gap-3">
+		<div className="flex h-full flex-col py-2 md:py-1 lg:py-2 gap-2">
 			<DeepSeaLogo className="hidden md:block flex-none" />
 			<section className="w-full flex-none grid grid-cols-2 md:flex md:flex-col gap-2">
 				{!isStorySelected ? (
 					<Button
 						size="large"
-						className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-11 lg:h-12"
+						className="col-span-2 md:w-full text-xs md:text-sm lg:text-base h-9 md:h-9 lg:h-10"
 						onClick={() => setIsStoryPanelOpen(true)}
 					>
 						Choose a story
@@ -85,7 +85,7 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 					<Button
 						size="large"
 						variant="outline"
-						className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-11 lg:h-12"
+						className="col-span-2 md:w-full text-xs md:text-sm lg:text-base h-9 md:h-9 lg:h-10"
 						onClick={handleCancelGame}
 						disabled={isCanceling}
 					>
@@ -94,14 +94,14 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 				) : (
 					<>
 						<Button
-							className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-10 lg:h-11"
+							className="col-span-2 md:w-full text-xs md:text-sm lg:text-base h-9 lg:h-10"
 							onClick={handleStartGame}
 							disabled={isStarting}
 						>
 							{isStarting ? 'Starting...' : 'Start the Game'}
 						</Button>
 						<Button
-							className="col-span-2 md:w-full text-xs md:text-base h-9 md:h-10 lg:h-11"
+							className="col-span-2 md:w-full text-xs md:text-sm lg:text-base h-9 lg:h-10"
 							variant="outline"
 							onClick={() => setIsStoryPanelOpen(true)}
 						>
@@ -110,14 +110,13 @@ const RoomControls: FC<RoomControlsProps> = ({ roomId, userName }) => {
 					</>
 				)}
 			</section>
-			<div className="flex-1 min-h-0" />
 			<section className="w-full flex-none flex flex-col gap-2">
-				<HowToPlay className="w-full text-xs md:text-base h-9 md:h-10 lg:h-11" />
-				<HowItWorks className="w-full text-xs md:text-base h-9 md:h-10 lg:h-11" />
+				<HowToPlay className="w-full text-xs md:text-sm lg:text-base h-9 lg:h-10" />
+				<HowItWorks className="w-full text-xs md:text-sm lg:text-base h-9 lg:h-10" />
 
 				<CopyButton
 					variant="outline"
-					className="col-span-2 md:col-span-1 text-xs md:text-base h-9 md:h-10 lg:h-11"
+					className="col-span-2 md:col-span-1 text-xs md:text-sm lg:text-base h-9 lg:h-10"
 					onCopy={() => toast('Gameroom link copied to clipboard', Check)}
 					value={url}
 				>
