@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "av>=17.0.1",
-    "fishjam-server-sdk>=0.28.1",
+    "fishjam-server-sdk>=0.31.0",
     "moq-net>=0.1.0",
     "websockets>=15.0",
 ]

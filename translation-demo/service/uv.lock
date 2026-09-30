@@ -118,7 +118,7 @@ wheels = [
 
 [[package]]
 name = "fishjam-server-sdk"
-version = "0.28.1"
+version = "0.31.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aenum" },
@@ -130,9 +130,9 @@ dependencies = [
     { name = "urllib3" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/71/81/d33f5370c0a4f82acad6a7bcc42381aaa25c834b4c1c031349f1a63ab20b/fishjam_server_sdk-0.28.1.tar.gz", hash = "sha256:28718a9e8f035ff42ad1b47759c0009c29fb1962b253108c21872fc8905dd5cf", size = 40577, upload-time = "2026-06-23T13:55:33.153Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/8e/d8e6054a2510aa0baaf7b070d65ef15e66ee757f0481741cb1e3b9750e4f/fishjam_server_sdk-0.31.0.tar.gz", hash = "sha256:ac7c583e03d3cdb9e467458317e32d90c0d7d798d14e1571380517aa41b4c126", size = 86203, upload-time = "2026-09-30T11:14:46.373Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8c/45/2b76f66029c252298f92c441149e3c25f0f1be9225a1be78f8fffec95f0c/fishjam_server_sdk-0.28.1-py3-none-any.whl", hash = "sha256:4b10648a34cb0ce16370bea75072a42c4917f48c889dfabae71f9fbc6d281e36", size = 97662, upload-time = "2026-06-23T13:55:31.939Z" },
+    { url = "https://files.pythonhosted.org/packages/38/d9/77c4b5097069fa922e42c0c163a0cf968c234924db360079e14df8670eed/fishjam_server_sdk-0.31.0-py3-none-any.whl", hash = "sha256:38f95f62b37fe8b6104bf149da33907f7919d1befa43ba043524c51ba13e374d", size = 226348, upload-time = "2026-09-30T11:14:45.171Z" },
 ]
 
 [[package]]
@@ -377,7 +377,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "av", specifier = ">=17.0.1" },
-    { name = "fishjam-server-sdk", specifier = ">=0.28.1" },
+    { name = "fishjam-server-sdk", specifier = ">=0.31.0" },
     { name = "moq-net", specifier = ">=0.1.0" },
     { name = "websockets", specifier = ">=15.0" },
 ]
