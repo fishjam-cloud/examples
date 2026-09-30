@@ -229,19 +229,19 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
-"@fishjam-cloud/react-client@0.30.0":
-  version "0.30.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-client/-/react-client-0.30.0.tgz#05394dc6bcbeefed4e24fed38a886a4648742b31"
-  integrity sha512-wrCJmgbHm2V3KOvwTiJOxZl+CMHDTeqL6ZNTcWoTNeZESPmw3SJnR5ulkWrndxgMXbG8F2Pdz2GOc4Yb+UVHWA==
+"@fishjam-cloud/react-client@0.31.0":
+  version "0.31.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/react-client/-/react-client-0.31.0.tgz#d17007496317378f0ce0d397bb34974c8fe72672"
+  integrity sha512-nfm1iCCH9mcw+efb/AEJjXugUTobC5Z8rG0ux2X9LKpiugzTlRIfZHD58amznqF+HwCeK0duQh9MC8mdbPK7JA==
   dependencies:
-    "@fishjam-cloud/ts-client" "0.30.0"
+    "@fishjam-cloud/ts-client" "0.31.0"
     events "3.3.0"
     lodash.isequal "4.5.0"
 
-"@fishjam-cloud/ts-client@0.30.0":
-  version "0.30.0"
-  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.30.0.tgz#f409bdf210fd9e798e6a075a71ff624bc93f2c2c"
-  integrity sha512-eHVBWLg7OFu35URXLkCsZgnzquDcQxf9ire4wajW7JUiRwIVhX8na7oTXBJdkNLNMWWdLhQSfufPM4RxysD+DA==
+"@fishjam-cloud/ts-client@0.31.0":
+  version "0.31.0"
+  resolved "https://registry.yarnpkg.com/@fishjam-cloud/ts-client/-/ts-client-0.31.0.tgz#691971b535ce465992787eafd9659602db033dd9"
+  integrity sha512-Mg5IT8nJT+eSibzz7VL/W9JKC80rZGFlK2ahgJqPEDv9F9YKJNleU0laS+CDiyb2KpP1oz4NzvkltyH+sYrRow==
   dependencies:
     "@binbat/whip-whep" "^1.1.1-sdp-trickle-throw"
     "@bufbuild/protobuf" "^2.2.3"
