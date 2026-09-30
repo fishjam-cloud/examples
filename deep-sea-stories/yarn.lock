@@ -320,7 +320,7 @@ __metadata:
   dependencies:
     "@deep-sea-stories/common": "workspace:*"
     "@fastify/cors": "npm:^11.1.0"
-    "@fishjam-cloud/js-server-sdk": "npm:^0.30.0"
+    "@fishjam-cloud/js-server-sdk": "npm:^0.31.0"
     "@google/genai": "npm:^1.30.0"
     "@trpc/server": "npm:^11.6.0"
     "@tsconfig/node24": "npm:^24.0.1"
@@ -658,9 +658,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/js-server-sdk@npm:^0.30.0":
-  version: 0.30.0
-  resolution: "@fishjam-cloud/js-server-sdk@npm:0.30.0"
+"@fishjam-cloud/js-server-sdk@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "@fishjam-cloud/js-server-sdk@npm:0.31.0"
   dependencies:
     uuid: "npm:^11.1.0"
   peerDependencies:
@@ -668,7 +668,7 @@ __metadata:
   peerDependenciesMeta:
     "@google/genai":
       optional: true
-  checksum: 10c0/fea73ffc0d72cd8a30138d2b826d052e022d345c6b420180592ec9fcc8cb71967db820c766b6cef3da3917d719b6ac1b419c015f99501046b5756c8b77795815
+  checksum: 10c0/f46db09b9c54da03ea286c0b1a7d093d474860aa4d02289ef58add316f346ed2d88d12aa8009e6e3dec2181e87300c2428d42d8915bbc5896da46abf640f4eb9
   languageName: node
   linkType: hard
 
